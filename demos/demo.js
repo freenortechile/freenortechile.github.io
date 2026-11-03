@@ -48,7 +48,7 @@
 
     function prepararSistemaNuevo() {
 
-        // FarmaPOS, VisiónPOS, FaenaPro y VentaFácil comparten la misma base
+        // FarmaPOS, VisiónPOS, FaenaPro y MarkNorte comparten la misma base
         if (Datos.config().configurado) return;
 
         const config = {
