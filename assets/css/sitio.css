@@ -418,3 +418,13 @@ main p { max-width: 64ch; }
 .pagina__codigo { font-family: var(--fuente-titulo); font-weight: 800; font-size: 1.1rem; color: var(--oro); letter-spacing: .12em; }
 .pagina-interna .cabecera { color: var(--tx); }
 .pagina-interna .pie { margin-top: 0; }
+
+/* ---------- Comprar en Mercado Libre ---------- */
+.comprar__lista { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 32px; }
+.compra { display: flex; flex-direction: column; gap: 8px; padding: 22px; background: var(--sup); border: 1px solid var(--linea); border-top: 3px solid var(--c, var(--oro)); border-radius: 14px; }
+.compra h3 { font-size: 1.15rem; }
+.compra p { color: var(--tx-2); font-size: .95rem; flex: 1; }
+.compra__precio { font-size: 1.5rem; }
+.compra .boton { margin-top: 8px; text-align: center; }
+@media (max-width: 1000px) { .comprar__lista { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .comprar__lista { grid-template-columns: 1fr; } }
