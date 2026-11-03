@@ -6,7 +6,7 @@
 "use strict";
 
 const SISTEMA = {
-    nombre: "VentaFácil",
+    nombre: "MarkNorte",
     version: "1.0"
 };
 
