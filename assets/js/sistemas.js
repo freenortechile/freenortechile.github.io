@@ -29,7 +29,7 @@
       ]
     },
     farmacia: {
-      nombre: 'FarmaPOS',
+      nombre: 'FarmaNorte',
       rubro: 'Farmacias y droguerías',
       acento: '#3b82f6',
       imagen: 'assets/img/sistemas/farmacia.png',
@@ -92,7 +92,7 @@
       ]
     },
     articulos: {
-      nombre: 'VentaFácil',
+      nombre: 'MarkNorte',
       rubro: 'Bazares, minimarkets, librerías y ferreterías',
       acento: '#6366f1',
       imagen: 'assets/img/sistemas/articulos.png',
@@ -113,7 +113,7 @@
       ]
     },
     sportpos: {
-      nombre: 'SportPOS',
+      nombre: 'SportNorte',
       rubro: 'Tiendas de zapatillas y ropa deportiva',
       acento: '#ea580c',
       imagen: 'assets/img/sistemas/sportpos.png',

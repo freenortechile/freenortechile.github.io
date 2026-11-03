@@ -62,7 +62,9 @@ window.FN_SISTEMAS = [
  },
  {
   "id": "sportpos",
-  "nombre": "SportPOS",
+  "ml": "https://articulo.mercadolibre.cl/MLC-4647162654",
+  "precio": 70000,
+  "nombre": "SportNorte",
   "rubro": "Tiendas de zapatillas y ropa deportiva",
   "corto": "Zapatillas y deportes",
   "grupo": "comercio",
@@ -118,7 +120,9 @@ window.FN_SISTEMAS = [
  },
  {
   "id": "articulos",
-  "nombre": "VentaFácil",
+  "ml": "https://articulo.mercadolibre.cl/MLC-2390826405",
+  "precio": 30000,
+  "nombre": "MarkNorte",
   "rubro": "Bazares, minimarkets, librerías y ferreterías",
   "corto": "Bazares y minimarkets",
   "grupo": "comercio",
@@ -356,6 +360,8 @@ window.FN_SISTEMAS = [
  },
  {
   "id": "joya",
+  "ml": "https://articulo.mercadolibre.cl/MLC-2391218477",
+  "precio": 70000,
   "nombre": "JoyaPOS",
   "rubro": "Joyerías y compra de oro",
   "corto": "Joyerías",
@@ -412,6 +418,8 @@ window.FN_SISTEMAS = [
  },
  {
   "id": "tecno",
+  "ml": "https://articulo.mercadolibre.cl/MLC-4646338532",
+  "precio": 70000,
   "nombre": "TecnoPOS",
   "rubro": "Electrónica y repuestos de celulares",
   "corto": "Celulares y electrónica",
@@ -531,7 +539,9 @@ window.FN_SISTEMAS = [
  },
  {
   "id": "farmacia",
-  "nombre": "FarmaPOS",
+  "ml": "https://articulo.mercadolibre.cl/MLC-2391706501",
+  "precio": 70000,
+  "nombre": "FarmaNorte",
   "rubro": "Farmacias y droguerías",
   "corto": "Farmacias",
   "grupo": "salud",
@@ -591,6 +601,8 @@ window.FN_SISTEMAS = [
  },
  {
   "id": "optica",
+  "ml": "https://articulo.mercadolibre.cl/MLC-2391701833",
+  "precio": 70000,
   "nombre": "VisiónPOS",
   "rubro": "Ópticas",
   "corto": "Ópticas",
@@ -709,6 +721,8 @@ window.FN_SISTEMAS = [
  },
  {
   "id": "taller",
+  "ml": "https://articulo.mercadolibre.cl/MLC-4646514268",
+  "precio": 70000,
   "nombre": "TallerPro",
   "rubro": "Talleres mecánicos",
   "corto": "Talleres",
@@ -771,6 +785,8 @@ window.FN_SISTEMAS = [
  },
  {
   "id": "belleza",
+  "ml": "https://articulo.mercadolibre.cl/MLC-2391568841",
+  "precio": 70000,
   "nombre": "BellezaPro",
   "rubro": "Peluquerías, uñas, estética y barberías",
   "corto": "Peluquerías y estética",

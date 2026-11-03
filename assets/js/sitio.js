@@ -178,6 +178,7 @@
     $('#ficha-mods').innerHTML = s.modulos.map(function (m) { return '<li><strong>' + esc(m[0]) + '</strong>' + esc(m[1]) + '</li>'; }).join('');
     $('#ficha-video').hidden = !s.video;
     var demo = $('#ficha-demo'); demo.hidden = !s.demo; if (s.demo) demo.href = s.demo;
+    var comprar = $('#ficha-comprar'); comprar.hidden = !s.ml; if (s.ml) { comprar.href = s.ml; comprar.textContent = 'Comprar en Mercado Libre · ' + clp(s.precio); }
     var op = 'demo-' + s.id;
     $('#ficha-cotizar').dataset.interest = $('#interes option[value="' + op + '"]') ? op : 'cotizar';
     var papel = $('#boleta-papel');
