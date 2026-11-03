@@ -200,6 +200,16 @@
     actual = null;
     if (ultimoFoco && ultimoFoco.focus) ultimoFoco.focus({ preventScroll: true });
   }
+  /* ---------- Comprar en Mercado Libre ---------- */
+  (function () {
+    var lista = $('#comprar-lista'); if (!lista) return;
+    lista.innerHTML = datos.filter(function (s) { return s.ml; }).map(function (s) {
+      return '<article class="compra" style="--c:' + esc(s.color || '#e3b85b') + '"><h3>' + esc(s.nombre) + '</h3><p>' + esc(s.rubro) + '</p>' +
+        '<strong class="compra__precio">' + clp(s.precio) + '</strong>' +
+        '<a class="boton boton--oro" href="' + esc(s.ml) + '" target="_blank" rel="noopener">Comprar en Mercado Libre</a></article>';
+    }).join('');
+  })();
+
   $('#ficha-volver').addEventListener('click', cerrar);
   fondo.addEventListener('click', cerrar);
   $('#ficha-cotizar').addEventListener('click', cerrar);
