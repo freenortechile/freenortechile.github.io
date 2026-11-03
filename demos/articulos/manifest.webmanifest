@@ -1,6 +1,6 @@
 {
-    "name": "VentaFácil — Punto de venta",
-    "short_name": "VentaFácil",
+    "name": "MarkNorte — Punto de venta",
+    "short_name": "MarkNorte",
     "description": "Punto de venta simple: vender, stock y caja.",
     "lang": "es-CL",
     "start_url": "./index.html",
