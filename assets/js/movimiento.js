@@ -64,3 +64,66 @@
     });
   }
 })();
+
+/* FREENORTE: tarjeta con video de cada plan y servicio mensual */
+(function () {
+  'use strict';
+  var dlg = document.getElementById('plan-dialogo');
+  if (!dlg) return;
+  var reducir = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var video = document.getElementById('plan-dialogo-video');
+  var DATOS = {
+    emprende: { t: 'Plan Emprende', p: '$49.990 · pago único', i: 'plan-emprende', c: 'Quiero este plan',
+      pasos: ['Te visitamos y conversamos sobre tu negocio', 'Instalamos el sistema en tu celular', 'Cargamos tus productos', 'Armamos tu catálogo de WhatsApp', 'Sales a vender'] },
+    local: { t: 'Plan Vende en tu local', p: '$69.990 · pago único', i: 'plan-local', c: 'Quiero este plan',
+      pasos: ['Te visitamos en tu local', 'Contamos tu mercadería con doble conteo', 'Cargamos tu inventario', 'Catálogo de WhatsApp', 'Ordenamos tu Instagram y Facebook'] },
+    online: { t: 'Plan Vende online', p: '$99.990 · pago único', i: 'plan-online', c: 'Quiero este plan',
+      pasos: ['Todo lo del plan Vende en tu local', 'Creamos tu cuenta de Mercado Libre a tu nombre', 'Publicamos tus primeros 5 productos', 'Te enseñamos a manejarla'] },
+    completo: { t: 'Plan Completo', p: '$149.990 · pago único', i: 'plan-completo', c: 'Quiero este plan',
+      pasos: ['Todo lo del plan Vende online', 'Diseñamos tu página web', 'Con botón de WhatsApp', 'La publicamos'] },
+    soporte: { t: 'Soporte y respaldo', p: '$5.000 al mes', i: 'soporte', c: 'Quiero este servicio',
+      pasos: ['Ayuda por WhatsApp o videollamada', 'Respaldo de tus datos', 'Actualizaciones sin costo extra'] },
+    gestionml: { t: 'Gestión de Mercado Libre', p: '$35.000 al mes', i: 'mercadolibre', c: 'Quiero este servicio',
+      pasos: ['5 publicaciones nuevas al mes', 'Revisión de precios para que no pierdas', 'Resumen de resultados cada mes'] },
+    marketing: { t: 'Marketing en redes', p: '$49.990 al mes', i: 'marketing', c: 'Quiero este servicio',
+      pasos: ['Planificamos tu mes', 'Grabamos y editamos tus videos', 'Publicamos y medimos'] }
+  };
+  var ultimo = null;
+
+  function abrir(id, origen) {
+    var d = DATOS[id]; if (!d) return;
+    ultimo = origen || null;
+    document.getElementById('plan-dialogo-titulo').textContent = d.t;
+    document.getElementById('plan-dialogo-precio').textContent = d.p;
+    document.getElementById('plan-dialogo-pasos').innerHTML = d.pasos.map(function (x) { return '<li>' + x + '</li>'; }).join('');
+    var cta = document.getElementById('plan-dialogo-cta');
+    cta.dataset.interest = d.i; cta.textContent = d.c;
+    video.poster = 'assets/videos/plan-' + id + '.jpg';
+    video.src = 'assets/videos/plan-' + id + '.mp4';
+    if (typeof dlg.showModal === 'function') dlg.showModal(); else dlg.setAttribute('open', '');
+    document.body.classList.add('sin-scroll');
+    if (!reducir) { var pr = video.play(); if (pr && pr.catch) pr.catch(function () {}); }
+  }
+  function cerrar() { if (dlg.open) dlg.close(); }
+  dlg.addEventListener('close', function () {
+    video.pause(); video.removeAttribute('src'); video.load();
+    document.body.classList.remove('sin-scroll');
+    if (ultimo && ultimo.focus) ultimo.focus();
+  });
+  document.getElementById('plan-dialogo-cerrar').addEventListener('click', cerrar);
+  dlg.addEventListener('click', function (e) { if (e.target === dlg) cerrar(); });
+  document.getElementById('plan-dialogo-cta').addEventListener('click', cerrar);
+
+  Array.prototype.forEach.call(document.querySelectorAll('[data-plan-video]'), function (b) {
+    b.addEventListener('click', function () { abrir(b.dataset.planVideo, b); });
+  });
+  /* Toda la tarjeta del plan abre el video (menos el botón "Quiero este plan") */
+  Array.prototype.forEach.call(document.querySelectorAll('.plan'), function (card) {
+    var ver = card.querySelector('[data-plan-video]'); if (!ver) return;
+    card.classList.add('plan--clic');
+    card.addEventListener('click', function (e) {
+      if (e.target.closest('a, button')) return;
+      abrir(ver.dataset.planVideo, ver);
+    });
+  });
+})();
