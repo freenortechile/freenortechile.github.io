@@ -13,7 +13,7 @@
   <link rel="preload" href="assets/fonts/sora-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/inter-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
   <script>document.documentElement.classList.add('js');try{var t=localStorage.getItem('fn-tema2');if(t==='dia'||t==='noche')document.documentElement.setAttribute('data-tema',t);}catch(e){}</script>
-  <link rel="stylesheet" href="assets/css/sitio.css?v=4">
+  <link rel="stylesheet" href="assets/css/sitio.css?v=5">
 </head>
 <body>
   <div class="progreso" id="progreso" aria-hidden="true"></div>
@@ -97,6 +97,7 @@
             <li>Sistema de ventas en tu celular</li>
             <li>WhatsApp Business con catálogo de productos</li>
           </ul>
+          <button type="button" class="plan__ver" data-plan-video="emprende"><span class="plan__play" aria-hidden="true"></span>Ver cómo lo hacemos</button>
           <a class="boton boton--borde plan__boton" href="#contacto" data-interest="plan-emprende">Quiero este plan</a>
         </li>
         <li class="plan" data-rev style="--i:1">
@@ -108,6 +109,7 @@
             <li>WhatsApp Business con catálogo</li>
             <li>Instagram y Facebook ordenados</li>
           </ul>
+          <button type="button" class="plan__ver" data-plan-video="local"><span class="plan__play" aria-hidden="true"></span>Ver cómo lo hacemos</button>
           <a class="boton boton--borde plan__boton" href="#contacto" data-interest="plan-local">Quiero este plan</a>
         </li>
         <li class="plan plan--destacado" data-rev style="--i:2">
@@ -120,6 +122,7 @@
             <li>Cuenta de Mercado Libre configurada a tu nombre</li>
             <li>Tus primeras 5 publicaciones</li>
           </ul>
+          <button type="button" class="plan__ver" data-plan-video="online"><span class="plan__play" aria-hidden="true"></span>Ver cómo lo hacemos</button>
           <a class="boton boton--oro plan__boton" href="#contacto" data-interest="plan-online">Quiero este plan</a>
         </li>
         <li class="plan" data-rev style="--i:3">
@@ -130,17 +133,18 @@
             <li>Todo lo del plan Vende online</li>
             <li>Tu página web con botón de WhatsApp</li>
           </ul>
+          <button type="button" class="plan__ver" data-plan-video="completo"><span class="plan__play" aria-hidden="true"></span>Ver cómo lo hacemos</button>
           <a class="boton boton--borde plan__boton" href="#contacto" data-interest="plan-completo">Quiero este plan</a>
         </li>
       </ol>
 
       <div class="planes__extra" data-rev>
         <div class="planes__bloque">
-          <h3 class="planes__subtitulo">Servicios mensuales</h3>
+          <h3 class="planes__subtitulo">Servicios mensuales <span class="planes__pista">Toca uno para ver el video</span></h3>
           <ul class="planes__mensual">
-            <li><span>Soporte y respaldo de datos</span><strong>$5.000<small>/mes</small></strong></li>
-            <li><span>Gestión de Mercado Libre <em>5 publicaciones nuevas y revisión de precios</em></span><strong>$35.000<small>/mes</small></strong></li>
-            <li><span>Marketing en redes sociales <em>4 publicaciones y 2 videos al mes</em></span><strong>$49.990<small>/mes</small></strong></li>
+            <li><button type="button" class="mensual__fila" data-plan-video="soporte"><span class="plan__play" aria-hidden="true"></span><span>Soporte y respaldo de datos</span><strong>$5.000<small>/mes</small></strong></button></li>
+            <li><button type="button" class="mensual__fila" data-plan-video="gestionml"><span class="plan__play" aria-hidden="true"></span><span>Gestión de Mercado Libre <em>5 publicaciones nuevas y revisión de precios</em></span><strong>$35.000<small>/mes</small></strong></button></li>
+            <li><button type="button" class="mensual__fila" data-plan-video="marketing"><span class="plan__play" aria-hidden="true"></span><span>Marketing en redes sociales <em>4 publicaciones y 2 videos al mes</em></span><strong>$49.990<small>/mes</small></strong></button></li>
           </ul>
         </div>
         <div class="planes__bloque">
@@ -503,6 +507,19 @@
 
   <a class="whatsapp-flotante" data-whatsapp-link href="https://wa.me/56949424720" aria-label="Escribir por WhatsApp" target="_blank" rel="noopener">WhatsApp</a>
 
+  <dialog class="plan-dialogo" id="plan-dialogo" aria-labelledby="plan-dialogo-titulo">
+    <div class="plan-dialogo__cab">
+      <div><p class="plan-dialogo__etq">Así lo hacemos</p><h3 class="plan-dialogo__titulo" id="plan-dialogo-titulo"></h3></div>
+      <p class="plan-dialogo__precio" id="plan-dialogo-precio"></p>
+      <button class="plan-dialogo__cerrar" type="button" id="plan-dialogo-cerrar" aria-label="Cerrar">×</button>
+    </div>
+    <div class="plan-dialogo__medio"><video id="plan-dialogo-video" controls playsinline muted preload="none" width="960" height="540"></video></div>
+    <div class="plan-dialogo__pie">
+      <ol class="plan-dialogo__pasos" id="plan-dialogo-pasos"></ol>
+      <a class="boton boton--oro plan-dialogo__cta" id="plan-dialogo-cta" href="#contacto" data-interest="plan-emprende">Quiero este plan</a>
+    </div>
+  </dialog>
+
   <dialog class="video-dialogo" id="video-dialogo" aria-labelledby="video-titulo">
     <div class="video-dialogo__barra"><p id="video-titulo"></p><button type="button" id="video-cerrar">Cerrar</button></div>
     <video id="video-player" controls playsinline preload="none" width="720" height="1280"></video>
@@ -511,6 +528,6 @@
   <script src="assets/js/datos-sistemas.js?v=3"></script>
   <script src="assets/js/contact-form.js"></script>
   <script src="assets/js/sitio.js?v=2"></script>
-  <script src="assets/js/movimiento.js?v=1"></script>
+  <script src="assets/js/movimiento.js?v=2"></script>
 </body>
 </html>
