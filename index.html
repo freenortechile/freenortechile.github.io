@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>FREENORTE | Sistemas de venta para tu negocio</title>
-  <meta name="description" content="Sistemas de punto de venta, inventario y caja para 16 rubros: farmacias, ópticas, talleres, joyerías, ferreterías, botillerías y más. Hechos en Iquique, Chile. Funcionan sin internet y se instalan en un día.">
+  <meta name="description" content="Sistemas de punto de venta, inventario y caja para 16 rubros: farmacias, ópticas, talleres, joyerías, ferreterías, botillerías y más. Además, cuentas de Mercado Libre, páginas web y marketing en redes. Planes desde $49.990. Hechos en Iquique, Chile.">
   <meta name="theme-color" content="#0b0f17">
   <meta property="og:title" content="FREENORTE | Sistemas de venta para tu negocio">
   <meta property="og:description" content="Punto de venta, inventario y caja para 16 rubros. Hechos en Iquique, funcionan sin internet y se instalan en un día.">
@@ -13,7 +13,7 @@
   <link rel="preload" href="assets/fonts/sora-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/inter-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
   <script>document.documentElement.classList.add('js');try{var t=localStorage.getItem('fn-tema2');if(t==='dia'||t==='noche')document.documentElement.setAttribute('data-tema',t);}catch(e){}</script>
-  <link rel="stylesheet" href="assets/css/sitio.css?v=2">
+  <link rel="stylesheet" href="assets/css/sitio.css?v=4">
 </head>
 <body>
   <div class="progreso" id="progreso" aria-hidden="true"></div>
@@ -22,7 +22,7 @@
   <header class="cabecera" id="cabecera">
     <a class="marca" href="#inicio" aria-label="FREENORTE, inicio"><span>FREE</span><span class="marca__n">NORTE</span></a>
     <nav class="menu" aria-label="Navegación principal">
-      <a href="#comprar">Comprar</a>
+      <a href="#planes">Planes</a>
       <a href="#sistemas">Sistemas</a>
       <a href="#servicios">Servicios</a>
       <a href="#inventario">Inventario</a>
@@ -39,7 +39,7 @@
 
   <div class="menu-movil" id="menu-movil" hidden>
     <nav aria-label="Navegación móvil">
-      <a href="#comprar">Comprar</a>
+      <a href="#planes">Planes</a>
       <a href="#sistemas">Sistemas</a>
       <a href="#servicios">Servicios</a>
       <a href="#inventario">Inventario</a>
@@ -58,10 +58,10 @@
         <div class="hero__col">
           <p class="hero__etiqueta">Hecho en Iquique, Chile</p>
           <h1 class="hero__titulo" id="hero-titulo">Sistemas de venta <span class="rota-linea"><span class="rota-p">para </span><span class="rota" id="rota">tu negocio</span></span></h1>
-          <p class="hero__lead">Punto de venta, inventario y caja para 16 rubros. Funcionan sin internet y se instalan en un día.</p>
+          <p class="hero__lead">Punto de venta, inventario, Mercado Libre y redes sociales para tu negocio. Funcionan sin internet y se instalan en un día. <strong class="hero__desde">Planes desde $49.990.</strong></p>
           <div class="hero__acciones">
-            <a class="boton boton--oro" href="#comprar">Comprar en Mercado Libre</a>
-            <a class="boton boton--borde" href="#sistemas">Ver los sistemas</a>
+            <a class="boton boton--oro" href="#planes">Ver planes y precios</a>
+            <a class="boton boton--borde" href="#comprar">Comprar en Mercado Libre</a>
             <a class="boton boton--borde" data-whatsapp-link href="https://wa.me/56949424720">Cotizar por WhatsApp</a>
           </div>
           <ul class="hero__datos">
@@ -81,12 +81,87 @@
       <div class="cinta" aria-hidden="true"><div class="cinta__pista" id="cinta"></div></div>
     </section>
 
+    <!-- Planes y precios -->
+    <section class="capitulo cap-base planes" id="planes" aria-labelledby="planes-titulo">
+      <div class="cabeza" data-rev>
+        <p class="etiqueta">Planes</p>
+        <h2 class="titulo" id="planes-titulo">Elige tu plan</h2>
+        <p class="cabeza__texto">Pago único, con instalación y capacitación incluidas. Puedes pagar con tarjeta de crédito en cuotas a través de Mercado Pago.</p>
+      </div>
+      <ol class="planes__lista">
+        <li class="plan" data-rev style="--i:0">
+          <h3 class="plan__nombre">Emprende</h3>
+          <p class="plan__precio"><b data-precio="49990">$49.990</b> <span>pago único</span></p>
+          <p class="plan__para">Para partir ordenando tus ventas.</p>
+          <ul class="plan__incluye">
+            <li>Sistema de ventas en tu celular</li>
+            <li>WhatsApp Business con catálogo de productos</li>
+          </ul>
+          <a class="boton boton--borde plan__boton" href="#contacto" data-interest="plan-emprende">Quiero este plan</a>
+        </li>
+        <li class="plan" data-rev style="--i:1">
+          <h3 class="plan__nombre">Vende en tu local</h3>
+          <p class="plan__precio"><b data-precio="69990">$69.990</b> <span>pago único</span></p>
+          <p class="plan__para">Para controlar stock y vender más en tu tienda.</p>
+          <ul class="plan__incluye">
+            <li>Sistema de ventas con control de inventario</li>
+            <li>WhatsApp Business con catálogo</li>
+            <li>Instagram y Facebook ordenados</li>
+          </ul>
+          <a class="boton boton--borde plan__boton" href="#contacto" data-interest="plan-local">Quiero este plan</a>
+        </li>
+        <li class="plan plan--destacado" data-rev style="--i:2">
+          <p class="plan__sello">Más elegido</p>
+          <h3 class="plan__nombre">Vende online</h3>
+          <p class="plan__precio"><b data-precio="99990">$99.990</b> <span>pago único</span></p>
+          <p class="plan__para">Para vender en tu local y en internet.</p>
+          <ul class="plan__incluye">
+            <li>Todo lo del plan Vende en tu local</li>
+            <li>Cuenta de Mercado Libre configurada a tu nombre</li>
+            <li>Tus primeras 5 publicaciones</li>
+          </ul>
+          <a class="boton boton--oro plan__boton" href="#contacto" data-interest="plan-online">Quiero este plan</a>
+        </li>
+        <li class="plan" data-rev style="--i:3">
+          <h3 class="plan__nombre">Completo</h3>
+          <p class="plan__precio"><b data-precio="149990">$149.990</b> <span>pago único</span></p>
+          <p class="plan__para">Para tener presencia en todos lados.</p>
+          <ul class="plan__incluye">
+            <li>Todo lo del plan Vende online</li>
+            <li>Tu página web con botón de WhatsApp</li>
+          </ul>
+          <a class="boton boton--borde plan__boton" href="#contacto" data-interest="plan-completo">Quiero este plan</a>
+        </li>
+      </ol>
+
+      <div class="planes__extra" data-rev>
+        <div class="planes__bloque">
+          <h3 class="planes__subtitulo">Servicios mensuales</h3>
+          <ul class="planes__mensual">
+            <li><span>Soporte y respaldo de datos</span><strong>$5.000<small>/mes</small></strong></li>
+            <li><span>Gestión de Mercado Libre <em>5 publicaciones nuevas y revisión de precios</em></span><strong>$35.000<small>/mes</small></strong></li>
+            <li><span>Marketing en redes sociales <em>4 publicaciones y 2 videos al mes</em></span><strong>$49.990<small>/mes</small></strong></li>
+          </ul>
+        </div>
+        <div class="planes__bloque">
+          <h3 class="planes__subtitulo">Medios de pago</h3>
+          <ul class="planes__pagos">
+            <li>Tarjeta de crédito en cuotas con Mercado Pago</li>
+            <li>Tarjeta de débito</li>
+            <li>Transferencia bancaria</li>
+            <li>Efectivo en la visita</li>
+          </ul>
+          <p class="planes__nota">Atendemos en terreno en Iquique, Alto Hospicio, Pozo Almonte y Arica, y a distancia en todo Chile.</p>
+        </div>
+      </div>
+    </section>
+
     <!-- Comprar en Mercado Libre -->
     <section class="capitulo cap-alt comprar" id="comprar" aria-labelledby="comprar-titulo">
       <div class="cabeza">
         <p class="etiqueta">Comprar</p>
         <h2 class="titulo" id="comprar-titulo">Compra tu sistema en Mercado Libre</h2>
-        <p class="cabeza__texto">Compra segura con Mercado Pago. Recibes el instalador, la app para el celular y la guía paso a paso. ¿Dudas? Escríbenos por WhatsApp.</p>
+        <p class="cabeza__texto">¿Solo quieres el sistema y lo instalas tú? Compra segura con Mercado Pago. Recibes el instalador, la app para el celular y la guía paso a paso. ¿Dudas? Escríbenos por WhatsApp.</p>
       </div>
       <div class="comprar__lista" id="comprar-lista"></div>
     </section>
@@ -169,6 +244,8 @@
         <li class="afiche__fila" data-rev><a href="#contacto" data-interest="app"><span class="afiche__nom">Aplicaciones web</span><span class="afiche__desc">Sistemas accesibles desde computador, tablet y celular.</span><span class="afiche__flecha" aria-hidden="true">→</span></a></li>
         <li class="afiche__fila" data-rev><a href="#contacto" data-interest="datos"><span class="afiche__nom">Análisis de datos</span><span class="afiche__desc">Dashboards e indicadores para decidir con números.</span><span class="afiche__flecha" aria-hidden="true">→</span></a></li>
         <li class="afiche__fila" data-rev><a href="#contacto" data-interest="automatizacion"><span class="afiche__nom">Automatización</span><span class="afiche__desc">Digitalización de procesos y herramientas.</span><span class="afiche__flecha" aria-hidden="true">→</span></a></li>
+        <li class="afiche__fila" data-rev><a href="#contacto" data-interest="mercadolibre"><span class="afiche__nom">Mercado Libre</span><span class="afiche__desc">Creamos tu cuenta, publicamos tus productos y te ayudamos a calcular si ganas o pierdes.</span><span class="afiche__flecha" aria-hidden="true">→</span></a></li>
+        <li class="afiche__fila" data-rev><a href="#contacto" data-interest="marketing"><span class="afiche__nom">Marketing en redes</span><span class="afiche__desc">Publicaciones y videos para Instagram, Facebook y TikTok cada mes.</span><span class="afiche__flecha" aria-hidden="true">→</span></a></li>
         <li class="afiche__fila" data-rev><a href="#contacto" data-interest="soporte"><span class="afiche__nom">Soporte y mantenimiento</span><span class="afiche__desc">Instalación, configuración, actualizaciones y ayuda.</span><span class="afiche__flecha" aria-hidden="true">→</span></a></li>
       </ul>
     </section>
@@ -195,7 +272,7 @@
         </div></li>
       </ol>
       <div class="inventario__cierre" data-rev>
-        <p class="inventario__nota">Atendemos en Iquique y alrededores, y también a distancia. Respondemos el mismo día.</p>
+        <p class="inventario__nota">Atendemos en Iquique, Alto Hospicio, Pozo Almonte y Arica, y también a distancia. Respondemos el mismo día.</p>
         <a class="boton boton--oscuro" href="#contacto" data-interest="inventario">Cotizar inventario</a>
         <a class="enlace" data-whatsapp-link href="https://wa.me/56949424720">Escribir por WhatsApp</a>
       </div>
@@ -285,6 +362,8 @@
           <div class="qa"><h3>¿Necesito instalar algo o comprar un computador especial?</h3><p>No. Funciona en cualquier computador, tablet o celular, y se instala como una aplicación con su propio ícono.</p></div>
           <div class="qa"><h3>¿Qué pasa si se corta internet?</h3><p>Sigues trabajando. Los sistemas funcionan sin conexión y, si usas la nube, se sincronizan cuando vuelve internet.</p></div>
           <div class="qa"><h3>¿Puedo usarlo en varios computadores o sucursales?</h3><p>Sí, con la opción de nube: todos los equipos y celulares comparten los mismos productos, ventas y stock.</p></div>
+          <div class="qa"><h3>¿Puedo pagar en cuotas?</h3><p>Sí. Te enviamos un link de pago de Mercado Pago y pagas con tu tarjeta de crédito en las cuotas que elijas. También aceptamos débito, transferencia y efectivo.</p></div>
+          <div class="qa"><h3>¿Mi cuenta de Mercado Libre y mis redes quedan a mi nombre?</h3><p>Sí. Todo queda a tu nombre y con tus datos. Nosotros lo configuramos, te enseñamos a usarlo y, si contratas la gestión mensual, lo administramos contigo.</p></div>
           <div class="qa"><h3>¿Emite boleta electrónica?</h3><p>Los sistemas imprimen un comprobante interno de venta. La boleta electrónica oficial se emite con tu sistema autorizado por el SII; si lo necesitas, te asesoramos para conectarlo.</p></div>
           <div class="qa"><h3>¿Mis datos están seguros?</h3><p>Las contraseñas se guardan protegidas y cada usuario tiene sus permisos. Puedes descargar copias de seguridad cuando quieras y restaurarlas en otro equipo.</p></div>
           <div class="qa"><h3>¿Cuánto demora tenerlo funcionando?</h3><p>Normalmente un día: cargamos tus productos (incluso desde Excel), creamos los usuarios y capacitamos a tu equipo.</p></div>
@@ -338,6 +417,12 @@
             <div class="field"><label for="interes">¿En qué te ayudamos? *</label>
               <select id="interes" name="interes">
                 <option value="">Selecciona una opción</option>
+                <option value="plan-emprende">Plan Emprende ($49.990)</option>
+                <option value="plan-local">Plan Vende en tu local ($69.990)</option>
+                <option value="plan-online">Plan Vende online ($99.990)</option>
+                <option value="plan-completo">Plan Completo ($149.990)</option>
+                <option value="mercadolibre">Gestión de Mercado Libre</option>
+                <option value="marketing">Marketing en redes sociales</option>
                 <option value="demo">Demostración de GESTIONA POS</option>
                 <option value="demo-farmacia">Demostración de FarmaNorte (farmacias)</option>
                 <option value="demo-optica">Demostración de VisiónPOS (ópticas)</option>
@@ -377,7 +462,7 @@
         <dl class="contacto__datos">
           <div><dt>Correo</dt><dd><a data-email-link href="mailto:contacto.freenorte@gmail.com"><span data-email-text>contacto.freenorte@gmail.com</span></a></dd></div>
           <div><dt>WhatsApp</dt><dd><a data-whatsapp-link href="https://wa.me/56949424720"><span data-whatsapp-text>+56 9 4942 4720</span></a></dd></div>
-          <div><dt>Dirección</dt><dd>Iquique, Chile. También atendemos a distancia.</dd></div>
+          <div><dt>Dirección</dt><dd>Iquique, Alto Hospicio, Pozo Almonte y Arica. También atendemos a distancia.</dd></div>
         </dl>
       </div>
     </section>
@@ -393,6 +478,7 @@
       </ul>
       <nav class="pie__enlaces" aria-label="Enlaces del pie">
         <ul>
+          <li><a href="#planes">Planes</a></li>
           <li><a href="#sistemas">Sistemas</a></li>
           <li><a href="#servicios">Servicios</a></li>
           <li><a href="#inventario">Inventario</a></li>
@@ -425,5 +511,6 @@
   <script src="assets/js/datos-sistemas.js?v=3"></script>
   <script src="assets/js/contact-form.js"></script>
   <script src="assets/js/sitio.js?v=2"></script>
+  <script src="assets/js/movimiento.js?v=1"></script>
 </body>
 </html>
