@@ -4,3 +4,6 @@ window.NUBE_CONFIG = {
     url: "https://usnfqvijvcphhlhooheg.supabase.co",
     clave: "sb_publishable_Andarc60CBfg_DqpYHpshA_Hr2s06wH"
 };
+
+// Fotos de productos publicadas en GitHub Pages (columna Foto de la planilla = nombre del archivo)
+window.FOTOS_URL = "https://freenortechile.github.io/fotos/";

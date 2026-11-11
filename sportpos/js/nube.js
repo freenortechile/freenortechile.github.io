@@ -89,7 +89,7 @@ const Nube = (function () {
         if (cliente || !configurada()) return cliente;
         const c = window.NUBE_CONFIG;
         cliente = window.supabase.createClient(c.url, c.clave, {
-            auth: { persistSession: true, autoRefreshToken: true, storageKey: "sportpos-nube-auth" },
+            auth: { persistSession: true, autoRefreshToken: true, storageKey: window.SPORT_MODO === "vendedor" ? "sportpos-vendedor-nube-auth" : "sportpos-nube-auth" },
             realtime: { params: { eventsPerSecond: 10 } }
         });
         return cliente;
@@ -399,6 +399,8 @@ const Nube = (function () {
             if (typeof pilaModales !== "undefined" && pilaModales.length) return refrescarPantalla();
             if (escribiendo) return refrescarPantalla();
             if (typeof App !== "undefined" && App.refrescar && document.getElementById("app")) App.refrescar();
+            // productos nuevos desde otro equipo: bajar sus fotos
+            if (typeof Fotos !== "undefined" && Fotos.descargarFaltantes) Fotos.descargarFaltantes();
         }, 600);
     }
 

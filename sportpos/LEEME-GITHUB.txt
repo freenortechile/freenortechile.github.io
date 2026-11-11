@@ -1,0 +1,34 @@
+SportPOS en GitHub Pages (versión 8: fotos desde internet)
+=========================================================
+
+Direcciones cuando esté todo subido:
+  Tienda / administrador:  https://freenortechile.github.io/sportpos/
+  Vendedores:              https://freenortechile.github.io/sportpos-vendedor/
+  Fotos:                   https://freenortechile.github.io/fotos/
+
+1) Subir la app (carpeta "sportpos")
+   - En el repositorio freenortechile.github.io: Add file > Upload files.
+   - Arrastrar la CARPETA "sportpos" completa > Commit changes.
+   - Si ya la habías subido, súbela otra vez: GitHub reemplaza los archivos.
+
+2) Subir la app de vendedores (carpeta "sportpos-vendedor")
+   - Igual que el paso 1, arrastrando la carpeta "sportpos-vendedor".
+
+3) Subir las fotos (7 tandas, GitHub acepta menos de 100 archivos por vez)
+   - Extraer fotos-github.zip (clic derecho > Extraer todo).
+   - En GitHub, en la portada del repositorio > Add file > Upload files.
+   - Arrastrar la carpeta "fotos" que está dentro de tanda-1 > Commit changes.
+   - Repetir con tanda-2 ... tanda-7. Todas quedan en la carpeta "fotos" del repositorio.
+   - Prueba: https://freenortechile.github.io/fotos/adidas-ef0213.jpg
+
+Cómo quedan vinculados (con el correo de la cuenta de la nube)
+   - Computador (instalador SportPOS 1.0.2) o celular de la tienda:
+     Configuración > Nube > entrar con el correo de la tienda.
+     Importar ahí la planilla-productos.xlsx (sin elegir fotos: se bajan solas).
+   - Celular del vendedor: abrir la dirección de vendedores en Safari/Chrome,
+     agregar a la pantalla de inicio, "Conectar con la tienda" con el MISMO correo.
+     Bajan productos, usuarios y fotos. El vendedor entra con su usuario.
+   - Los vendedores se crean en la app de la tienda: Configuración > Usuarios.
+
+Para actualizar después: subir de nuevo los archivos cambiados y aumentar el
+número de VERSION en sw.js (sportpos-v9, vendedor-sportpos-v9).

@@ -959,5 +959,5 @@ window.addEventListener("hashchange", () => App.navegar());
 
 document.addEventListener(
     "DOMContentLoaded",
-    () => Fotos.cargarCache().finally(() => App.iniciar())
+    () => Fotos.cargarCache().finally(() => { App.iniciar(); setTimeout(() => Fotos.descargarFaltantes(), 4000); })
 );
