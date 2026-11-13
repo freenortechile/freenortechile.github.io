@@ -5,7 +5,7 @@
 // Al publicar cambios, subir el número de VERSION.
 // ==========================================
 
-const VERSION = "sportpos-vendedor-v2";
+const VERSION = "sportpos-vendedor-v3";
 
 const ARCHIVOS = [
     "./",
@@ -15,6 +15,7 @@ const ARCHIVOS = [
     "js/tema.js",
     "js/modo.js",
     "js/base.js",
+    "js/excel.js",
     "js/datos.js",
     "js/fotos.js",
     "js/movil.js",
@@ -58,7 +59,7 @@ self.addEventListener("activate", evento => {
 
     evento.waitUntil(
         caches.keys()
-            .then(claves => Promise.all(claves.filter(c => c !== VERSION).map(c => caches.delete(c))))
+            .then(claves => Promise.all(claves.filter(c => c !== VERSION && c.replace(/v\d+$/, "") === VERSION.replace(/v\d+$/, "")).map(c => caches.delete(c))))
             .then(() => self.clients.claim())
     );
 });
@@ -78,6 +79,11 @@ self.addEventListener("fetch", evento => {
     const esLector = url.hostname === "cdn.jsdelivr.net";
 
     if (url.origin !== self.location.origin && !esLector) {
+        return;
+    }
+
+    // Fotos de productos: las guarda la app en el equipo, no hace falta duplicarlas aquí
+    if (url.pathname.includes("/fotos/")) {
         return;
     }
 
