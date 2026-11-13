@@ -2,6 +2,7 @@
 // SPORTPOS — PRODUCTOS
 // Catálogo simple con categorías, precio,
 // costo, stock, foto e importación desde Excel
+// (.xlsx directo, con fotos por nombre de archivo)
 // ==========================================
 
 "use strict";
@@ -144,53 +145,161 @@ const Productos = {
 
 
     COLUMNAS: [
-        ["marca", "Marca"],
-        ["modelo", "Modelo"],
-        ["color", "Color"],
-        ["talla", "Talla"],
-        ["genero", "Género"],
-        ["categoria", "Categoría"],
-        ["codigoBarras", "Código de barras"],
-        ["precio", "Precio"],
-        ["costo", "Costo"],
-        ["stock", "Stock"],
-        ["stockMinimo", "Stock mínimo"],
-        ["unidad", "Unidad"]
+        ["marca", "Marca", 14],
+        ["modelo", "Modelo", 24],
+        ["color", "Color", 12],
+        ["talla", "Talla", 9],
+        ["genero", "Género", 11],
+        ["categoria", "Categoría", 24],
+        ["codigoBarras", "Código de barras", 18],
+        ["precio", "Precio", 11],
+        ["costo", "Costo", 11],
+        ["stock", "Stock", 8],
+        ["stockMinimo", "Stock mínimo", 13],
+        ["unidad", "Unidad", 9],
+        ["foto", "Foto", 26]
     ],
+
+    // Otros nombres de columna que también se reconocen
+    ALIAS: {
+        codigoBarras: ["codigo", "codigo barras", "codigo de barra", "ean", "cod barras"],
+        precio: ["precio venta", "precio de venta"],
+        stockMinimo: ["minimo", "stock minimo"],
+        genero: ["sexo"],
+        foto: ["imagen", "fotos", "archivo foto"]
+    },
+
+
+    // ---------- PLANTILLA Y EXPORTACIÓN EN EXCEL (.xlsx) ----------
+
+    libroExcel(filas) {
+
+        const indice = k => this.COLUMNAS.findIndex(c => c[0] === k);
+        const categorias = Datos.categorias();
+
+        return Excel.crear([
+            {
+                nombre: "Productos",
+                filas: [this.COLUMNAS.map(c => c[1])].concat(filas),
+                anchos: this.COLUMNAS.map(c => c[2]),
+                columnasTexto: ["marca", "modelo", "color", "talla", "genero", "categoria", "codigoBarras", "unidad", "foto"].map(indice),
+                columnasNumero: ["precio", "costo", "stock", "stockMinimo"].map(indice),
+                listas: [
+                    { columna: indice("genero"), valores: GENEROS },
+                    { columna: indice("unidad"), valores: UNIDADES },
+                    { columna: indice("categoria"), origen: `Listas!$A$2:$A$${categorias.length + 1}` }
+                ]
+            },
+            {
+                nombre: "Instrucciones",
+                anchos: [110],
+                filas: [
+                    ["Cómo llenar la planilla de productos"],
+                    [""],
+                    ["1. Una fila por cada talla y color. Modelo y Precio son obligatorios."],
+                    ["2. Precio y Costo con o sin puntos (89990 o 89.990). Los precios incluyen IVA."],
+                    ["3. Código de barras: la columna ya está en formato Texto. Puede escanearlo directo en la celda con el lector."],
+                    ["4. Género, Categoría y Unidad tienen lista desplegable. Puede escribir una categoría nueva si no está."],
+                    ["5. Unidad: \"par\" para calzado y calcetines, \"unidad\" para ropa y accesorios. Si la deja vacía se elige sola."],
+                    ["6. Stock: solo se usa en productos nuevos. Para sumar mercadería a uno existente use Inventario › Ingreso."],
+                    ["7. Foto: escriba el nombre del archivo, por ejemplo pegasus40-negro.jpg. Una misma foto sirve para todas las tallas."],
+                    ["   Al importar, elija las fotos o la carpeta donde están. Si la foto se llama igual que el código de barras, no hace falta escribirla."],
+                    ["8. Si el producto ya existe (mismo código, o misma marca + modelo + color + talla) se actualizan sus datos y precio."],
+                    ["   Las celdas vacías no borran lo que el producto ya tiene."],
+                    ["9. Borre las filas de ejemplo, guarde el archivo como Excel (.xlsx) y súbalo en Productos › Importar."]
+                ],
+                sinEncabezado: true
+            },
+            {
+                nombre: "Listas",
+                oculta: true,
+                filas: [["Categorías"]].concat(categorias.map(c => [c]))
+            }
+        ]);
+    },
+
+
+    descargarPlantilla() {
+
+        const ejemplos = [
+            ["Nike", "Pegasus 40", "Negro", "41", "Hombre", "Zapatillas running", "", 89990, 52000, 3, 1, "par", "pegasus40-negro.jpg"],
+            ["Nike", "Pegasus 40", "Negro", "42", "Hombre", "Zapatillas running", "", 89990, 52000, 4, 1, "par", "pegasus40-negro.jpg"],
+            ["Adidas", "Samba OG", "Blanco", "40", "Unisex", "Zapatillas urbanas", "", 109990, 64000, 2, 1, "par", "samba-blanco.jpg"],
+            ["Puma", "Polera Essentials", "Azul", "M", "Hombre", "Poleras", "", 19990, 9500, 5, 2, "unidad", ""],
+            ["Puma", "Polera Essentials", "Azul", "L", "Hombre", "Poleras", "", 19990, 9500, 5, 2, "unidad", ""],
+            ["Adidas", "Calza Training", "Negro", "S", "Mujer", "Pantalones y calzas", "", 24990, 12000, 4, 1, "unidad", ""],
+            ["Nike", "Mochila Brasilia", "Negro", "Única", "Unisex", "Mochilas y bolsos", "", 32990, 17000, 3, 1, "unidad", ""]
+        ];
+
+        descargarArchivo("plantilla-productos.xlsx", this.libroExcel(ejemplos), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+    },
 
 
     exportar() {
 
-        const filas = [this.COLUMNAS.map(c => c[1])].concat(Datos.productos().map(p => this.COLUMNAS.map(([k]) => p[k] ?? "")));
+        const filas = Datos.productos().map(p => this.COLUMNAS.map(([k]) => {
+            if (k === "foto") return "";
+            const v = p[k] ?? "";
+            return ["precio", "costo", "stock", "stockMinimo"].includes(k) && v !== "" ? Number(v) || 0 : String(v);
+        }));
 
-        descargarArchivo("productos.csv", aCSV(filas), "text/csv");
+        descargarArchivo(`productos-${new Date().toISOString().slice(0, 10)}.xlsx`, this.libroExcel(filas), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
     },
 
 
+    // ---------- IMPORTAR ----------
+
     importar() {
+
+        // Fotos elegidas: nombre de archivo normalizado → File
+        const fotos = new Map();
+
+        const agregarFotos = lista => {
+            Array.from(lista || []).forEach(f => {
+                if (!/^image\//.test(f.type) && !/\.(jpe?g|png|webp|gif|bmp)$/i.test(f.name)) return;
+                const nombre = normalizar(f.name);
+                fotos.set(nombre, f);
+                fotos.set(nombre.replace(/\.[a-z0-9]+$/, ""), f);
+            });
+        };
 
         abrirModal({
             titulo: "Importar productos desde Excel",
             clase: "ancho",
             html: `
                 <ol style="margin:0 0 16px;padding-left:20px;line-height:1.9">
-                    <li>Descargue la plantilla y ábrala en Excel.</li>
-                    <li>Complete una fila por cada talla y color (Modelo y Precio son obligatorios).</li>
-                    <li>Guárdela como <strong>CSV (delimitado por punto y coma)</strong> y súbala aquí.</li>
+                    <li>Descargue la plantilla y complete una fila por cada talla y color (Modelo y Precio son obligatorios).</li>
+                    <li>Súbala aquí tal cual, en Excel (<strong>.xlsx</strong>). También acepta CSV.</li>
+                    <li>Fotos (opcional): en la columna <strong>Foto</strong> escriba el nombre del archivo y elija las fotos o la carpeta abajo.</li>
                 </ol>
-                <button class="btn" type="button" id="ipPlantilla">${icono("descargar")} Descargar plantilla</button>
-                <div class="campo" style="margin-top:16px"><label for="ipArchivo">Archivo CSV</label><input type="file" id="ipArchivo" accept=".csv,text/csv"></div>
-                <div class="mensaje-info" style="margin-top:14px">Si el producto ya existe (mismo código o misma marca, modelo, color y talla) se actualizan sus datos y precio. El stock de los existentes no cambia.</div>
+                <button class="btn" type="button" id="ipPlantilla">${icono("descargar")} Descargar plantilla Excel</button>
+                <div class="campo" style="margin-top:16px"><label for="ipArchivo">Archivo Excel o CSV</label><input type="file" id="ipArchivo" accept=".xlsx,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv"></div>
+                <div class="campo" style="margin-top:12px">
+                    <label for="ipFotos">Fotos de los productos (opcional)</label>
+                    <div class="con-boton">
+                        <input type="file" id="ipFotos" accept="image/*" multiple>
+                        <button type="button" class="btn" id="ipCarpeta">${icono("imagen")} Elegir carpeta</button>
+                    </div>
+                    <input type="file" id="ipCarpetaEntrada" webkitdirectory multiple style="display:none">
+                    <span class="ayuda" id="ipFotosInfo">Puede elegir varias fotos a la vez o una carpeta completa. Si una foto se llama igual que el código de barras, se asigna sola.</span>
+                </div>
+                <div class="mensaje-info" style="margin-top:14px">Si el producto ya existe (mismo código o misma marca, modelo, color y talla) se actualizan sus datos y precio. Las celdas vacías no borran nada y el stock de los existentes no cambia.</div>
                 <div id="ipResultado" style="margin-top:14px"></div>
             `,
             alAbrir: raiz => {
-                $("#ipPlantilla", raiz).addEventListener("click", () => descargarArchivo("plantilla-productos.csv", aCSV([
-                    this.COLUMNAS.map(c => c[1]),
-                    ["Nike", "Pegasus 40", "Negro", "42", "Hombre", "Zapatillas running", "7801234567890", "89990", "52000", "4", "1", "par"]
-                ]), "text/csv"));
+
+                const info = () => {
+                    const n = new Set(fotos.values()).size;
+                    $("#ipFotosInfo", raiz).textContent = n ? `${plural(n, "foto elegida", "fotos elegidas")}.` : "Puede elegir varias fotos a la vez o una carpeta completa.";
+                };
+
+                $("#ipPlantilla", raiz).addEventListener("click", () => this.descargarPlantilla());
+                $("#ipFotos", raiz).addEventListener("change", e => { agregarFotos(e.target.files); info(); });
+                $("#ipCarpeta", raiz).addEventListener("click", () => $("#ipCarpetaEntrada", raiz).click());
+                $("#ipCarpetaEntrada", raiz).addEventListener("change", e => { agregarFotos(e.target.files); info(); });
             },
             botones: [
-                { texto: "Cancelar" },
+                { texto: "Cerrar" },
                 {
                     texto: "Importar",
                     clase: "btn-primario",
@@ -200,54 +309,30 @@ const Productos = {
                         const archivo = $("#ipArchivo", raiz).files[0];
                         const resultado = $("#ipResultado", raiz);
 
-                        if (!archivo) { resultado.innerHTML = '<div class="mensaje-error">Elija el archivo CSV.</div>'; return; }
+                        if (!archivo) { resultado.innerHTML = '<div class="mensaje-error">Elija el archivo Excel.</div>'; return; }
 
                         try {
 
-                            const filas = leerCSV(await leerArchivoTexto(archivo));
+                            resultado.innerHTML = '<div class="mensaje-info">Leyendo el archivo…</div>';
 
-                            if (filas.length < 2) throw new Error("El archivo no tiene filas con datos.");
-
-                            const enc = filas[0].map(normalizar);
-                            const col = {};
-
-                            this.COLUMNAS.forEach(([k, t]) => { const i = enc.findIndex(e => e === normalizar(t) || e === normalizar(k)); if (i >= 0) col[k] = i; });
-
-                            if (col.modelo === undefined || col.precio === undefined) throw new Error('Faltan las columnas "Modelo" y "Precio". Use la plantilla.');
-
-                            const productos = Datos.productos();
-                            let nuevos = 0, actualizados = 0;
-                            const errores = [];
-
-                            filas.slice(1).forEach((f, n) => {
-
-                                const v = k => col[k] === undefined ? "" : String(f[col[k]] ?? "").trim();
-                                const precio = aEntero(v("precio"));
-
-                                if (!v("modelo") || precio <= 0) { errores.push(`Fila ${n + 2}: falta el modelo o el precio.`); return; }
-
-                                const datos = { marca: v("marca"), modelo: v("modelo"), color: v("color"), talla: v("talla"), genero: v("genero"), precio, categoria: v("categoria"), codigoBarras: v("codigoBarras").replace(/\s/g, ""), costo: aEntero(v("costo")), stockMinimo: aEntero(v("stockMinimo")), unidad: v("unidad") || "par" };
-                                datos.nombre = nombreVariante(datos);
-                                const nombre = datos.nombre;
-                                const existente = productos.find(p => (datos.codigoBarras && p.codigoBarras === datos.codigoBarras) || normalizar(p.nombre) === normalizar(nombre));
-
-                                if (existente) {
-                                    Object.assign(existente, datos);
-                                    actualizados++;
-                                } else {
-                                    productos.push(Object.assign({ id: nuevoId(), activo: true, creado: new Date().toISOString(), stock: Math.max(0, Number(v("stock").replace(",", ".")) || 0) }, datos));
-                                    nuevos++;
-                                }
+                            const r = await this.procesarImportacion(await Excel.leer(archivo), fotos, texto => {
+                                resultado.innerHTML = `<div class="mensaje-info">${esc(texto)}</div>`;
                             });
 
-                            Datos.guardarProductos(productos);
                             this.pintar();
 
-                            resultado.innerHTML = `<div class="mensaje-info"><strong>${nuevos}</strong> nuevos · <strong>${actualizados}</strong> actualizados${errores.length ? ` · <span class="rojo">${errores.length} con error</span>` : ""}</div>`;
+                            const lista = (titulo, items, clase) => items.length
+                                ? `<div class="${clase}" style="margin-top:8px"><strong>${titulo}</strong><ul style="margin:6px 0 0;padding-left:18px;max-height:160px;overflow:auto">${items.slice(0, 50).map(t => `<li>${esc(t)}</li>`).join("")}${items.length > 50 ? `<li>… y ${items.length - 50} más</li>` : ""}</ul></div>`
+                                : "";
 
-                            if (!errores.length) {
+                            resultado.innerHTML =
+                                `<div class="mensaje-info"><strong>${r.nuevos}</strong> nuevos · <strong>${r.actualizados}</strong> actualizados${r.fotos ? ` · <strong>${r.fotos}</strong> con foto` : ""}${r.errores.length ? ` · <span class="rojo">${r.errores.length} filas sin importar</span>` : ""}</div>` +
+                                lista("Filas sin importar", r.errores, "mensaje-error") +
+                                lista("Revise", r.avisos, "mensaje-info");
+
+                            if (!r.errores.length && !r.avisos.length) {
                                 cerrar();
-                                avisar(`Importación lista: ${nuevos} nuevos, ${actualizados} actualizados.`);
+                                avisar(`Importación lista: ${r.nuevos} nuevos, ${r.actualizados} actualizados${r.fotos ? `, ${r.fotos} con foto` : ""}.`);
                             }
 
                         } catch (error) {
@@ -257,8 +342,219 @@ const Productos = {
                 }
             ]
         });
+    },
+
+
+    // filas: [[encabezados], [datos]...] · fotos: Map nombre → File
+    async procesarImportacion(filas, fotos = new Map(), progreso = () => {}) {
+
+        if (filas.length < 2) throw new Error("El archivo no tiene filas con datos.");
+
+        // Ubicar columnas por su nombre (con o sin tilde, en cualquier orden)
+        const enc = filas[0].map(t => normalizar(t).replace(/\s+/g, " "));
+        const col = {};
+
+        this.COLUMNAS.forEach(([k, t]) => {
+            const nombres = [normalizar(t), normalizar(k)].concat(this.ALIAS[k] || []);
+            const i = enc.findIndex(e => nombres.includes(e));
+            if (i >= 0) col[k] = i;
+        });
+
+        if (col.modelo === undefined || col.precio === undefined) {
+            throw new Error('No se encontraron las columnas "Modelo" y "Precio". Use la plantilla Excel (la primera fila debe tener los títulos).');
+        }
+
+        const productos = Datos.productos();
+        const movimientos = [];
+        const pendientesFoto = [];
+        const vistos = new Map();
+        const nombresVistos = new Map();
+        const errores = [];
+        const avisos = [];
+        let nuevos = 0, actualizados = 0, desdeInternet = 0;
+
+        filas.slice(1).forEach((f, n) => {
+
+            const fila = n + 2;
+            const v = k => col[k] === undefined ? "" : String(f[col[k]] ?? "").trim();
+
+            const precio = montoEntero(v("precio"));
+
+            if (!v("modelo") || precio <= 0) { errores.push(`Fila ${fila}: falta el modelo o el precio.`); return; }
+
+            // Código de barras: sin espacios, sin el ="..." que deja Excel, y sin notación 7,8E+12
+            let codigo = v("codigoBarras").replace(/^="?|"$/g, "").replace(/\s/g, "");
+
+            if (/^\d+([.,]\d+)?e\+?\d+$/i.test(codigo)) {
+                avisos.push(`Fila ${fila}: el código de barras quedó como "${codigo}" (Excel lo cortó). Se importó sin código; corríjalo en la planilla con la columna en formato Texto.`);
+                codigo = "";
+            }
+
+            if (codigo && vistos.has(codigo)) {
+                errores.push(`Fila ${fila}: el código ${codigo} ya está en la fila ${vistos.get(codigo)}.`);
+                return;
+            }
+
+            // Solo los datos que vienen escritos (una celda vacía no borra nada)
+            const datos = { precio };
+            const texto = (k, valor) => { if (valor !== "") datos[k] = valor; };
+
+            texto("marca", v("marca"));
+            texto("modelo", v("modelo"));
+            texto("color", v("color"));
+            texto("talla", v("talla"));
+            texto("categoria", v("categoria"));
+            texto("codigoBarras", codigo);
+
+            if (v("genero")) datos.genero = GENEROS.find(g => normalizar(g) === normalizar(v("genero"))) || v("genero");
+            if (v("unidad")) datos.unidad = UNIDADES.find(u => normalizar(u) === normalizar(v("unidad"))) || undefined;
+            if (v("costo")) datos.costo = montoEntero(v("costo"));
+            if (v("stockMinimo")) datos.stockMinimo = Math.max(0, montoEntero(v("stockMinimo")));
+            if (datos.unidad === undefined) delete datos.unidad;
+
+            const nombre = nombreVariante(Object.assign({}, datos));
+
+            if (nombresVistos.has(normalizar(nombre)) && !codigo) {
+                avisos.push(`Fila ${fila}: repite "${nombre}" de la fila ${nombresVistos.get(normalizar(nombre))}. Quedaron los datos de la fila ${fila}.`);
+            }
+
+            nombresVistos.set(normalizar(nombre), fila);
+            // Con código manda el código: dos códigos distintos son dos productos aunque se llamen igual
+            const existente = codigo
+                ? (productos.find(p => p.codigoBarras === codigo) || productos.find(p => !p.codigoBarras && normalizar(p.nombre) === normalizar(nombre)))
+                : productos.find(p => normalizar(p.nombre) === normalizar(nombre));
+
+            if (codigo && productos.some(p => p.codigoBarras === codigo && p !== existente)) {
+                errores.push(`Fila ${fila}: el código ${codigo} ya lo tiene otro producto.`);
+                return;
+            }
+
+            let producto;
+
+            if (existente) {
+
+                Object.assign(existente, datos);
+                existente.nombre = nombreVariante(existente);
+                producto = existente;
+                actualizados++;
+
+            } else {
+
+                if (!datos.unidad) datos.unidad = unidadProbable(datos);
+
+                const stock = Math.max(0, cantidad(v("stock")));
+
+                producto = Object.assign({ id: nuevoId(), activo: true, creado: new Date().toISOString(), stock, costo: 0, stockMinimo: 0 }, datos);
+                producto.nombre = nombreVariante(producto);
+                productos.push(producto);
+                nuevos++;
+
+                if (stock > 0) {
+                    movimientos.push({ tipo: "ingreso", productoId: producto.id, producto: producto.nombre, unidades: stock, detalle: "Stock inicial (importación)" });
+                }
+            }
+
+            if (codigo) vistos.set(codigo, fila);
+
+            // Foto: la columna Foto, o una foto que se llame como el código de barras
+            const pedida = v("foto");
+
+            if (/^https?:\/\//i.test(pedida) && Fotos.urlBase() && pedida.startsWith(Fotos.urlBase())) {
+                producto.fotoArchivo = decodeURIComponent(pedida.slice(Fotos.urlBase().length));
+                desdeInternet++;
+            } else if (/^https?:\/\//i.test(pedida)) {
+                avisos.push(`Fila ${fila}: las fotos por enlace de internet no se descargan. Guarde la foto en el computador y elíjala al importar.`);
+            } else if (pedida || codigo) {
+
+                const nombreArchivo = pedida.split(/[\\/]/).pop().trim();
+                const clave = normalizar(nombreArchivo);
+                const archivo = (clave && (fotos.get(clave) || fotos.get(clave.replace(/\.[a-z0-9]+$/, "")))) || (codigo && fotos.get(normalizar(codigo)));
+
+                // el nombre de la foto viaja con el producto: los otros equipos la bajan desde internet
+                if (nombreArchivo) producto.fotoArchivo = nombreArchivo;
+
+                if (archivo) pendientesFoto.push({ id: producto.id, archivo });
+                else if (nombreArchivo && Fotos.urlBase()) desdeInternet++;
+                else if (pedida && !Fotos.producto(producto.id)) {
+                    avisos.push(fotos.size
+                        ? `Fila ${fila}: no se encontró la foto "${pedida}" entre las fotos elegidas.`
+                        : `Fila ${fila}: indica la foto "${pedida}", pero no eligió fotos al importar.`);
+                }
+            }
+        });
+
+        if (!Datos.guardarProductos(productos)) {
+            throw new Error("No se pudo guardar: el almacenamiento está lleno. Haga un respaldo y libere espacio.");
+        }
+
+        if (movimientos.length) {
+            const lista = Datos.movimientos();
+            const usuario = Sesion.nombre();
+            const fecha = new Date().toISOString();
+            movimientos.forEach(m => lista.unshift(Object.assign({ id: nuevoId(), fecha, usuario }, m)));
+            Datos.guardarMovimientos(lista.slice(0, 5000));
+        }
+
+        Fotos.olvidarRemotas();
+        setTimeout(() => Fotos.descargarFaltantes(), 1500);
+
+        // Fotos: cada archivo se reduce una sola vez aunque lo usen varias tallas
+        const reducidas = new Map();
+        let conFoto = 0;
+
+        for (let i = 0; i < pendientesFoto.length; i++) {
+
+            const { id, archivo } = pendientesFoto[i];
+            progreso(`Cargando fotos ${i + 1} de ${pendientesFoto.length}…`);
+
+            try {
+                if (!reducidas.has(archivo)) reducidas.set(archivo, await reducirImagen(archivo, 500, "image/jpeg", 0.75));
+                await Fotos.guardar("p:" + id, reducidas.get(archivo));
+                conFoto++;
+            } catch (error) {
+                avisos.push(`La foto "${archivo.name}" no se pudo cargar (${error.message}).`);
+            }
+        }
+
+        return { nuevos, actualizados, fotos: conFoto + desdeInternet, errores, avisos };
     }
 };
+
+
+// "89.990" · "$89.990" · "89990" · "89990,5" · "89990.4" (desde Excel) → pesos enteros
+function montoEntero(valor) {
+
+    const t = String(valor ?? "").replace(/[$\s]/g, "");
+
+    if (/^-?\d+\.\d{1,2}$/.test(t)) return Math.round(Number(t));
+    if (/^-?\d+,\d{1,2}$/.test(t)) return Math.round(Number(t.replace(",", ".")));
+
+    return aEntero(t);
+}
+
+
+// "4" · "1.000" · "2,5" → número
+function cantidad(valor) {
+
+    const t = String(valor ?? "").replace(/\s/g, "");
+
+    if (/^\d{1,3}(\.\d{3})+$/.test(t)) return Number(t.replace(/\./g, ""));
+
+    return Number(t.replace(",", ".")) || 0;
+}
+
+
+// Calzado y calcetines se venden por par; lo demás por unidad
+function unidadProbable(p) {
+
+    const texto = normalizar([p.categoria, p.modelo].join(" "));
+    const talla = Number(String(p.talla || "").replace(",", "."));
+
+    if (/zapatill|calzado|calcetin|zapato|chala|bota/.test(texto)) return "par";
+    if (Number.isFinite(talla) && talla >= 16 && talla <= 50 && !/polera|poleron|pantalon|short|calza|chaqueta|ropa|buzo|camiseta/.test(texto)) return "par";
+
+    return "unidad";
+}
 
 
 // ==========================================
@@ -475,7 +771,14 @@ function formularioProducto(id, alGuardar) {
                         if (repetidas.length === tallas.length) { mostrarError("Esas tallas ya existen para ese modelo y color."); return; }
                     }
 
+                    // si quitan la foto, tampoco se usa la de internet
+                    if (foto && foto.cambiado && !foto.valor && producto) {
+                        const registro = productos.find(x => x.id === id);
+                        if (registro) delete registro.fotoArchivo;
+                    }
+
                     if (!Datos.guardarProductos(productos)) return;
+                    Fotos.olvidarRemotas();
 
                     if (foto && foto.cambiado) {
                         try {
