@@ -56,6 +56,8 @@ const Datos = {
     guardarConfig: valor => DB.guardar("config", valor),
 
     usuarios: () => DB.leer("usuarios", []),
+    // sin los usuarios borrados (el registro se guarda marcado para que el borrado llegue a todos los equipos)
+    usuariosVigentes: () => DB.leer("usuarios", []).filter(u => u && !u.borrado),
     guardarUsuarios: valor => DB.guardar("usuarios", valor),
 
     productos: () => DB.leer("productos", []),
@@ -198,7 +200,7 @@ const Sesion = {
 
         const usuario = Datos.usuarios().find(u => u.id === sesion.usuarioId);
 
-        return usuario && usuario.activo ? usuario : null;
+        return usuario && usuario.activo && !usuario.borrado ? usuario : null;
     },
 
     iniciar(usuario) {

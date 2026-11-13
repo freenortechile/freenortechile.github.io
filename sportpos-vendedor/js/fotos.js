@@ -27,7 +27,7 @@ const Fotos = {
                 try {
 
                     const pedido =
-                        indexedDB.open("sportpos", 1);
+                        indexedDB.open(window.SPORT_MODO === "vendedor" ? "sportpos-vendedor" : "sportpos", 1);
 
                     pedido.onupgradeneeded = () => pedido.result.createObjectStore("fotos");
                     pedido.onsuccess = () => resolver(this.base = pedido.result);
@@ -67,7 +67,7 @@ const Fotos = {
 
     async guardar(clave, dato) {
 
-        if (clave.startsWith("p:")) {
+        if (clave.startsWith("p:") || clave.startsWith("f:")) {
             this.cache.set(clave, dato);
         }
 
@@ -163,18 +163,21 @@ const Fotos = {
             if (!(await this.abrir())) {
 
                 DB.claves()
-                    .filter(clave => clave.startsWith("foto_p:"))
+                    .filter(clave => clave.startsWith("foto_p:") || clave.startsWith("foto_f:"))
                     .forEach(clave => this.cache.set(clave.slice(5), DB.leer(clave)));
 
                 return;
             }
 
-            const rango = IDBKeyRange.bound("p:", "p:\uffff");
+            for (const prefijo of ["p:", "f:"]) {
 
-            const claves = await this.operar("readonly", tienda => tienda.getAllKeys(rango));
-            const valores = await this.operar("readonly", tienda => tienda.getAll(rango));
+                const rango = IDBKeyRange.bound(prefijo, prefijo + "\uffff");
 
-            claves.forEach((clave, i) => this.cache.set(clave, valores[i]));
+                const claves = await this.operar("readonly", tienda => tienda.getAllKeys(rango));
+                const valores = await this.operar("readonly", tienda => tienda.getAll(rango));
+
+                claves.forEach((clave, i) => this.cache.set(clave, valores[i]));
+            }
 
         } catch (error) {
             console.warn("No se pudieron cargar las fotos.", error);
@@ -182,10 +185,120 @@ const Fotos = {
     },
 
 
+    // ---------- fotos desde internet (GitHub) ----------
+    // Cada producto puede tener "fotoArchivo" (ej. puma-395561-01.jpg). Ese dato viaja
+    // por la nube, y cada equipo baja la foto desde FOTOS_URL y la guarda una sola vez
+    // por archivo (clave "f:<archivo>"), aunque la usen varias tallas.
+
+    remotas: null,
+    remotasHora: 0,
+    descargando: false,
+
+
+    urlBase() {
+        const base = String(window.FOTOS_URL || "").trim();
+        return base && !base.endsWith("/") ? base + "/" : base;
+    },
+
+
+    urlDe(archivo) {
+        const base = this.urlBase();
+        return base && archivo ? base + encodeURIComponent(archivo) : null;
+    },
+
+
+    mapaRemotas() {
+
+        if (!this.remotas || Date.now() - this.remotasHora > 2000) {
+
+            const mapa = new Map();
+
+            try {
+                (Datos.productos() || []).forEach(p => { if (p && p.fotoArchivo) mapa.set(p.id, String(p.fotoArchivo)); });
+            } catch (e) { /* sin datos todavía */ }
+
+            this.remotas = mapa;
+            this.remotasHora = Date.now();
+        }
+
+        return this.remotas;
+    },
+
+
+    olvidarRemotas() {
+        this.remotas = null;
+    },
+
+
     producto(id) {
-        return this.cache.get("p:" + id) || null;
+
+        const propia = this.cache.get("p:" + id);
+        if (propia) return propia;
+
+        const archivo = this.mapaRemotas().get(id);
+        if (!archivo) return null;
+
+        return this.cache.get("f:" + archivo) || this.urlDe(archivo);
+    },
+
+
+    // Baja y guarda las fotos que faltan en este equipo (en segundo plano)
+    async descargarFaltantes() {
+
+        if (this.descargando || !this.urlBase() || navigator.onLine === false) return 0;
+
+        this.descargando = true;
+        this.olvidarRemotas();
+
+        let bajadas = 0;
+
+        try {
+
+            const pendientes = new Set();
+
+            this.mapaRemotas().forEach((archivo, id) => {
+                if (!this.cache.has("p:" + id) && !this.cache.has("f:" + archivo)) pendientes.add(archivo);
+            });
+
+            const lista = Array.from(pendientes);
+
+            const trabajar = async () => {
+
+                while (lista.length) {
+
+                    const archivo = lista.shift();
+
+                    try {
+                        const respuesta = await fetch(this.urlDe(archivo), { cache: "force-cache" });
+                        if (!respuesta.ok) continue;
+                        const dato = await reducirImagen(await respuesta.blob(), 500, "image/jpeg", 0.75);
+                        await this.guardar("f:" + archivo, dato);
+                        bajadas++;
+                    } catch (e) {
+                        if (navigator.onLine === false) return;
+                    }
+                }
+            };
+
+            await Promise.all([trabajar(), trabajar(), trabajar(), trabajar()]);
+
+        } finally {
+            this.descargando = false;
+        }
+
+        return bajadas;
     }
 };
+
+
+// Si una foto de internet no carga (sin conexión o no existe), no mostrar el ícono roto
+document.addEventListener("error", evento => {
+    const img = evento.target;
+    const base = Fotos.urlBase();
+    if (img && img.tagName === "IMG" && base && String(img.src).startsWith(base)) {
+        img.style.visibility = "hidden";
+    }
+}, true);
 
 
 // ==========================================

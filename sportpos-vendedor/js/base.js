@@ -7,10 +7,11 @@
 
 const SISTEMA = {
     nombre: "SportPOS",
-    version: "1.0"
+    version: "1.0.3"
 };
 
-const PREFIJO = "sport_";
+// la app de vendedores guarda aparte, por si se abre en el mismo equipo que la de administración
+const PREFIJO = window.SPORT_MODO === "vendedor" ? "sportv_" : "sport_";
 
 
 // ==========================================
