@@ -5,7 +5,7 @@
 // Al publicar cambios, subir el número de VERSION.
 // ==========================================
 
-const VERSION = "sportpos-v8";
+const VERSION = "sportpos-v9";
 
 const ARCHIVOS = [
     "./",
@@ -59,7 +59,7 @@ self.addEventListener("activate", evento => {
 
     evento.waitUntil(
         caches.keys()
-            .then(claves => Promise.all(claves.filter(c => c !== VERSION && c.startsWith(VERSION.replace(/v\d+$/, ""))).map(c => caches.delete(c))))
+            .then(claves => Promise.all(claves.filter(c => c !== VERSION && c.replace(/v\d+$/, "") === VERSION.replace(/v\d+$/, "")).map(c => caches.delete(c))))
             .then(() => self.clients.claim())
     );
 });
