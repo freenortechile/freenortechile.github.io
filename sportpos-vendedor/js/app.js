@@ -117,6 +117,7 @@ const App = {
                             <button class="btn btn-primario btn-grande" type="submit" id="erEntrar">Entrar ${icono("flecha")}</button>
                             ${soloVendedor ? "" : '<button type="button" class="btn btn-fantasma" id="erLocal">Usar este equipo sin nube</button>'}
                         </div>
+                        <p class="chico texto-3 centro" style="margin-top:18px">${SISTEMA.nombre} versión ${SISTEMA.version}</p>
                     </form>
                 </div>
             </div>
@@ -355,6 +356,7 @@ const App = {
                             <button class="btn btn-fantasma" type="button" id="btnOlvide">¿Olvidó su contraseña?</button>
                             ${window.SPORT_MODO === "vendedor" && Nube.configurada() ? '<button class="btn btn-fantasma chico" type="button" id="btnOtraTienda">Conectar con otra tienda o con la clave nueva</button>' : ""}
                         </div>
+                        <p class="chico texto-3 centro" style="margin-top:18px">${SISTEMA.nombre} versión ${SISTEMA.version}</p>
                     </form>
                 </div>
             </div>
