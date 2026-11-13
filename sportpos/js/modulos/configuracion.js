@@ -252,8 +252,13 @@ const Configuracion = {
 
     pintarUsuarios() {
 
-        const usuarios = Datos.usuarios();
+        const usuarios = Datos.usuariosVigentes();
         const actual = Sesion.usuario();
+
+        // nombres de ingreso repetidos (pasa al unir dos equipos en la nube)
+        const veces = {};
+        usuarios.forEach(u => { veces[u.usuario] = (veces[u.usuario] || 0) + 1; });
+        const repetidos = Object.keys(veces).filter(k => veces[k] > 1);
 
         $("#cfContenido").innerHTML = `
             <div class="tarjeta">
@@ -261,6 +266,7 @@ const Configuracion = {
                     <div><h3>Usuarios</h3><p class="chico texto-2">El vendedor ve: Inicio, Vender, Ventas (las suyas), Caja y Productos (sin editar).</p></div>
                     <button class="btn btn-primario" id="usNuevo">${icono("mas")} Nuevo usuario</button>
                 </div>
+                ${repetidos.length ? `<div class="mensaje-aviso" style="margin:0 16px 12px">Hay usuarios con el mismo nombre de ingreso: <strong>${repetidos.map(esc).join(", ")}</strong>. Toque <strong>Editar</strong> en uno de ellos y cámbiele el usuario (por ejemplo, su nombre) para que cada persona tenga el suyo.</div>` : ""}
                 <div class="tabla-contenedor">
                     <table class="tabla">
                         <thead><tr><th>Nombre</th><th>Usuario</th><th>Rol</th><th>Estado</th><th>Último ingreso</th><th></th></tr></thead>
@@ -275,6 +281,7 @@ const Configuracion = {
                                     <td class="acciones">
                                         <button class="btn btn-chico" data-editar="${u.id}">${icono("editar")} Editar</button>
                                         <button class="btn btn-chico" data-clave="${u.id}">${icono("llave")} Contraseña</button>
+                                        ${u.id === actual.id ? "" : `<button class="btn btn-chico btn-peligro" data-borrar="${u.id}" title="Borrar usuario">${icono("basura")} Borrar</button>`}
                                     </td>
                                 </tr>`).join("")}
                         </tbody>
@@ -290,7 +297,48 @@ const Configuracion = {
             const clave = evento.target.closest("[data-clave]");
             if (editar) this.formularioUsuario(editar.dataset.editar);
             if (clave) this.cambiarClave(clave.dataset.clave);
+            const borrar = evento.target.closest("[data-borrar]");
+            if (borrar) this.borrarUsuario(borrar.dataset.borrar);
         });
+    },
+
+
+    // Borra un usuario. El registro queda marcado como borrado (no se elimina) para que:
+    //  - el borrado llegue por la nube a los demás equipos (celulares, vendedores);
+    //  - las ventas antiguas sigan mostrando quién las hizo.
+    async borrarUsuario(id) {
+
+        const usuarios = Datos.usuarios();
+        const registro = usuarios.find(u => u.id === id);
+        const actual = Sesion.usuario();
+
+        if (!registro || registro.borrado) return;
+
+        if (actual && registro.id === actual.id) {
+            avisar("No puede borrar el usuario con el que está trabajando.", "error");
+            return;
+        }
+
+        const quedanAdmins = usuarios.some(u => u.id !== id && u.rol === "admin" && u.activo && !u.borrado);
+        if (registro.rol === "admin" && !quedanAdmins) {
+            avisar("Debe quedar al menos un administrador activo.", "error");
+            return;
+        }
+
+        const ok = await confirmar({
+            titulo: "Borrar usuario",
+            mensaje: `¿Borrar a <strong>${esc(registro.nombre)}</strong> (usuario <strong>${esc(registro.usuario)}</strong>)? Ya no podrá ingresar en ningún equipo. Sus ventas anteriores se mantienen.`,
+            textoSi: "Borrar",
+            peligro: true
+        });
+
+        if (!ok) return;
+
+        Object.assign(registro, { borrado: true, activo: false, borradoEn: new Date().toISOString() });
+        Datos.guardarUsuarios(usuarios);
+
+        avisar("Usuario borrado.");
+        this.pintar();
     },
 
 
@@ -344,7 +392,7 @@ const Configuracion = {
                             return;
                         }
 
-                        if (usuarios.some(u => u.usuario === acceso && u.id !== id)) {
+                        if (usuarios.some(u => u.usuario === acceso && u.id !== id && !u.borrado)) {
                             mostrarError("Ese usuario ya existe. Elija otro.");
                             return;
                         }
@@ -376,7 +424,7 @@ const Configuracion = {
 
                             // Siempre debe quedar al menos un administrador activo
                             const quedanAdmins = usuarios.some(u =>
-                                u.id !== id && u.rol === "admin" && u.activo
+                                u.id !== id && u.rol === "admin" && u.activo && !u.borrado
                             ) || (nuevoRol === "admin" && activo);
 
                             if (!quedanAdmins) {
