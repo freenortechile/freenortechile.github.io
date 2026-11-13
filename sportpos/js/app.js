@@ -333,11 +333,17 @@ const App = {
                 const boton = $("#formIngreso button[type=submit]");
                 boton.disabled = true;
 
-                const usuario =
-                    Datos.usuarios().find(u => u.usuario === usuarioTexto);
+                // Puede haber dos usuarios con el mismo nombre de ingreso (por ejemplo, al unir
+                // los datos de dos equipos en la nube). Se prueba la contraseña con cada uno.
+                const candidatos =
+                    Datos.usuariosVigentes().filter(u => normalizar(u.usuario).replace(/\s+/g, "") === usuarioTexto);
 
-                const correcto =
-                    usuario && await verificarClave(usuario, clave);
+                let usuario = null;
+                for (const u of candidatos) {
+                    if (await verificarClave(u, clave)) { usuario = u; break; }
+                }
+
+                const correcto = Boolean(usuario);
 
                 boton.disabled = false;
 
@@ -842,7 +848,7 @@ function recuperarAcceso() {
                     }
 
                     const usuarios = Datos.usuarios();
-                    const usuario = usuarios.find(u => u.usuario === usuarioTexto && u.rol === "admin");
+                    const usuario = usuarios.find(u => u.usuario === usuarioTexto && u.rol === "admin" && !u.borrado);
 
                     if (!usuario) {
                         mostrarError("No existe un administrador con ese usuario.");

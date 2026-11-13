@@ -72,6 +72,13 @@ const Nube = (function () {
         escuchas.forEach(f => { try { f(); } catch (e) { /* nada */ } });
     }
 
+    // La tabla de la nube no acepta datos vacíos (null). Un documento que no existe en este
+    // equipo (caja cerrada, contadores aún sin ventas) se sube con esta marca y al bajarlo se
+    // vuelve a convertir en "no existe".
+    const VACIO = { _vacio: true };
+    const esVacio = d => d === null || d === undefined || (typeof d === "object" && !Array.isArray(d) && d._vacio === true);
+    const paraSubir = d => (d === null || d === undefined) ? VACIO : d;
+
     // valor de un documento tal como se sube
     function valorDocumento(nombre) {
         let v = DB.leer(nombre, null);
@@ -199,7 +206,9 @@ const Nube = (function () {
 
         COLECCIONES.forEach(col => {
             const hs = estado.hashes[col] || {};
-            DB.leer(col, []).forEach(r => {
+            const registros = DB.leer(col, []);
+            (Array.isArray(registros) ? registros : []).forEach(r => {
+                if (!r || typeof r !== "object") return;
                 const id = idDe(col, r);
                 if (id === null) return;
                 const h = hash(canon(r));
@@ -217,26 +226,46 @@ const Nube = (function () {
         return lista;
     }
 
+    function marcarSubidos(trozo) {
+        const estado = leerEstado();
+        trozo.forEach(c => {
+            estado.hashes[c.coleccion] = estado.hashes[c.coleccion] || {};
+            estado.hashes[c.coleccion][c.id] = c.h;
+        });
+        guardarEstado(estado);
+    }
+
+    const filaDe = c => ({ coleccion: c.coleccion, id: c.id, datos: paraSubir(c.datos) });
+
     async function empujar() {
 
         const lista = cambiosPendientes();
 
         if (!lista.length) return 0;
 
+        const fallidos = [];
+
         for (let i = 0; i < lista.length; i += 150) {
 
             const trozo = lista.slice(i, i + 150);
-            const filas = trozo.map(c => ({ coleccion: c.coleccion, id: c.id, datos: c.datos }));
-            const { error } = await cliente.from("docs").upsert(filas, { onConflict: "user_id,coleccion,id" });
+            const { error } = await cliente.from("docs").upsert(trozo.map(filaDe), { onConflict: "user_id,coleccion,id" });
 
-            if (error) throw error;
+            if (!error) { marcarSubidos(trozo); continue; }
 
-            const estado = leerEstado();
-            trozo.forEach(c => {
-                estado.hashes[c.coleccion] = estado.hashes[c.coleccion] || {};
-                estado.hashes[c.coleccion][c.id] = c.h;
-            });
-            guardarEstado(estado);
+            // sin conexión o sesión vencida: se reintenta todo después
+            if (!navigator.onLine || error.status === 401 || /jwt|fetch|network/i.test(String(error.message))) throw error;
+
+            // un registro con problemas no debe trancar a los demás: se suben de a uno
+            for (const c of trozo) {
+                const r = await cliente.from("docs").upsert([filaDe(c)], { onConflict: "user_id,coleccion,id" });
+                if (r.error) fallidos.push(c.coleccion + " " + c.id + ": " + (r.error.message || r.error));
+                else marcarSubidos([c]);
+            }
+        }
+
+        if (fallidos.length) {
+            console.warn("[Nube] no se pudieron subir:", fallidos);
+            throw new Error(fallidos.length + " cambio(s) no se pudieron subir. Primero: " + fallidos[0]);
         }
 
         return lista.length;
@@ -258,7 +287,7 @@ const Nube = (function () {
 
         const col = fila.coleccion;
         const id = String(fila.id);
-        const datos = fila.datos;
+        const datos = esVacio(fila.datos) ? null : fila.datos;
 
         estado.hashes[col] = estado.hashes[col] || {};
 
@@ -290,6 +319,9 @@ const Nube = (function () {
         }
 
         if (!COLECCIONES.includes(col)) return false;
+
+        // registro dañado o vacío en la nube: no se toca lo local
+        if (!datos || typeof datos !== "object" || Array.isArray(datos)) return false;
 
         const lista = DB.leer(col, []);
         const i = lista.findIndex(r => idDe(col, r) === id);
