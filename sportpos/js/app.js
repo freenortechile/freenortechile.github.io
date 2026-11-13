@@ -75,183 +75,242 @@ const App = {
     },
 
 
-    // app de vendedores: no se crea la tienda aqui, solo se conecta a la que ya existe
-    mostrarConectarVendedor() {
+    // ==========================================
+    // ENTRADA CON RUT (primera vez en cada equipo)
+    // RUT + clave de la tienda: si la tienda existe se descargan sus datos;
+    // si es nueva, se pide solo el nombre, el usuario y la contraseña.
+    // ==========================================
 
-        document.body.innerHTML = `
-            <div class="acceso">
-                ${this.ladoPresentacion()}
-                <div class="acceso-form">
-                    <div class="acceso-caja">
-                        <h2>SportPOS Vendedor</h2>
-                        <p class="sub">Esta aplicación es solo para vendedores. Conéctela con la cuenta de la tienda para descargar productos y usuarios.</p>
-                        <div class="rejilla">
-                            <button type="button" class="btn btn-primario btn-grande" id="puNube">Conectar con la tienda</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
+    mostrarConectarVendedor() {
+        this.mostrarEntradaRut();
     },
 
 
     mostrarPrimerUso() {
+        if (Nube.configurada()) this.mostrarEntradaRut();
+        else this.mostrarPrimerUsoLocal();
+    },
+
+
+    mostrarEntradaRut(mensaje) {
+
+        const soloVendedor = window.SPORT_MODO === "vendedor";
 
         document.body.innerHTML = `
             <div class="acceso">
                 ${this.ladoPresentacion()}
                 <div class="acceso-form">
-                    <form class="acceso-caja ancha" id="formPrimerUso" novalidate>
-                        <h2>Bienvenido</h2>
-                        <p class="sub">Configure su tienda en un minuto. Podrá cambiar estos datos después.</p>
-
-                        <div class="rejilla rejilla-2">
-                            <div class="seccion-form col-todo">Datos de la tienda</div>
-                            <div class="campo col-todo">
-                                <label class="requerido" for="puNombre">Nombre de la tienda</label>
-                                <input id="puNombre" placeholder="Sport Center" autofocus>
+                    <form class="acceso-caja" id="formRut" novalidate>
+                        <h2>${soloVendedor ? "SportPOS Vendedor" : "Bienvenido"}</h2>
+                        <p class="sub">Escriba el RUT y la clave de la tienda. ${soloVendedor ? "Se descargan los productos y los usuarios." : "Si la tienda ya existe se descargan sus datos; si es nueva, se crea."}</p>
+                        <div class="rejilla">
+                            <div class="campo">
+                                <label for="erRut">RUT de la tienda</label>
+                                <input id="erRut" inputmode="text" autocomplete="username" autocapitalize="off" placeholder="76.123.456-7">
                             </div>
                             <div class="campo">
-                                <label for="puRut">RUT</label>
-                                <input id="puRut" placeholder="76.123.456-7">
+                                <label for="erClave">Clave de la tienda</label>
+                                <input id="erClave" type="password" autocomplete="current-password" placeholder="Mínimo 6 caracteres">
+                                <span class="ayuda">Es la misma en todos los equipos de la tienda (computador y celulares).</span>
                             </div>
-                            <div class="campo">
-                                <label for="puQuimico">Giro</label>
-                                <input id="puQuimico" placeholder="Venta de zapatillas y ropa deportiva">
-                            </div>
-
-                            <div class="seccion-form col-todo">Usuario administrador</div>
-                            <div class="campo">
-                                <label class="requerido" for="puAdminNombre">Su nombre</label>
-                                <input id="puAdminNombre" placeholder="María González">
-                            </div>
-                            <div class="campo">
-                                <label class="requerido" for="puUsuario">Usuario para ingresar</label>
-                                <input id="puUsuario" placeholder="maria" autocomplete="username">
-                            </div>
-                            <div class="campo">
-                                <label class="requerido" for="puClave">Contraseña</label>
-                                <input id="puClave" type="password" autocomplete="new-password">
-                                <span class="ayuda">Mínimo 6 caracteres</span>
-                            </div>
-                            <div class="campo">
-                                <label class="requerido" for="puClave2">Repetir contraseña</label>
-                                <input id="puClave2" type="password" autocomplete="new-password">
-                            </div>
-
-                            <label class="check col-todo">
-                                <input type="checkbox" id="puEjemplo" checked>
-                                Cargar productos de ejemplo para probar
-                            </label>
-
-                            <div id="puError" class="mensaje-error col-todo oculto"></div>
-
-                            <button class="btn btn-primario btn-grande col-todo" type="submit">
-                                Comenzar ${icono("flecha")}
-                            </button>
-                            ${Nube.configurada() ? '<button type="button" class="btn btn-fantasma btn-bloque col-todo" id="puNube">Ya uso SportPOS en otro equipo: conectar con la nube</button>' : ""}
+                            <div id="erError" class="mensaje-error ${mensaje ? "" : "oculto"}">${mensaje ? esc(mensaje) : ""}</div>
+                            <button class="btn btn-primario btn-grande" type="submit" id="erEntrar">Entrar ${icono("flecha")}</button>
+                            ${soloVendedor ? "" : '<button type="button" class="btn btn-fantasma" id="erLocal">Usar este equipo sin nube</button>'}
                         </div>
                     </form>
                 </div>
             </div>
         `;
 
+        setTimeout(() => $("#erRut").focus(), 30);
 
-        $("#puRut").addEventListener(
-            "blur",
-            evento => {
-                if (evento.target.value.trim()) {
-                    evento.target.value = formatearRut(evento.target.value);
-                }
+        $("#erRut").addEventListener("blur", e => {
+            const v = e.target.value.trim();
+            if (v && !v.includes("@") && validarRut(v)) e.target.value = formatearRut(v);
+        });
+
+        const bLocal = $("#erLocal");
+        if (bLocal) bLocal.addEventListener("click", () => this.mostrarPrimerUsoLocal());
+
+        $("#formRut").addEventListener("submit", async evento => {
+
+            evento.preventDefault();
+
+            const error = $("#erError");
+            const boton = $("#erEntrar");
+            const fallar = t => { error.textContent = t; error.classList.remove("oculto"); boton.disabled = false; boton.innerHTML = `Entrar ${icono("flecha")}`; };
+
+            const texto = $("#erRut").value.trim();
+            const clave = $("#erClave").value;
+
+            if (!texto || !clave) return fallar("Escriba el RUT y la clave de la tienda.");
+            if (!texto.includes("@") && !validarRut(texto)) return fallar("El RUT no es válido. Revise el número y el dígito verificador.");
+            if (clave.length < 6) return fallar("La clave de la tienda tiene al menos 6 caracteres.");
+            if (!navigator.onLine) return fallar("Se necesita internet la primera vez.");
+
+            error.classList.add("oculto");
+            boton.disabled = true;
+            boton.textContent = "Buscando la tienda…";
+
+            const correo = Nube.correoDeTienda(texto);
+
+            try {
+                await Nube.entrar(correo, clave, false);
+            } catch (e) {
+                const m = String((e && e.message) || e);
+                if (!/incorrect/i.test(m)) return fallar(m);
+                // no existe o la clave está mala: Supabase no dice cuál de las dos
+                if (soloVendedor) return fallar("No encontramos una tienda con ese RUT y esa clave. Revise la clave con el administrador.");
+                return this.preguntarTiendaNueva(texto, clave);
             }
-        );
 
-
-        $("#formPrimerUso").addEventListener(
-            "submit",
-            async evento => {
-
-                evento.preventDefault();
-
-                const error = $("#puError");
-
-                const mostrarError = texto => {
-                    error.textContent = texto;
-                    error.classList.remove("oculto");
-                };
-
-                const nombre = $("#puNombre").value.trim();
-                const rut = $("#puRut").value.trim();
-                const adminNombre = $("#puAdminNombre").value.trim();
-                const usuario = normalizar($("#puUsuario").value).replace(/\s+/g, "");
-                const clave = $("#puClave").value;
-                const clave2 = $("#puClave2").value;
-
-                if (!nombre || !adminNombre || !usuario || !clave) {
-                    mostrarError("Complete los datos marcados con *.");
-                    return;
+            // la tienda existe
+            try {
+                const enNube = await Nube.cuentaEnNube();
+                if (!enNube) {
+                    if (soloVendedor) { await Nube.salir(); return fallar("La tienda aún no tiene datos. Primero configúrela en el computador."); }
+                    return this.mostrarTiendaNueva(texto, true);
                 }
-
-                if (rut && !validarRut(rut)) {
-                    mostrarError("El RUT de la tienda no es válido.");
-                    return;
-                }
-
-                if (clave.length < 6) {
-                    mostrarError("La contraseña debe tener al menos 6 caracteres.");
-                    return;
-                }
-
-                if (clave !== clave2) {
-                    mostrarError("Las contraseñas no coinciden.");
-                    return;
-                }
+                boton.textContent = "Descargando datos…";
+                await Nube.primeraSincronizacion("nube");
+                location.reload();
+            } catch (e) {
+                fallar(String((e && e.message) || e));
+            }
+        });
+    },
 
 
-                const administrador = Object.assign(
-                    {
-                        id: nuevoId(),
-                        nombre: adminNombre,
-                        usuario,
-                        rol: "admin",
-                        activo: true,
-                        creado: new Date().toISOString()
-                    },
-                    await crearClave(clave)
-                );
+    preguntarTiendaNueva(texto, clave) {
 
-                const codigo =
-                    generarCodigoRecuperacion();
-
-                Datos.guardarUsuarios([administrador]);
-
-                Datos.guardarConfig({
-                    configurado: true,
-                    nombre,
-                    rut: rut ? formatearRut(rut) : "",
-                    quimico: $("#puQuimico").value.trim(),
-                    mensajeBoleta: "Gracias por su compra",
-                    anchoPapel: "80",
-                    imprimirAuto: false,
-                    recuperacion: await crearClave(codigo.replace(/-/g, "")),
-                    creado: new Date().toISOString()
-                });
-
-                if ($("#puEjemplo").checked && typeof cargarDatosEjemplo === "function") {
-                    cargarDatosEjemplo();
-                }
-
-                Sesion.iniciar(administrador);
-
-                mostrarCodigoRecuperacion(
-                    codigo,
-                    () => {
-                        location.hash = "#inicio";
-                        this.mostrarApp();
+        abrirModal({
+            titulo: "No encontramos esa tienda",
+            clase: "angosto",
+            html: `<p>No hay una tienda con el RUT <strong>${esc(texto)}</strong> y esa clave.</p>
+                   <p style="margin-top:10px">Si la tienda ya existe, revise la clave. Si es una tienda nueva, créela ahora con esta clave.</p>
+                   <div id="tnError" class="mensaje-error oculto" style="margin-top:12px"></div>`,
+            botones: [
+                { texto: "Revisar la clave", accion: cerrar => { cerrar(); this.mostrarEntradaRut(); $("#erRut").value = texto; $("#erClave").focus(); } },
+                {
+                    texto: "Crear tienda nueva",
+                    clase: "btn-primario",
+                    accion: async (cerrar, raiz) => {
+                        const error = $("#tnError", raiz);
+                        try {
+                            await Nube.entrar(Nube.correoDeTienda(texto), clave, true);
+                        } catch (e) {
+                            const m = String((e && e.message) || e);
+                            error.textContent = /ya tiene cuenta/i.test(m) ? "Ese RUT ya tiene una tienda: la clave no es correcta." : m;
+                            error.classList.remove("oculto");
+                            return;
+                        }
+                        cerrar();
+                        this.mostrarTiendaNueva(texto, true);
                     }
-                );
+                }
+            ]
+        });
+    },
+
+
+    // tienda nueva: solo nombre, usuario y contraseña (la cuenta de la nube ya está creada)
+    mostrarTiendaNueva(rutTexto, conNube) {
+
+        const esCorreo = String(rutTexto || "").includes("@");
+
+        document.body.innerHTML = `
+            <div class="acceso">
+                ${this.ladoPresentacion()}
+                <div class="acceso-form">
+                    <form class="acceso-caja" id="formTienda" novalidate>
+                        <h2>Tienda nueva</h2>
+                        <p class="sub">${conNube ? "Último paso. " : ""}Estos datos se pueden cambiar después en Configuración.</p>
+                        <div class="rejilla">
+                            <div class="campo">
+                                <label class="requerido" for="tnNombre">Nombre de la tienda</label>
+                                <input id="tnNombre" placeholder="Sport Center">
+                            </div>
+                            <div class="campo">
+                                <label ${conNube && !esCorreo ? "" : 'class="requerido"'} for="tnRut">RUT de la tienda</label>
+                                <input id="tnRut" value="${esc(esCorreo ? "" : (validarRut(rutTexto || "") ? formatearRut(rutTexto) : (rutTexto || "")))}" ${conNube && !esCorreo ? "readonly" : ""} placeholder="76.123.456-7">
+                            </div>
+                            <div class="campo">
+                                <label class="requerido" for="tnUsuario">Usuario del administrador</label>
+                                <input id="tnUsuario" value="administrador" autocomplete="username" autocapitalize="off">
+                            </div>
+                            <div class="campo">
+                                <label class="requerido" for="tnClave">Contraseña del administrador</label>
+                                <input id="tnClave" type="password" autocomplete="new-password" placeholder="Mínimo 6 caracteres">
+                                <label class="check" style="margin-top:4px"><input type="checkbox" id="tnVer"> Mostrar contraseña</label>
+                            </div>
+                            <div id="tnError2" class="mensaje-error oculto"></div>
+                            <button class="btn btn-primario btn-grande" type="submit">Comenzar ${icono("flecha")}</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        `;
+
+        setTimeout(() => $("#tnNombre").focus(), 30);
+
+        $("#tnVer").addEventListener("change", e => { $("#tnClave").type = e.target.checked ? "text" : "password"; });
+        $("#tnRut").addEventListener("blur", e => { if (validarRut(e.target.value)) e.target.value = formatearRut(e.target.value); });
+
+        $("#formTienda").addEventListener("submit", async evento => {
+
+            evento.preventDefault();
+
+            const error = $("#tnError2");
+            const fallar = t => { error.textContent = t; error.classList.remove("oculto"); };
+
+            const nombre = $("#tnNombre").value.trim();
+            const rut = $("#tnRut").value.trim();
+            const usuario = normalizar($("#tnUsuario").value).replace(/\s+/g, "");
+            const clave = $("#tnClave").value;
+
+            if (!nombre || !usuario || !clave) return fallar("Complete los datos marcados con *.");
+            if (rut && !validarRut(rut)) return fallar("El RUT de la tienda no es válido.");
+            if (!conNube && !rut) return fallar("Escriba el RUT de la tienda.");
+            if (clave.length < 6) return fallar("La contraseña debe tener al menos 6 caracteres.");
+
+            const administrador = Object.assign(
+                { id: nuevoId(), nombre: "Administrador", usuario, rol: "admin", activo: true, creado: new Date().toISOString() },
+                await crearClave(clave)
+            );
+
+            const codigo = generarCodigoRecuperacion();
+
+            Datos.guardarUsuarios([administrador]);
+
+            Datos.guardarConfig({
+                configurado: true,
+                nombre,
+                rut: rut ? formatearRut(rut) : "",
+                quimico: "",
+                mensajeBoleta: "Gracias por su compra",
+                anchoPapel: "80",
+                imprimirAuto: false,
+                recuperacion: await crearClave(codigo.replace(/-/g, "")),
+                creado: new Date().toISOString()
+            });
+
+            Sesion.iniciar(administrador);
+
+            if (conNube) {
+                try { await Nube.primeraSincronizacion("unir"); } catch (e) { /* se sube después, al volver internet */ }
             }
-        );
+
+            mostrarCodigoRecuperacion(codigo, () => {
+                location.hash = "#inicio";
+                this.mostrarApp();
+            });
+        });
+    },
+
+
+    // sin nube: el mismo formulario corto, solo en este equipo
+    mostrarPrimerUsoLocal() {
+        this.mostrarTiendaNueva("", false);
     },
 
 
@@ -294,6 +353,7 @@ const App = {
                             <button class="btn btn-primario btn-grande" type="submit">Ingresar</button>
 
                             <button class="btn btn-fantasma" type="button" id="btnOlvide">¿Olvidó su contraseña?</button>
+                            ${window.SPORT_MODO === "vendedor" && Nube.configurada() ? '<button class="btn btn-fantasma chico" type="button" id="btnOtraTienda">Conectar con otra tienda o con la clave nueva</button>' : ""}
                         </div>
                     </form>
                 </div>
@@ -301,6 +361,19 @@ const App = {
         `;
 
         setTimeout(() => $("#inUsuario").focus(), 30);
+
+        // app de vendedores: volver a conectar (otra tienda, o la tienda pasó a RUT / cambió su clave)
+        const bOtra = $("#btnOtraTienda");
+        if (bOtra) bOtra.addEventListener("click", async () => {
+            if (Nube.estado().conectado) {
+                await Nube.sincronizar();
+                if (Nube.estado().pendientes) { avisar("Hay ventas sin subir. Conéctese a internet y vuelva a intentar.", "error"); return; }
+            }
+            if (!(await confirmar({ titulo: "Volver a conectar", mensaje: "Este celular se desconecta y se borra su copia de los datos. Después se entra con el RUT y la clave de la tienda y se descarga todo de nuevo.", textoSi: "Continuar", peligro: true }))) return;
+            await Nube.salir();
+            ["productos", "ventas", "movimientos", "posventa", "usuarios", "cierres", "config", "caja", "contadores", "carrito", "sesion"].forEach(k => DB.borrar(k));
+            this.mostrarEntradaRut();
+        });
 
 
         $("#formIngreso").addEventListener(

@@ -90,6 +90,25 @@ const Nube = (function () {
     }
 
 
+    // ---------- cuenta de la tienda por RUT ----------
+    // La nube (Supabase) identifica cuentas por correo. Con el RUT se arma un correo interno
+    // fijo (no recibe mensajes): 76123456-7@tiendas.freenorte.cl. Si se escribe un correo
+    // (tiendas antiguas), se usa tal cual.
+    const DOMINIO_RUT = "tiendas.freenorte.cl";
+
+    function correoDeTienda(texto) {
+        const t = String(texto || "").trim();
+        if (t.includes("@")) return t.toLowerCase();
+        const limpio = t.replace(/[^0-9kK]/g, "").toLowerCase();
+        return limpio.slice(0, -1) + "-" + limpio.slice(-1) + "@" + DOMINIO_RUT;
+    }
+
+    function rutDeCorreo(correo) {
+        const m = String(correo || "").match(/^(\d+)-([0-9k])@tiendas\.freenorte\.cl$/i);
+        return m ? formatearRut(m[1] + m[2].toUpperCase()) : "";
+    }
+
+
     // ---------- conexión ----------
 
     function crearCliente() {
@@ -163,7 +182,7 @@ const Nube = (function () {
 
         if (r.error) {
             const m = String(r.error.message || r.error);
-            if (/invalid login/i.test(m)) throw new Error("Correo o contraseña incorrectos.");
+            if (/invalid login/i.test(m)) throw new Error("RUT (o correo) o clave incorrectos.");
             if (/already registered|already been registered/i.test(m)) throw new Error("Ese correo ya tiene cuenta. Use «Entrar».");
             if (/password/i.test(m) && /6|short|weak/i.test(m)) throw new Error("La contraseña debe tener al menos 6 caracteres.");
             if (/email.*confirm|confirm/i.test(m)) throw new Error("Falta confirmar el correo. Revise su bandeja o apague «Confirm email» en Supabase.");
@@ -186,6 +205,21 @@ const Nube = (function () {
         suscribir();
         avisarCambio();
         return usuario;
+    }
+
+    // crea una cuenta sin tocar la conexión actual de este equipo
+    async function crearCuenta(correo, clave) {
+        if (!configurada()) throw new Error("La nube no está configurada en este sistema.");
+        const c = window.NUBE_CONFIG;
+        const aparte = window.supabase.createClient(c.url, c.clave, { auth: { persistSession: false, autoRefreshToken: false, storageKey: "sportpos-cuenta-nueva" } });
+        const r = await aparte.auth.signUp({ email: correo, password: clave });
+        if (r.error) {
+            const m = String(r.error.message || r.error);
+            if (/already registered|already been registered/i.test(m)) throw new Error("Ese RUT ya tiene una tienda en la nube.");
+            if (/password/i.test(m)) throw new Error("La clave debe tener al menos 6 caracteres.");
+            throw new Error(m);
+        }
+        try { await aparte.auth.signOut(); } catch (e) { /* nada */ }
     }
 
     async function salir() {
@@ -480,7 +514,7 @@ const Nube = (function () {
     })();
 
 
-    return { iniciar, entrar, salir, sincronizar, primeraSincronizacion, cuentaEnNube, estado, alCambiar, configurada };
+    return { iniciar, entrar, salir, sincronizar, primeraSincronizacion, cuentaEnNube, estado, alCambiar, configurada, correoDeTienda, rutDeCorreo, crearCuenta };
 
 })();
 
@@ -503,8 +537,8 @@ const NubeUI = {
                 <p class="texto-2" style="margin:0 0 12px">${primerUso
                     ? "Use la cuenta de la tienda que ya creó en otro equipo. Se descargarán sus productos, ventas y usuarios."
                     : "Una sola cuenta para todos los equipos de la tienda (celular y computador). No es el usuario de ventas del sistema."}</p>
-                <div class="campo"><label for="nbCorreo">Correo de la tienda</label><input id="nbCorreo" type="email" autocomplete="username" placeholder="tienda@correo.com"></div>
-                <div class="campo" style="margin-top:10px"><label for="nbClave">Contraseña de la nube</label><input id="nbClave" type="password" autocomplete="current-password" placeholder="Mínimo 6 caracteres"></div>
+                <div class="campo"><label for="nbCorreo">RUT de la tienda</label><input id="nbCorreo" autocomplete="username" autocapitalize="off" placeholder="76.123.456-7" value="${esc(primerUso ? "" : (Datos.config().rut || ""))}"><span class="ayuda">Si su tienda se conectó antes con un correo, puede escribir el correo.</span></div>
+                <div class="campo" style="margin-top:10px"><label for="nbClave">Clave de la tienda</label><input id="nbClave" type="password" autocomplete="current-password" placeholder="Mínimo 6 caracteres"></div>
                 ${primerUso ? "" : '<label class="check" style="margin-top:10px"><input type="checkbox" id="nbCrear"> Es la primera vez: crear la cuenta de la tienda</label>'}
                 <div id="nbError" class="mensaje-error oculto" style="margin-top:12px"></div>
             `,
@@ -517,11 +551,14 @@ const NubeUI = {
 
                         const error = $("#nbError", raiz);
                         const fallar = t => { error.textContent = t; error.classList.remove("oculto"); };
-                        const correo = $("#nbCorreo", raiz).value.trim();
+                        const texto = $("#nbCorreo", raiz).value.trim();
                         const clave = $("#nbClave", raiz).value;
                         const crear = !primerUso && $("#nbCrear", raiz).checked;
 
-                        if (!correo || !clave) { fallar("Escriba el correo y la contraseña."); return; }
+                        if (!texto || !clave) { fallar("Escriba el RUT y la clave de la tienda."); return; }
+                        if (!texto.includes("@") && !validarRut(texto)) { fallar("El RUT no es válido."); return; }
+
+                        const correo = Nube.correoDeTienda(texto);
 
                         error.classList.add("oculto");
 
@@ -551,6 +588,58 @@ const NubeUI = {
                         } catch (e) {
                             fallar(String((e && e.message) || e));
                         }
+                    }
+                }
+            ]
+        });
+    },
+
+    // Pasa la tienda de una cuenta con correo a una cuenta con RUT. Se crea la cuenta nueva
+    // y se suben todos los datos de este equipo. Los demás equipos se vuelven a conectar con RUT.
+    pasarARut() {
+
+        const e = Nube.estado();
+
+        if (e.pendientes || e.error) {
+            avisar("Primero toque «Sincronizar ahora» y espere a que diga «Al día».", "error");
+            return;
+        }
+
+        abrirModal({
+            titulo: "Pasar la tienda a RUT",
+            clase: "angosto",
+            html: `
+                <p class="texto-2" style="margin:0 0 12px">Desde ahora los equipos se conectan con el RUT y una clave de la tienda. Después, en cada celular hay que volver a entrar con ese RUT y esa clave.</p>
+                <div class="campo"><label for="prRut">RUT de la tienda</label><input id="prRut" value="${esc(Datos.config().rut || "")}" placeholder="76.123.456-7"></div>
+                <div class="campo" style="margin-top:10px"><label for="prClave">Clave de la tienda (nueva)</label><input id="prClave" type="password" autocomplete="new-password" placeholder="Mínimo 6 caracteres"></div>
+                <div id="prError" class="mensaje-error oculto" style="margin-top:12px"></div>`,
+            botones: [
+                { texto: "Cancelar" },
+                {
+                    texto: "Pasar a RUT",
+                    clase: "btn-primario",
+                    accion: async (cerrar, raiz) => {
+                        const error = $("#prError", raiz);
+                        const fallar = t => { error.textContent = t; error.classList.remove("oculto"); };
+                        const rut = $("#prRut", raiz).value.trim();
+                        const clave = $("#prClave", raiz).value;
+                        if (!validarRut(rut)) return fallar("El RUT no es válido.");
+                        if (clave.length < 6) return fallar("La clave debe tener al menos 6 caracteres.");
+                        const correoNuevo = Nube.correoDeTienda(rut);
+                        // 1) se crea la cuenta del RUT aparte: si falla, este equipo sigue conectado como antes
+                        try {
+                            await Nube.crearCuenta(correoNuevo, clave);
+                        } catch (x) {
+                            return fallar(String((x && x.message) || x));
+                        }
+                        // 2) este equipo se cambia a la cuenta nueva y sube todo
+                        await Nube.salir();
+                        await Nube.entrar(correoNuevo, clave, false);
+                        await Nube.primeraSincronizacion("unir");
+                        const cfg = Datos.config(); if (!cfg.rut) { cfg.rut = formatearRut(rut); Datos.guardarConfig(cfg); }
+                        cerrar();
+                        avisar("Listo: la tienda ahora se conecta con RUT " + formatearRut(rut) + ".");
+                        Configuracion.pintar();
                     }
                 }
             ]
@@ -594,12 +683,13 @@ const NubeUI = {
                 <div class="tarjeta-cuerpo">
                     ${e.conectado ? `
                         <div class="ficha-datos" style="margin-bottom:14px">
-                            <div><div class="etiqueta">Cuenta</div><div class="dato">${esc(e.correo)}</div></div>
+                            <div><div class="etiqueta">Cuenta</div><div class="dato">${Nube.rutDeCorreo(e.correo) ? "RUT " + esc(Nube.rutDeCorreo(e.correo)) : esc(e.correo)}</div></div>
                             <div><div class="etiqueta">Estado</div><div class="dato">${!e.enLinea ? "Sin internet" : e.error ? "Con problemas" : e.sincronizando ? "Sincronizando…" : e.pendientes ? "Pendiente de subir" : "Al día"}</div></div>
                             <div><div class="etiqueta">Cambios por subir</div><div class="dato">${e.pendientes}</div></div>
                             <div><div class="etiqueta">Última descarga</div><div class="dato">${esc(ultima)}</div></div>
                         </div>
                         ${e.error ? `<div class="mensaje-error" style="margin-bottom:12px">${esc(e.error)}</div>` : ""}
+                        ${Nube.rutDeCorreo(e.correo) || window.SPORT_MODO === "vendedor" ? "" : `<div class="mensaje-info" style="margin-bottom:12px">Esta tienda se conecta con correo. Puede pasarla a <strong>RUT + clave</strong> para conectar los celulares más fácil. <button class="btn btn-chico" id="nbPasarRut" style="margin-left:6px">Pasar a RUT</button></div>`}
                         <p class="chico texto-2" style="margin:0 0 14px">Los equipos conectados a esta cuenta comparten productos, ventas, caja, posventa y usuarios. Si no hay internet, el sistema sigue funcionando y sube los cambios al volver.</p>
                         <div style="display:flex;gap:8px;flex-wrap:wrap">
                             <button class="btn btn-primario" id="nbSincronizar">Sincronizar ahora</button>
@@ -620,6 +710,9 @@ const NubeUI = {
                 if (ficha) ficha.appendChild(celda);
             }).catch(() => { });
         }
+
+        const bRut = $("#nbPasarRut", contenedor);
+        if (bRut) bRut.addEventListener("click", () => NubeUI.pasarARut());
 
         const bConectar = $("#nbConectar", contenedor);
         if (bConectar) bConectar.addEventListener("click", () => NubeUI.conectar());

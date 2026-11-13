@@ -7,7 +7,7 @@
 
 const SISTEMA = {
     nombre: "SportPOS",
-    version: "1.0.3"
+    version: "1.0.4"
 };
 
 // la app de vendedores guarda aparte, por si se abre en el mismo equipo que la de administración
