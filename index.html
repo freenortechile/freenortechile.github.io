@@ -13,21 +13,21 @@
   <link rel="preload" href="assets/fonts/sora-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/inter-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
   <script>document.documentElement.classList.add('js');try{var t=localStorage.getItem('fn-tema2');if(t==='dia'||t==='noche')document.documentElement.setAttribute('data-tema',t);}catch(e){}</script>
-  <link rel="stylesheet" href="assets/css/sitio.css?v=5">
+  <link rel="stylesheet" href="assets/css/sitio.css?v=7">
 </head>
 <body>
   <div class="progreso" id="progreso" aria-hidden="true"></div>
   <a class="saltar" href="#sistemas">Saltar al contenido</a>
 
   <header class="cabecera" id="cabecera">
-    <a class="marca" href="#inicio" aria-label="FREENORTE, inicio"><span>FREE</span><span class="marca__n">NORTE</span></a>
+    <a class="marca" href="#inicio" aria-label="FREENORTE, inicio"><svg class="marca__brujula" viewBox="0 0 120 120" aria-hidden="true" focusable="false"><circle cx="60" cy="60" r="50" fill="none" stroke="currentColor" stroke-width="10"/><polygon points="60,14 77,60 43,60" fill="currentColor"/><polygon points="43,60 77,60 60,106" fill="currentColor" opacity=".38"/></svg><span class="marca__texto"><span>FREE</span><span class="marca__n">NORTE</span></span></a>
     <nav class="menu" aria-label="Navegación principal">
       <a href="#planes">Planes</a>
       <a href="#sistemas">Sistemas</a>
-      <a href="#servicios">Servicios</a>
+      <a href="#marketing">Marketing</a>
+      <a href="#marketplaces">Marketplaces</a>
       <a href="#inventario">Inventario</a>
-      <a href="#nosotros">Nosotros</a>
-      <a href="#preguntas">Preguntas</a>
+      <a href="#videos">Videos</a>
       <a href="#contacto">Contacto</a>
     </nav>
     <div class="cabecera__acciones">
@@ -42,7 +42,10 @@
       <a href="#planes">Planes</a>
       <a href="#sistemas">Sistemas</a>
       <a href="#servicios">Servicios</a>
+      <a href="#marketing">Marketing digital</a>
+      <a href="#marketplaces">Marketplaces</a>
       <a href="#inventario">Inventario</a>
+      <a href="#videos">Videos</a>
       <a href="#nosotros">Nosotros</a>
       <a href="#preguntas">Preguntas</a>
       <a href="#contacto">Contacto</a>
@@ -248,13 +251,144 @@
         <li class="afiche__fila" data-rev><a href="#contacto" data-interest="app"><span class="afiche__nom">Aplicaciones web</span><span class="afiche__desc">Sistemas accesibles desde computador, tablet y celular.</span><span class="afiche__flecha" aria-hidden="true">→</span></a></li>
         <li class="afiche__fila" data-rev><a href="#contacto" data-interest="datos"><span class="afiche__nom">Análisis de datos</span><span class="afiche__desc">Dashboards e indicadores para decidir con números.</span><span class="afiche__flecha" aria-hidden="true">→</span></a></li>
         <li class="afiche__fila" data-rev><a href="#contacto" data-interest="automatizacion"><span class="afiche__nom">Automatización</span><span class="afiche__desc">Digitalización de procesos y herramientas.</span><span class="afiche__flecha" aria-hidden="true">→</span></a></li>
-        <li class="afiche__fila" data-rev><a href="#contacto" data-interest="mercadolibre"><span class="afiche__nom">Mercado Libre</span><span class="afiche__desc">Creamos tu cuenta, publicamos tus productos y te ayudamos a calcular si ganas o pierdes.</span><span class="afiche__flecha" aria-hidden="true">→</span></a></li>
-        <li class="afiche__fila" data-rev><a href="#contacto" data-interest="marketing"><span class="afiche__nom">Marketing en redes</span><span class="afiche__desc">Publicaciones y videos para Instagram, Facebook y TikTok cada mes.</span><span class="afiche__flecha" aria-hidden="true">→</span></a></li>
+        <li class="afiche__fila" data-rev><a href="#marketplaces"><span class="afiche__nom">Marketplaces</span><span class="afiche__desc">Mercado Libre, Falabella.com y Lider.cl: publicamos y promocionamos tus productos; tú atiendes las ventas.</span><span class="afiche__flecha" aria-hidden="true">→</span></a></li>
+        <li class="afiche__fila" data-rev><a href="#marketing"><span class="afiche__nom">Marketing digital</span><span class="afiche__desc">Redes sociales, Mercado Libre y tu página web, con publicaciones y videos cada mes.</span><span class="afiche__flecha" aria-hidden="true">→</span></a></li>
         <li class="afiche__fila" data-rev><a href="#contacto" data-interest="soporte"><span class="afiche__nom">Soporte y mantenimiento</span><span class="afiche__desc">Instalación, configuración, actualizaciones y ayuda.</span><span class="afiche__flecha" aria-hidden="true">→</span></a></li>
       </ul>
     </section>
 
     <!-- 5. Inventario: cuatro líneas que bajan en escalera -->
+
+    <section class="capitulo cap-base marketing" id="marketing" aria-labelledby="marketing-titulo">
+      <div class="cabeza" data-rev>
+        <p class="etiqueta">Marketing digital</p>
+        <h2 class="titulo" id="marketing-titulo">Que tu negocio venda también por internet</h2>
+        <p class="cabeza__texto">Sumamos tres vitrinas a tu local: redes sociales, Mercado Libre y tu propia página web. Nosotros hacemos el trabajo cada mes; tú atiendes las ventas.</p>
+      </div>
+      <ul class="vitrinas">
+        <li class="vitrina" data-rev style="--i:0"><span class="vitrina__num">1</span><h3>Redes sociales</h3><p>Facebook, Instagram y TikTok ordenados, con publicaciones de catálogo y videos cortos grabados en tu local.</p></li>
+        <li class="vitrina" data-rev style="--i:1"><span class="vitrina__num">2</span><h3>Mercado Libre</h3><p>Cuenta a tu nombre con Mercado Pago y Mercado Envíos. Publicamos cada producto con sus tallas o variantes.</p></li>
+        <li class="vitrina" data-rev style="--i:2"><span class="vitrina__num">3</span><h3>Tu página web</h3><p>Tu catálogo con un botón que abre WhatsApp con el producto ya escrito. Sin comisión por venta.</p></li>
+      </ul>
+      <ol class="planes__lista planes__lista--3">
+        <li class="plan" data-rev style="--i:0">
+          <h3 class="plan__nombre">Básico</h3>
+          <p class="plan__precio"><b>$100.000</b> <span>al mes</span></p>
+          <p class="plan__para">Para aparecer.</p>
+          <ul class="plan__incluye">
+            <li>8 publicaciones y 4 videos al mes</li>
+            <li>30 productos en Mercado Libre</li>
+            <li>Vitrina web de 1 página con 12 destacados</li>
+            <li>Difusión en grupos de la zona 2 veces por semana</li>
+          </ul>
+          <a class="boton boton--borde plan__boton" href="#contacto" data-interest="mkt-basico">Quiero este plan</a>
+        </li>
+        <li class="plan plan--destacado" data-rev style="--i:1">
+          <p class="plan__sello">Recomendado</p>
+          <h3 class="plan__nombre">Medio</h3>
+          <p class="plan__precio"><b>$160.000</b> <span>al mes</span></p>
+          <p class="plan__para">Para vender.</p>
+          <ul class="plan__incluye">
+            <li>12 publicaciones y 8 videos al mes</li>
+            <li>100 productos en Mercado Libre</li>
+            <li>Catálogo web de 150 productos con dominio .cl</li>
+            <li>Respondemos preguntas de lunes a viernes</li>
+            <li>1 promoción al mes e informe mensual</li>
+          </ul>
+          <a class="boton boton--oro plan__boton" href="#contacto" data-interest="mkt-medio">Quiero este plan</a>
+        </li>
+        <li class="plan" data-rev style="--i:2">
+          <h3 class="plan__nombre">Completo</h3>
+          <p class="plan__precio"><b>$220.000</b> <span>al mes</span></p>
+          <p class="plan__para">Todo tu catálogo, más publicidad.</p>
+          <ul class="plan__incluye">
+            <li>16 publicaciones y 12 videos al mes</li>
+            <li>Todo tu catálogo con foto en Mercado Libre</li>
+            <li>Catálogo web completo con filtros</li>
+            <li>Manejo de anuncios pagados en redes</li>
+            <li>Informe mensual con reunión</li>
+          </ul>
+          <a class="boton boton--borde plan__boton" href="#contacto" data-interest="mkt-completo">Quiero este plan</a>
+        </li>
+      </ol>
+      <p class="nota-planes" data-rev>Precios en pesos chilenos, mensuales. La puesta en marcha (cuentas, fotos y primeras publicaciones) se cotiza según el tamaño de tu catálogo. Se recomienda una permanencia mínima de 3 meses. El dinero de los anuncios pagados lo pone el negocio.</p>
+    </section>
+
+    <section class="capitulo cap-alt marketplaces" id="marketplaces" aria-labelledby="marketplaces-titulo">
+      <div class="cabeza" data-rev>
+        <p class="etiqueta">Marketplaces</p>
+        <h2 class="titulo" id="marketplaces-titulo">Aparece donde la gente ya está comprando</h2>
+        <p class="cabeza__texto">Publicamos y promocionamos tus productos en Mercado Libre, Falabella.com y Lider.cl. Partimos con uno y sumamos los demás cuando el primero funciona.</p>
+      </div>
+      <ol class="canales">
+        <li class="canal" data-rev style="--i:0"><p class="canal__paso">Primer canal</p><h3>Mercado Libre</h3><p>El marketplace más usado de Chile. El más fácil para partir.</p></li>
+        <li class="canal" data-rev style="--i:1"><p class="canal__paso">Segundo canal</p><h3>Falabella.com</h3><p>Público que busca marcas. Postulamos tu tienda en su Seller Center.</p></li>
+        <li class="canal" data-rev style="--i:2"><p class="canal__paso">Tercer canal</p><h3>Lider.cl</h3><p>El marketplace de Walmart Chile, abierto a pymes.</p></li>
+      </ol>
+      <div class="reparto" data-rev>
+        <div class="reparto__lado">
+          <h3>Freenorte hace el marketing</h3>
+          <ul class="plan__incluye reparto__lista">
+            <li>Crear y ordenar tu cuenta en cada marketplace</li>
+            <li>Publicar con fotos, títulos y fichas completas</li>
+            <li>Recomendar precios que cubran la comisión y compitan</li>
+            <li>Armar y vigilar la publicidad dentro de cada plataforma</li>
+            <li>Preparar CyberDay, Black Friday y otras fechas</li>
+            <li>Informe mensual: qué se vio, qué se vendió y qué mejorar</li>
+          </ul>
+        </div>
+        <div class="reparto__lado">
+          <h3>Tu negocio hace las ventas</h3>
+          <ul class="plan__incluye reparto__lista">
+            <li>Responder las preguntas de los compradores</li>
+            <li>Preparar y despachar cada pedido a tiempo</li>
+            <li>Emitir la boleta o factura de cada venta</li>
+            <li>Mantener el stock al día</li>
+            <li>Decidir el precio final y el presupuesto de publicidad</li>
+          </ul>
+        </div>
+      </div>
+      <ol class="planes__lista planes__lista--3">
+        <li class="plan" data-rev style="--i:0">
+          <h3 class="plan__nombre">Plan 1</h3>
+          <p class="plan__para">Mercado Libre</p>
+          <ul class="plan__incluye">
+            <li>Cuenta y perfil de tu tienda</li>
+            <li>Hasta 100 productos publicados y optimizados</li>
+            <li>Precios recomendados</li>
+            <li>Campaña de Mercado Ads</li>
+            <li>Informe mensual</li>
+          </ul>
+          <a class="boton boton--borde plan__boton" href="#contacto" data-interest="marketplaces">Cotizar</a>
+        </li>
+        <li class="plan plan--destacado" data-rev style="--i:1">
+          <p class="plan__sello">Recomendado</p>
+          <h3 class="plan__nombre">Plan 2</h3>
+          <p class="plan__para">Mercado Libre + Falabella.com</p>
+          <ul class="plan__incluye">
+            <li>Todo lo del Plan 1</li>
+            <li>Postulación y alta en Falabella.com</li>
+            <li>Catálogo en las dos plataformas</li>
+            <li>Promociones en fechas clave</li>
+            <li>Informe comparado por canal</li>
+          </ul>
+          <a class="boton boton--oro plan__boton" href="#contacto" data-interest="marketplaces">Cotizar</a>
+        </li>
+        <li class="plan" data-rev style="--i:2">
+          <h3 class="plan__nombre">Plan 3</h3>
+          <p class="plan__para">Mercado Libre + Falabella.com + Lider.cl</p>
+          <ul class="plan__incluye">
+            <li>Todo lo del Plan 2</li>
+            <li>Postulación y alta en Lider.cl</li>
+            <li>Publicidad en las plataformas que la ofrezcan</li>
+            <li>Reunión mensual de resultados</li>
+          </ul>
+          <a class="boton boton--borde plan__boton" href="#contacto" data-interest="marketplaces">Cotizar</a>
+        </li>
+      </ol>
+      <p class="nota-planes" data-rev>Valores según el plan y tu catálogo: los conversamos contigo. No incluyen las comisiones de cada marketplace, los envíos ni el dinero de la publicidad. Falabella y Lider revisan y aprueban cada tienda: se necesita RUT, inicio de actividades y boleta o factura electrónica. Vende solo productos originales, con sus facturas de compra.</p>
+    </section>
+
     <section class="capitulo cap-oro inventario" id="inventario" aria-labelledby="inventario-titulo">
       <div class="cabeza" data-rev><p class="etiqueta">Inventario</p><h2 class="titulo" id="inventario-titulo">Contamos y cargamos tu mercadería</h2></div>
       <ol class="escalera">
@@ -272,7 +406,7 @@
         </div></li>
         <li class="escalera__paso" data-rev><span class="escalera__num" aria-hidden="true">04</span><div>
           <h3 class="escalera__linea">Y sales a vender.</h3>
-          <p class="escalera__detalle">Te capacitamos a ti y a tus vendedores, y recibes tu inventario en Excel y PDF con un respaldo.</p>
+          <p class="escalera__detalle">Te capacitamos a ti y a tus vendedores, y recibes tu inventario valorizado (cuánto tienes invertido y cuánto vale a precio de venta) en Excel y PDF, con un respaldo.</p>
         </div></li>
       </ol>
       <div class="inventario__cierre" data-rev>
@@ -318,6 +452,34 @@
     </figure>
 
     <!-- 8. Nosotros -->
+
+    <section class="capitulo cap-azul videos" id="videos" aria-labelledby="videos-titulo">
+      <div class="cabeza" data-rev>
+        <p class="etiqueta">Videos</p>
+        <h2 class="titulo" id="videos-titulo">Míralo en menos de un minuto</h2>
+        <p class="cabeza__texto">Videos con voz de nuestros servicios y sistemas. Toca uno para verlo con sonido.</p>
+      </div>
+      <ul class="videos__lista">
+        <li class="video-card" data-rev style="--i:0">
+          <video controls playsinline preload="none" poster="assets/videos/vid-servicio-inventario.jpg" width="720" height="1280"><source src="assets/videos/vid-servicio-inventario.mp4" type="video/mp4"></video>
+          <p class="video-card__titulo">Servicio de inventario</p><p class="video-card__texto">Contamos, valorizamos y cargamos tu mercadería.</p>
+        </li>
+        <li class="video-card" data-rev style="--i:1">
+          <video controls playsinline preload="none" poster="assets/videos/vid-marketing.jpg" width="720" height="1280"><source src="assets/videos/vid-marketing.mp4" type="video/mp4"></video>
+          <p class="video-card__titulo">Marketing digital</p><p class="video-card__texto">Redes, Mercado Libre y tu página web.</p>
+        </li>
+        <li class="video-card" data-rev style="--i:2">
+          <video controls playsinline preload="none" poster="assets/videos/vid-ventafacil-celular.jpg" width="720" height="1280"><source src="assets/videos/vid-ventafacil-celular.mp4" type="video/mp4"></video>
+          <p class="video-card__titulo">VentaFácil en tu celular</p><p class="video-card__texto">Para bazares, minimarkets y ferreterías.</p>
+        </li>
+        <li class="video-card" data-rev style="--i:3">
+          <video controls playsinline preload="none" poster="assets/videos/vid-sportpos-pc.jpg" width="720" height="1280"><source src="assets/videos/vid-sportpos-pc.mp4" type="video/mp4"></video>
+          <p class="video-card__titulo">SportPOS en el computador</p><p class="video-card__texto">Para tiendas de zapatillas y ropa deportiva.</p>
+        </li>
+      </ul>
+      <p class="videos__mas" data-rev>Más videos en <a href="https://www.tiktok.com/@freenorte.chile" target="_blank" rel="noopener">TikTok @freenorte.chile</a> e <a href="https://www.instagram.com/contacto.freenorte/" target="_blank" rel="noopener">Instagram @contacto.freenorte</a>.</p>
+    </section>
+
     <section class="capitulo cap-alt nosotros" id="nosotros" aria-labelledby="nosotros-titulo">
       <div class="nosotros__rejilla">
         <div class="nosotros__texto">
@@ -382,6 +544,13 @@
         <p class="etiqueta">Contacto</p>
         <h2 class="contacto__pregunta" id="contacto-titulo">¿Qué negocio tienes?</h2>
         <p class="contacto__sub">Cuéntanos y te respondemos hoy.</p>
+        <ul class="redes" aria-label="Redes sociales de FREENORTE">
+          <li><a class="redes__link" href="https://wa.me/56949424720" target="_blank" rel="noopener"><span class="redes__icono redes__icono--wa" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 21l2.1-5.6A8.4 8.4 0 1 1 21 11.5z"/><path d="M8.5 11.5h.01M12 11.5h.01M15.5 11.5h.01"/></svg></span><span class="redes__texto"><span class="redes__red">WhatsApp</span><span class="redes__usuario">+56 9 4942 4720</span></span></a></li>
+          <li><a class="redes__link" href="https://www.instagram.com/contacto.freenorte/" target="_blank" rel="noopener"><span class="redes__icono redes__icono--ig" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M22 18a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h3.5l2-3h5l2 3H20a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="3.6"/></svg></span><span class="redes__texto"><span class="redes__red">Instagram</span><span class="redes__usuario">@contacto.freenorte</span></span></a></li>
+          <li><a class="redes__link" href="https://www.tiktok.com/@freenorte.chile" target="_blank" rel="noopener"><span class="redes__icono redes__icono--tt" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span><span class="redes__texto"><span class="redes__red">TikTok</span><span class="redes__usuario">@freenorte.chile</span></span></a></li>
+          <!-- PENDIENTE: reemplazar por el link exacto de la página de Facebook -->
+          <li><a class="redes__link" href="https://www.facebook.com/search/top?q=Freenorte%20Soluciones%20Digitales" target="_blank" rel="noopener"><span class="redes__icono redes__icono--fb" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><circle cx="9" cy="7" r="4"/><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg></span><span class="redes__texto"><span class="redes__red">Facebook</span><span class="redes__usuario">Freenorte · Soluciones Digitales</span></span></a></li>
+        </ul>
         <form class="rapido" id="rapido">
           <label class="sr-only" for="rapido-texto">Tu tipo de negocio</label>
           <input class="rapido__campo" id="rapido-texto" type="text" autocomplete="off" placeholder="Por ejemplo: una farmacia en Iquique" maxlength="140">
@@ -427,6 +596,10 @@
                 <option value="plan-completo">Plan Completo ($149.990)</option>
                 <option value="mercadolibre">Gestión de Mercado Libre</option>
                 <option value="marketing">Marketing en redes sociales</option>
+                <option value="mkt-basico">Marketing digital Básico ($100.000 al mes)</option>
+                <option value="mkt-medio">Marketing digital Medio ($160.000 al mes)</option>
+                <option value="mkt-completo">Marketing digital Completo ($220.000 al mes)</option>
+                <option value="marketplaces">Marketing en marketplaces (Mercado Libre, Falabella, Lider)</option>
                 <option value="demo">Demostración de GESTIONA POS</option>
                 <option value="demo-farmacia">Demostración de FarmaNorte (farmacias)</option>
                 <option value="demo-optica">Demostración de VisiónPOS (ópticas)</option>
@@ -450,7 +623,7 @@
                 <option value="app">Aplicación web</option>
                 <option value="datos">Análisis de datos</option>
                 <option value="automatizacion">Automatización</option>
-                <option value="inventario">Inventario y registro digital</option>
+                <option value="inventario">Inventario y valorización de mercadería</option>
                 <option value="soporte">Soporte y mantenimiento</option>
                 <option value="otro">Otro</option>
               </select><span class="field__error" role="alert"></span></div>
@@ -473,10 +646,16 @@
   </main>
 
   <footer class="pie">
-    <div class="pie__marca"><p class="pie__nombre"><span>FREE</span><span class="marca__n">NORTE</span></p><p class="pie__lema">Sistemas de venta y gestión hechos en Iquique, Chile.</p></div>
+    <div class="pie__marca"><p class="pie__nombre"><svg class="marca__brujula" viewBox="0 0 120 120" aria-hidden="true" focusable="false"><circle cx="60" cy="60" r="50" fill="none" stroke="currentColor" stroke-width="10"/><polygon points="60,14 77,60 43,60" fill="currentColor"/><polygon points="43,60 77,60 60,106" fill="currentColor" opacity=".38"/></svg><span><span>FREE</span><span class="marca__n">NORTE</span></span></p><p class="pie__lema">Freelancer del norte de Chile: sistemas de venta, inventario y marketing digital para tu negocio.</p>
+      <ul class="redes-pie" aria-label="Redes sociales">
+        <li><a href="https://wa.me/56949424720" target="_blank" rel="noopener" aria-label="WhatsApp de FREENORTE"><span class="redes__icono redes__icono--wa" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 21l2.1-5.6A8.4 8.4 0 1 1 21 11.5z"/><path d="M8.5 11.5h.01M12 11.5h.01M15.5 11.5h.01"/></svg></span></a></li>
+        <li><a href="https://www.instagram.com/contacto.freenorte/" target="_blank" rel="noopener" aria-label="Instagram @contacto.freenorte"><span class="redes__icono redes__icono--ig" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M22 18a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h3.5l2-3h5l2 3H20a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="3.6"/></svg></span></a></li>
+        <li><a href="https://www.tiktok.com/@freenorte.chile" target="_blank" rel="noopener" aria-label="TikTok @freenorte.chile"><span class="redes__icono redes__icono--tt" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span></a></li>
+        <li><a href="https://www.facebook.com/search/top?q=Freenorte%20Soluciones%20Digitales" target="_blank" rel="noopener" aria-label="Facebook de FREENORTE"><span class="redes__icono redes__icono--fb" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><circle cx="9" cy="7" r="4"/><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg></span></a></li>
+      </ul></div>
     <div class="pie__fila">
       <ul class="pie__lugares">
-        <li>Iquique, Chile</li>
+        <li>Iquique y Alto Hospicio, Chile</li>
         <li><a data-whatsapp-link href="https://wa.me/56949424720"><span data-whatsapp-text>+56 9 4942 4720</span></a></li>
         <li><a data-email-link href="mailto:contacto.freenorte@gmail.com"><span data-email-text>contacto.freenorte@gmail.com</span></a></li>
       </ul>
@@ -486,13 +665,18 @@
           <li><a href="#sistemas">Sistemas</a></li>
           <li><a href="#servicios">Servicios</a></li>
           <li><a href="#inventario">Inventario</a></li>
+          <li><a href="#marketing">Marketing digital</a></li>
+          <li><a href="#marketplaces">Marketplaces</a></li>
         </ul>
         <ul>
+          <li><a href="#videos">Videos</a></li>
           <li><a href="#nosotros">Nosotros</a></li>
           <li><a href="#preguntas">Preguntas</a></li>
           <li><a href="demos/articulos/index.html">Demo MarkNorte</a></li>
         </ul>
         <ul>
+          <li><a href="https://www.instagram.com/contacto.freenorte/" target="_blank" rel="noopener">Instagram</a></li>
+          <li><a href="https://www.tiktok.com/@freenorte.chile" target="_blank" rel="noopener">TikTok</a></li>
           <li><a href="privacidad.html">Privacidad</a></li>
           <li><a href="#contacto">Contacto</a></li>
         </ul>
