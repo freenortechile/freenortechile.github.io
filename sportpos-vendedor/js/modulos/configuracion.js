@@ -503,7 +503,24 @@ const Configuracion = {
 
         const c = Datos.config();
 
-        $("#cfContenido").innerHTML = `
+        const ra = RespaldoAuto.estado();
+        const auto = RespaldoAuto.disponible()
+            ? `<div class="tarjeta" style="max-width:980px;margin-bottom:18px">
+                    <div class="tarjeta-cabeza"><h3>Respaldo automático del día</h3><span class="badge ${ra.error ? "b-peligro" : ra.ultimo ? "b-ok" : "b-aviso"}">${ra.error ? "Con problemas" : ra.ultimo ? "Funcionando" : "Aún sin respaldo"}</span></div>
+                    <div class="tarjeta-cuerpo">
+                        <p style="margin-bottom:10px">Este computador guarda solo un respaldo de cada día: al <strong>cerrar la caja</strong>, al <strong>cerrar el programa</strong> y cuando nadie lo usa por ${RespaldoAuto.INACTIVIDAD_MIN} minutos. Se guardan los últimos 60 días.</p>
+                        <p class="chico texto-2">Último respaldo: <strong>${ra.ultimo ? fechaHora(ra.ultimo) : "todavía no"}</strong>${ra.motivo ? ` (${esc(ra.motivo)})` : ""}${ra.bytes ? ` · ${ra.bytes < 1048576 ? Math.max(1, Math.round(ra.bytes / 1024)) + " KB" : (ra.bytes / 1048576).toFixed(1).replace(".", ",") + " MB"}` : ""}</p>
+                        ${ra.carpeta ? `<p class="chico texto-2" style="margin-top:4px">Carpeta: <strong>${esc(ra.carpeta)}</strong></p>` : ""}
+                        ${ra.error ? `<div class="mensaje-error" style="margin-top:10px">${esc(ra.error)}</div>` : ""}
+                        <div class="fila" style="margin-top:14px">
+                            <button class="btn btn-primario" id="raAhora">${icono("base")} Guardar respaldo ahora</button>
+                            <button class="btn" id="raCarpeta">${icono("descargar")} Abrir carpeta de respaldos</button>
+                        </div>
+                    </div>
+               </div>`
+            : `<div class="mensaje-info" style="max-width:980px;margin-bottom:18px">El respaldo automático del día funciona en el <strong>programa del computador</strong>. En el celular los datos quedan guardados en la nube.</div>`;
+
+        $("#cfContenido").innerHTML = auto + `
             <div class="dos-iguales" style="max-width:980px">
                 <div class="tarjeta">
                     <div class="tarjeta-cabeza"><h3>Descargar respaldo</h3></div>
@@ -523,6 +540,16 @@ const Configuracion = {
                 </div>
             </div>
         `;
+
+        const bAhora = $("#raAhora");
+        if (bAhora) bAhora.addEventListener("click", async () => {
+            bAhora.disabled = true;
+            const r = await RespaldoAuto.guardar("guardado a mano");
+            avisar(r ? "Respaldo guardado en " + r.ruta : "No se pudo guardar el respaldo.", r ? "ok" : "error");
+            this.pintarRespaldo();
+        });
+        const bCarpeta = $("#raCarpeta");
+        if (bCarpeta) bCarpeta.addEventListener("click", () => window.sportposEscritorio.abrirCarpeta());
 
         $("#rsDescargar").addEventListener("click", async () => {
 
@@ -599,7 +626,8 @@ const Configuracion = {
             Object.entries(respaldo.datos).forEach(([clave, valor]) => DB.guardar(clave, valor));
 
             try {
-                await Fotos.reemplazarTodas(respaldo.fotos || {});
+                // los respaldos automáticos no llevan fotos: en ese caso se dejan las fotos que ya hay
+                if (respaldo.fotos && Object.keys(respaldo.fotos).length) await Fotos.reemplazarTodas(respaldo.fotos);
             } catch (error) {
                 avisar("Los datos se restauraron, pero no las fotos.", "aviso");
             }

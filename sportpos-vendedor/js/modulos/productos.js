@@ -12,6 +12,7 @@ const Productos = {
     texto: "",
     categoria: "",
     estado: "activos",
+    ubicacion: "",
 
 
     render(vista) {
@@ -22,7 +23,7 @@ const Productos = {
             <div class="tarjeta">
                 <div class="barra-herramientas">
                     <div class="con-boton" style="flex:1;min-width:220px">
-                        <div class="buscar" style="flex:1;position:relative">${icono("buscar")}<input id="prBuscar" placeholder="Buscar por marca, modelo, color, talla o código" value="${esc(this.texto)}"></div>
+                        <div class="buscar" style="flex:1;position:relative">${icono("buscar")}<input id="prBuscar" placeholder="Buscar por marca, modelo, color, talla, ubicación o código" value="${esc(this.texto)}"></div>
                         <button type="button" class="btn btn-icono" id="prEscanear" title="Escanear" aria-label="Escanear código">${icono("codigo")}</button>
                     </div>
                     <select id="prEstado" aria-label="Estado" style="width:auto">
@@ -31,6 +32,7 @@ const Productos = {
                         <option value="sin" ${this.estado === "sin" ? "selected" : ""}>Sin stock</option>
                         <option value="inactivos" ${this.estado === "inactivos" ? "selected" : ""}>Desactivados</option>
                     </select>
+                    <select id="prUbic" aria-label="Ubicación en bodega" style="width:auto"></select>
                     ${esAdmin ? `
                         <button class="btn" id="prImportar">${icono("subir")} Importar</button>
                         <button class="btn" id="prExportar">${icono("descargar")} Exportar</button>
@@ -43,6 +45,7 @@ const Productos = {
 
         $("#prBuscar").addEventListener("input", e => { this.texto = e.target.value; this.pintar(); });
         $("#prEstado").addEventListener("change", e => { this.estado = e.target.value; this.pintar(); });
+        $("#prUbic").addEventListener("change", e => { this.ubicacion = e.target.value; this.pintar(); });
 
         $("#prEscanear").addEventListener("click", async () => {
             const codigo = await escanearCodigo();
@@ -68,8 +71,42 @@ const Productos = {
             if (!b) return;
             if (b.dataset.accion === "editar") formularioProducto(b.dataset.id, () => this.pintar());
             if (b.dataset.accion === "ajustar") ajustarStock(b.dataset.id, () => this.pintar());
+            if (b.dataset.accion === "borrar") this.borrar(b.dataset.id);
         });
 
+        this.pintar();
+    },
+
+
+    // Borra un producto (queda marcado, no se elimina del todo: así el borrado llega a todos
+    // los equipos por la nube y las ventas antiguas siguen mostrando qué se vendió).
+    async borrar(id) {
+
+        if (!Sesion.esAdmin()) return;
+
+        const productos = Datos.todosLosProductos();
+        const p = productos.find(x => x.id === id);
+        if (!p || p.borrado) return;
+
+        const stock = controlaStock(p) ? Number(p.stock) || 0 : 0;
+
+        const ok = await confirmar({
+            titulo: "Borrar producto",
+            mensaje: `¿Borrar <strong>${esc(p.nombre)}</strong>${p.talla ? ` (talla <strong>${esc(p.talla)}</strong>)` : ""}?`
+                + (stock > 0 ? `<br><br>Tiene <strong>${stock}</strong> en stock: ese stock se descuenta del inventario.` : "")
+                + `<br><br>Se borra en todos los equipos. Las ventas anteriores de este producto se mantienen. Si solo quiere dejar de venderlo por un tiempo, use <strong>Editar → Desactivar</strong>.`,
+            textoSi: "Borrar",
+            peligro: true
+        });
+
+        if (!ok) return;
+
+        Object.assign(p, { borrado: true, activo: false, borradoEn: new Date().toISOString(), borradoPor: Sesion.nombre() });
+        DB.guardar("productos", productos);
+
+        if (stock > 0) Datos.registrarMovimiento({ tipo: "baja", productoId: id, producto: p.nombre, unidades: -stock, detalle: "Producto borrado" });
+
+        avisar("Producto borrado.");
         this.pintar();
     },
 
@@ -82,6 +119,10 @@ const Productos = {
         $("#prCategorias").innerHTML = [["", "Todas"], ...usadas.map(c => [c, c])]
             .map(([k, t]) => `<button class="chip ${this.categoria === k ? "activo" : ""}" data-cat="${esc(k)}">${esc(t)} <span class="n">${productos.filter(p => p.activo !== false && (!k || p.categoria === k)).length}</span></button>`).join("");
 
+        const ubics = ubicacionesUsadas();
+        if (this.ubicacion && this.ubicacion !== "_sin" && !ubics.includes(this.ubicacion)) this.ubicacion = "";
+        $("#prUbic").innerHTML = `<option value="">Todas las ubicaciones</option>${ubics.map(u => `<option value="${esc(u)}" ${this.ubicacion === u ? "selected" : ""}>📍 ${esc(u)}</option>`).join("")}<option value="_sin" ${this.ubicacion === "_sin" ? "selected" : ""}>Sin ubicación</option>`;
+
         const palabras = normalizar(this.texto).split(/\s+/).filter(Boolean);
 
         const lista = productos
@@ -92,7 +133,9 @@ const Productos = {
                 if (this.estado === "bajo" && !(activo && stockBajo(p))) return false;
                 if (this.estado === "sin" && !(activo && controlaStock(p) && Number(p.stock) <= 0)) return false;
                 if (this.categoria && p.categoria !== this.categoria) return false;
-                if (palabras.length && !palabras.every(x => normalizar([p.nombre, p.marca, p.codigoBarras, p.categoria].join(" ")).includes(x))) return false;
+                if (this.ubicacion === "_sin" && p.ubicacion) return false;
+                if (this.ubicacion && this.ubicacion !== "_sin" && p.ubicacion !== this.ubicacion) return false;
+                if (palabras.length && !palabras.every(x => normalizar([p.nombre, p.marca, p.modelo, p.color, p.talla, p.ubicacion, p.codigoBarras, p.categoria].join(" ")).includes(x))) return false;
                 return true;
             })
             .sort((a, b) => a.nombre.localeCompare(b.nombre));
@@ -115,7 +158,7 @@ const Productos = {
         $("#prTabla").innerHTML = `
             <div class="tabla-contenedor">
                 <table class="tabla">
-                    <thead><tr><th>Producto</th><th>Categoría</th><th class="num">Precio</th>${esAdmin ? '<th class="num">Margen</th>' : ""}<th>Stock</th><th></th></tr></thead>
+                    <thead><tr><th>Producto</th><th>Talla</th><th>Ubicación</th><th>Categoría</th><th class="num">Precio</th>${esAdmin ? '<th class="num">Margen</th>' : ""}<th>Stock</th><th></th></tr></thead>
                     <tbody>${mostrar.map(p => {
                         const foto = Fotos.producto(p.id);
                         const sin = controlaStock(p) && Number(p.stock) <= 0;
@@ -128,13 +171,16 @@ const Productos = {
                                         <div style="min-width:0"><div class="celda-titulo">${esc(p.nombre)}</div><div class="celda-sub">${esc([p.marca, p.codigoBarras].filter(Boolean).join(" · "))}</div></div>
                                     </div>
                                 </td>
+                                <td class="nowrap">${p.talla ? `<span class="badge b-azul" style="font-size:13px">${esc(p.talla)}</span>` : '<span class="texto-3">—</span>'}</td>
+                                <td class="nowrap">${p.ubicacion ? `<span class="badge" style="font-size:13px;font-weight:700">📍 ${esc(p.ubicacion)}</span>` : '<span class="texto-3">—</span>'}</td>
                                 <td>${insigniaCategoria(p) || '<span class="texto-3">—</span>'}</td>
                                 <td class="num negrita">${dinero(p.precio)}</td>
                                 ${esAdmin ? `<td class="num ${margen !== null && margen < 15 ? "rojo" : ""}">${margen !== null ? margen + "%" : "—"}</td>` : ""}
                                 <td class="nowrap"><span class="negrita ${sin ? "rojo" : stockBajo(p) ? "amarillo" : !controlaStock(p) ? "texto-3" : ""}">${esc(textoStock(p))}</span></td>
                                 <td class="acciones">${esAdmin ? `
                                     ${controlaStock(p) ? `<button class="btn btn-chico" data-accion="ajustar" data-id="${p.id}">Stock</button>` : ""}
-                                    <button class="btn btn-chico btn-icono" data-accion="editar" data-id="${p.id}" title="Editar" aria-label="Editar">${icono("editar")}</button>` : ""}</td>
+                                    <button class="btn btn-chico btn-icono" data-accion="editar" data-id="${p.id}" title="Editar" aria-label="Editar">${icono("editar")}</button>
+                                    <button class="btn btn-chico btn-icono btn-peligro" data-accion="borrar" data-id="${p.id}" title="Borrar producto" aria-label="Borrar producto">${icono("basura")}</button>` : ""}</td>
                             </tr>`;
                     }).join("")}</tbody>
                 </table>
@@ -157,7 +203,8 @@ const Productos = {
         ["stock", "Stock", 8],
         ["stockMinimo", "Stock mínimo", 13],
         ["unidad", "Unidad", 9],
-        ["foto", "Foto", 26]
+        ["foto", "Foto", 26],
+        ["ubicacion", "Ubicación", 12]
     ],
 
     // Otros nombres de columna que también se reconocen
@@ -166,7 +213,8 @@ const Productos = {
         precio: ["precio venta", "precio de venta"],
         stockMinimo: ["minimo", "stock minimo"],
         genero: ["sexo"],
-        foto: ["imagen", "fotos", "archivo foto"]
+        foto: ["imagen", "fotos", "archivo foto"],
+        ubicacion: ["ubicacion en bodega", "ubicacion bodega", "sitio", "sitio en bodega", "lugar", "bodega", "rack", "estante"]
     },
 
 
@@ -182,7 +230,7 @@ const Productos = {
                 nombre: "Productos",
                 filas: [this.COLUMNAS.map(c => c[1])].concat(filas),
                 anchos: this.COLUMNAS.map(c => c[2]),
-                columnasTexto: ["marca", "modelo", "color", "talla", "genero", "categoria", "codigoBarras", "unidad", "foto"].map(indice),
+                columnasTexto: ["marca", "modelo", "color", "talla", "genero", "categoria", "codigoBarras", "unidad", "foto", "ubicacion"].map(indice),
                 columnasNumero: ["precio", "costo", "stock", "stockMinimo"].map(indice),
                 listas: [
                     { columna: indice("genero"), valores: GENEROS },
@@ -206,7 +254,8 @@ const Productos = {
                     ["   Al importar, elija las fotos o la carpeta donde están. Si la foto se llama igual que el código de barras, no hace falta escribirla."],
                     ["8. Si el producto ya existe (mismo código, o misma marca + modelo + color + talla) se actualizan sus datos y precio."],
                     ["   Las celdas vacías no borran lo que el producto ya tiene."],
-                    ["9. Borre las filas de ejemplo, guarde el archivo como Excel (.xlsx) y súbalo en Productos › Importar."]
+                    ["9. Ubicación: el sitio de la bodega donde está, por ejemplo A-1, A-2, B-3. Ayuda a encontrarlo rápido."],
+                    ["10. Borre las filas de ejemplo, guarde el archivo como Excel (.xlsx) y súbalo en Productos › Importar."]
                 ],
                 sinEncabezado: true
             },
@@ -222,13 +271,13 @@ const Productos = {
     descargarPlantilla() {
 
         const ejemplos = [
-            ["Nike", "Pegasus 40", "Negro", "41", "Hombre", "Zapatillas running", "", 89990, 52000, 3, 1, "par", "pegasus40-negro.jpg"],
-            ["Nike", "Pegasus 40", "Negro", "42", "Hombre", "Zapatillas running", "", 89990, 52000, 4, 1, "par", "pegasus40-negro.jpg"],
-            ["Adidas", "Samba OG", "Blanco", "40", "Unisex", "Zapatillas urbanas", "", 109990, 64000, 2, 1, "par", "samba-blanco.jpg"],
-            ["Puma", "Polera Essentials", "Azul", "M", "Hombre", "Poleras", "", 19990, 9500, 5, 2, "unidad", ""],
-            ["Puma", "Polera Essentials", "Azul", "L", "Hombre", "Poleras", "", 19990, 9500, 5, 2, "unidad", ""],
-            ["Adidas", "Calza Training", "Negro", "S", "Mujer", "Pantalones y calzas", "", 24990, 12000, 4, 1, "unidad", ""],
-            ["Nike", "Mochila Brasilia", "Negro", "Única", "Unisex", "Mochilas y bolsos", "", 32990, 17000, 3, 1, "unidad", ""]
+            ["Nike", "Pegasus 40", "Negro", "41", "Hombre", "Zapatillas running", "", 89990, 52000, 3, 1, "par", "pegasus40-negro.jpg", "A-1"],
+            ["Nike", "Pegasus 40", "Negro", "42", "Hombre", "Zapatillas running", "", 89990, 52000, 4, 1, "par", "pegasus40-negro.jpg", "A-1"],
+            ["Adidas", "Samba OG", "Blanco", "40", "Unisex", "Zapatillas urbanas", "", 109990, 64000, 2, 1, "par", "samba-blanco.jpg", "A-2"],
+            ["Puma", "Polera Essentials", "Azul", "M", "Hombre", "Poleras", "", 19990, 9500, 5, 2, "unidad", "", "B-1"],
+            ["Puma", "Polera Essentials", "Azul", "L", "Hombre", "Poleras", "", 19990, 9500, 5, 2, "unidad", "", "B-1"],
+            ["Adidas", "Calza Training", "Negro", "S", "Mujer", "Pantalones y calzas", "", 24990, 12000, 4, 1, "unidad", "", "B-2"],
+            ["Nike", "Mochila Brasilia", "Negro", "Única", "Unisex", "Mochilas y bolsos", "", 32990, 17000, 3, 1, "unidad", "", "C-1"]
         ];
 
         descargarArchivo("plantilla-productos.xlsx", this.libroExcel(ejemplos), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
@@ -405,6 +454,7 @@ const Productos = {
             texto("talla", v("talla"));
             texto("categoria", v("categoria"));
             texto("codigoBarras", codigo);
+            texto("ubicacion", normalizarUbicacion(v("ubicacion")));
 
             if (v("genero")) datos.genero = GENEROS.find(g => normalizar(g) === normalizar(v("genero"))) || v("genero");
             if (v("unidad")) datos.unidad = UNIDADES.find(u => normalizar(u) === normalizar(v("unidad"))) || undefined;
@@ -565,6 +615,9 @@ function formularioProducto(id, alGuardar) {
 
     const producto = id ? Datos.producto(id) : null;
     const p = producto || { unidad: "par", stock: 0, stockMinimo: 1 };
+    // otras tallas del mismo modelo y color (para darles la misma ubicación)
+    const mismo = (a, b) => normalizar([a.marca, a.modelo, a.color].join("|")) === normalizar([b.marca, b.modelo, b.color].join("|"));
+    const hermanos = producto && producto.modelo ? Datos.productos().filter(x => x.id !== producto.id && mismo(x, producto)) : [];
     let foto = null;
     const tallasNuevas = [];
 
@@ -603,6 +656,12 @@ function formularioProducto(id, alGuardar) {
                 <div class="campo"><label for="fpCosto">Costo</label><input id="fpCosto" type="text" inputmode="numeric" value="${p.costo ? numero(p.costo) : ""}"><span class="ayuda" id="fpMargen"></span></div>
                 <div class="campo"><label for="fpUnidad">Se vende por</label><select id="fpUnidad">${UNIDADES.map(u => `<option ${u === p.unidad ? "selected" : ""}>${u}</option>`).join("")}</select></div>
                 <label class="check col-todo"><input type="checkbox" id="fpControla" ${controlaStock(p) ? "checked" : ""}> Controlar stock (desmarque para servicios o recargas)</label>
+                <div class="campo">
+                    <label for="fpUbicacion">Ubicación en bodega</label>
+                    <input id="fpUbicacion" list="fpUbicaciones" value="${esc(p.ubicacion || "")}" placeholder="Ej: A-1" autocomplete="off" style="text-transform:uppercase">
+                    <datalist id="fpUbicaciones">${ubicacionesUsadas().map(u => `<option value="${esc(u)}">`).join("")}</datalist>
+                    ${producto && hermanos.length ? `<label class="check" style="margin-top:4px"><input type="checkbox" id="fpUbicTodas" checked> Igual para las ${hermanos.length + 1} tallas de este modelo y color</label>` : `<span class="ayuda">${producto ? "Dónde está en la bodega" : "Se usa para todas las tallas"}</span>`}
+                </div>
                 <div class="campo"><label for="fpMinimo">Stock mínimo</label><input id="fpMinimo" type="number" min="0" value="${aEntero(p.stockMinimo)}"><span class="ayuda">Avisa cuando quede menos</span></div>
                 <div id="fpError" class="mensaje-error col-todo oculto"></div>
             </div>
@@ -730,7 +789,8 @@ function formularioProducto(id, alGuardar) {
                         costo: aEntero($("#fpCosto", raiz).value),
                         unidad: $("#fpUnidad", raiz).value,
                         controlaStock: $("#fpControla", raiz).checked,
-                        stockMinimo: Math.max(0, aEntero($("#fpMinimo", raiz).value))
+                        stockMinimo: Math.max(0, aEntero($("#fpMinimo", raiz).value)),
+                        ubicacion: normalizarUbicacion($("#fpUbicacion", raiz).value)
                     };
 
                     if (!datos.modelo) { mostrarError("Escriba el modelo."); return; }
@@ -754,6 +814,8 @@ function formularioProducto(id, alGuardar) {
                         datos.talla = tallas[0];
                         datos.nombre = nombreVariante(datos);
                         Object.assign(productos.find(x => x.id === id), datos);
+                        const todas = $("#fpUbicTodas", raiz);
+                        if (todas && todas.checked) productos.filter(x => x.id !== id && mismo(x, producto)).forEach(x => { x.ubicacion = datos.ubicacion; });
                     } else {
                         const repetidas = [];
 

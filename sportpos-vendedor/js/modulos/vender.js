@@ -154,7 +154,7 @@ const Vender = {
         }
 
         const encontrados = lista.filter(p => {
-            const pajar = normalizar([p.nombre, p.marca, p.codigoBarras, p.categoria].join(" "));
+            const pajar = normalizar([p.nombre, p.marca, p.ubicacion, p.codigoBarras, p.categoria].join(" "));
             return palabras.every(x => pajar.includes(x));
         }).sort((a, b) => a.nombre.localeCompare(b.nombre));
 
@@ -439,6 +439,7 @@ const Vender = {
                         <div class="nombre">${esc(p.nombre)}</div>
                         <div class="detalle">${esc([p.marca, p.codigoBarras].filter(Boolean).join(" · "))}</div>
                         <div class="insignias">
+                            ${insigniaUbicacion(p)}
                             ${insigniaCategoria(p)}
                             <button class="badge" type="button" data-ficha="${p.id}" style="cursor:pointer">Ficha</button>
                         </div>

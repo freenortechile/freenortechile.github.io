@@ -397,6 +397,7 @@ const Caja = {
                         if (!Datos.guardarCierres(cierres)) return;
 
                         Datos.guardarCaja(null);
+                        if (typeof RespaldoAuto !== "undefined") RespaldoAuto.guardar("cierre de caja");
 
                         cerrarModal();
 
