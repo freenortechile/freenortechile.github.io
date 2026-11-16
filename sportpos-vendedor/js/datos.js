@@ -60,8 +60,15 @@ const Datos = {
     usuariosVigentes: () => DB.leer("usuarios", []).filter(u => u && !u.borrado),
     guardarUsuarios: valor => DB.guardar("usuarios", valor),
 
-    productos: () => DB.leer("productos", []),
-    guardarProductos: valor => DB.guardar("productos", valor),
+    // Los productos borrados se guardan marcados (borrado: true) para que el borrado llegue por la
+    // nube a todos los equipos y las ventas antiguas sigan mostrando el producto. No se muestran.
+    productos: () => DB.leer("productos", []).filter(p => p && !p.borrado),
+    todosLosProductos: () => DB.leer("productos", []),
+    guardarProductos: valor => {
+        const ids = new Set((valor || []).map(p => p && p.id));
+        const borrados = DB.leer("productos", []).filter(p => p && p.borrado && !ids.has(p.id));
+        return DB.guardar("productos", (valor || []).concat(borrados));
+    },
 
     ventas: () => DB.leer("ventas", []),
     guardarVentas: valor => DB.guardar("ventas", valor),
@@ -118,6 +125,23 @@ const Datos = {
 
 function nombreCompleto(producto) {
     return producto ? producto.nombre : "";
+}
+
+
+// Ubicación en bodega: "a 1", "a-1 " → "A-1"
+function normalizarUbicacion(texto) {
+    return String(texto || "").trim().toUpperCase().replace(/\s*-\s*/g, "-").replace(/\s+/g, "-");
+}
+
+// Ubicaciones ya usadas (para sugerirlas al escribir)
+function ubicacionesUsadas() {
+    return Array.from(new Set(Datos.productos().map(p => p.ubicacion).filter(Boolean)))
+        .sort((a, b) => a.localeCompare(b, "es", { numeric: true }));
+}
+
+// Insignia con la ubicación (o nada)
+function insigniaUbicacion(p) {
+    return p && p.ubicacion ? `<span class="badge" title="Ubicación en bodega" style="font-weight:700">📍 ${esc(p.ubicacion)}</span>` : "";
 }
 
 

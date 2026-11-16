@@ -172,8 +172,9 @@ const App = {
                     if (soloVendedor) { await Nube.salir(); return fallar("La tienda aún no tiene datos. Primero configúrela en el computador."); }
                     return this.mostrarTiendaNueva(texto, true);
                 }
-                boton.textContent = "Descargando datos…";
-                await Nube.primeraSincronizacion("nube");
+                const fmt = n => Number(n).toLocaleString("es-CL");
+                boton.textContent = `Descargando datos… 0 de ${fmt(enNube)}`;
+                await Nube.primeraSincronizacion("nube", n => { boton.textContent = `Descargando datos… ${fmt(Math.min(n, enNube))} de ${fmt(enNube)}`; });
                 location.reload();
             } catch (e) {
                 fallar(String((e && e.message) || e));
@@ -1033,6 +1034,103 @@ function abrirMiCuenta() {
 
 
 // ==========================================
+// RESPALDO AUTOMÁTICO DEL DÍA (programa de computador)
+// Guarda Documentos\SportPOS Respaldos\respaldo-AAAA-MM-DD.json:
+//  - al cerrar la caja (fin del día);
+//  - al cerrar el programa;
+//  - cuando nadie usa el sistema por 10 minutos y hubo cambios;
+//  - al abrir otro día, si el computador se apagó sin cerrar el programa.
+// En el celular no aplica (los datos quedan en la nube).
+// ==========================================
+
+const RespaldoAuto = {
+
+    INACTIVIDAD_MIN: 10,
+    cambios: false,
+    temporizador: null,
+    guardando: null,
+
+    disponible() { return Boolean(window.sportposEscritorio && window.sportposEscritorio.guardarRespaldo); },
+
+    estado() { return DB.leer("respaldoAuto", {}) || {}; },
+
+    // el propio estado del respaldo no cuenta como "cambio de datos"
+    guardarEstado(e) { this.propio = true; try { DB.guardar("respaldoAuto", e); } finally { this.propio = false; } },
+
+    contenido() {
+        const config = Datos.config();
+        const datos = {};
+        DB.claves()
+            .filter(clave => !["sesion", "carrito", "respaldoAuto"].includes(clave) && !clave.startsWith("foto_"))
+            .forEach(clave => { datos[clave] = DB.leer(clave); });
+        return {
+            sistema: SISTEMA.nombre,
+            version: SISTEMA.version,
+            fecha: new Date().toISOString(),
+            farmacia: config.nombre,
+            automatico: true,
+            datos,
+            fotos: {}
+        };
+    },
+
+    // dia: "AAAA-MM-DD" (por defecto hoy). El archivo del día se reemplaza por el más nuevo.
+    async guardar(motivo, dia) {
+        if (!this.disponible() || !Datos.config().configurado) return null;
+        while (this.guardando) { try { await this.guardando; } catch (e) { /* nada */ } }
+        const fecha = dia || hoyISO();
+        const inicio = new Date().toISOString();
+        this.guardando = window.sportposEscritorio.guardarRespaldo(`respaldo-${fecha}.json`, JSON.stringify(this.contenido()));
+        try {
+            const r = await this.guardando;
+            this.cambios = false;
+            this.guardarEstado(Object.assign(this.estado(), { ultimo: inicio, dia: fecha, motivo, carpeta: r.carpeta, ruta: r.ruta, bytes: r.bytes, error: "" }));
+            return r;
+        } catch (error) {
+            this.guardarEstado(Object.assign(this.estado(), { error: String((error && error.message) || error), errorEn: new Date().toISOString() }));
+            console.warn("[Respaldo]", error);
+            return null;
+        } finally {
+            this.guardando = null;
+        }
+    },
+
+    iniciar() {
+        if (!this.disponible()) return;
+
+        // cambios que no alcanzaron a respaldarse (se apagó el computador sin cerrar el programa):
+        // se guardan con la fecha del día en que se hicieron
+        const e = this.estado();
+        if (e.cambioEn && (!e.ultimo || e.ultimo < e.cambioEn)) this.guardar("al abrir (cambios sin respaldo)", fechaISO(new Date(e.cambioEn)));
+
+        // cada cambio en los datos queda anotado
+        Nube.alCambiar(() => {
+            if (this.propio) return;
+            const ahora = new Date();
+            const est = this.estado();
+            // primer cambio de un día nuevo: antes se cierra el respaldo del día anterior
+            if (est.cambioEn && fechaISO(new Date(est.cambioEn)) < fechaISO(ahora) && (!est.ultimo || est.ultimo < est.cambioEn)) {
+                this.guardar("fin del dia", fechaISO(new Date(est.cambioEn)));
+            }
+            this.cambios = true;
+            this.guardarEstado(Object.assign(est, { cambioEn: ahora.toISOString() }));
+        });
+
+        // sin uso por 10 minutos y con cambios: respaldo
+        const actividad = () => {
+            clearTimeout(this.temporizador);
+            this.temporizador = setTimeout(() => { if (this.cambios) this.guardar("sin uso por " + this.INACTIVIDAD_MIN + " minutos"); }, this.INACTIVIDAD_MIN * 60000);
+        };
+        ["click", "keydown", "touchstart"].forEach(t => document.addEventListener(t, actividad, { passive: true, capture: true }));
+        actividad();
+
+        // al cerrar el programa (el programa espera hasta 6 segundos a que termine)
+        window.sportposEscritorio.antesDeCerrar(() => (this.cambios || !this.estado().ultimo) ? this.guardar("cierre del programa") : null);
+    }
+};
+
+
+// ==========================================
 // ARRANQUE
 // ==========================================
 
@@ -1040,5 +1138,9 @@ window.addEventListener("hashchange", () => App.navegar());
 
 document.addEventListener(
     "DOMContentLoaded",
-    () => Fotos.cargarCache().finally(() => { App.iniciar(); setTimeout(() => Fotos.descargarFaltantes(), 4000); })
+    () => Fotos.cargarCache().finally(() => {
+        App.iniciar();
+        try { RespaldoAuto.iniciar(); } catch (e) { console.warn("[Respaldo]", e); }
+        setTimeout(() => Fotos.descargarFaltantes(), 4000);
+    })
 );
