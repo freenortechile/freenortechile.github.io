@@ -381,11 +381,76 @@ const Nube = (function () {
         return true;
     }
 
-    async function traer(todo, forzar) {
+    // Aplica de una vez un bloque de filas bajadas de la nube. Cada colección se lee y se
+    // guarda UNA sola vez por bloque (antes era una vez por fila: con miles de registros
+    // la descarga tardaba minutos y la pantalla quedaba pegada en "Descargando datos…").
+    function aplicarLote(filas, forzar) {
+
+        const estado = leerEstado();
+        const listas = {};
+        let cambios = 0;
+
+        for (const fila of filas) {
+
+            const col = fila.coleccion;
+
+            if (DOCUMENTOS.includes(col)) { if (aplicarFila(fila, estado, forzar)) cambios++; continue; }
+            if (!COLECCIONES.includes(col)) continue;
+
+            const datos = esVacio(fila.datos) ? null : fila.datos;
+            if (!datos || typeof datos !== "object" || Array.isArray(datos)) continue;
+
+            estado.hashes[col] = estado.hashes[col] || {};
+
+            let L = listas[col];
+            if (!L) {
+                const leida = DB.leer(col, []);
+                const lista = Array.isArray(leida) ? leida : [];
+                const pos = new Map();
+                lista.forEach((r, i) => { const k = idDe(col, r); if (k !== null && !pos.has(k)) pos.set(k, i); });
+                L = listas[col] = { lista, pos, nuevos: new Map(), sucio: false };
+            }
+
+            const id = String(fila.id);
+            const h = hash(canon(datos));
+
+            if (L.nuevos.has(id)) { L.nuevos.set(id, datos); estado.hashes[col][id] = h; continue; }
+
+            const i = L.pos.get(id);
+            if (i !== undefined) {
+                const hl = hash(canon(L.lista[i]));
+                if (hl !== estado.hashes[col][id] && !forzar) continue;   // cambio local sin subir: gana lo local
+                estado.hashes[col][id] = h;
+                if (hl === h) continue;
+                L.lista[i] = datos;
+            } else {
+                L.nuevos.set(id, datos);
+                estado.hashes[col][id] = h;
+            }
+            L.sucio = true;
+            cambios++;
+        }
+
+        const fechaDe = r => String(r.fecha || r.cerradaEn || r.creado || "");
+        Object.keys(listas).forEach(col => {
+            const L = listas[col];
+            if (!L.sucio) return;
+            // los nuevos van primero (como antes), lo más nuevo arriba
+            const lista = Array.from(L.nuevos.values()).reverse().concat(L.lista);
+            if (["ventas", "movimientos", "posventa", "cierres"].includes(col)) lista.sort((a, b) => fechaDe(b).localeCompare(fechaDe(a)));
+            escribirLocal(col, lista);
+        });
+
+        guardarEstado(estado);
+        return cambios;
+    }
+
+    async function traer(todo, forzar, alAvanzar) {
 
         const estado = leerEstado();
         let desde = todo ? "1970-01-01T00:00:00Z" : estado.ultima;
         let cambios = 0;
+        let leidas = 0;
 
         for (;;) {
 
@@ -400,8 +465,10 @@ const Nube = (function () {
             if (error) throw error;
             if (!data || !data.length) break;
 
-            const e = leerEstado();
-            data.forEach(f => { if (aplicarFila(f, e, forzar)) cambios++; });
+            cambios += aplicarLote(data, forzar);
+            leidas += data.length;
+            if (alAvanzar) { try { alAvanzar(leidas); } catch (x) { /* nada */ } }
+            await new Promise(r => setTimeout(r, 0));   // deja respirar la pantalla entre bloques
 
             const ultima = data[data.length - 1].actualizado;
             const e2 = leerEstado();
@@ -434,6 +501,7 @@ const Nube = (function () {
 
         try {
             const bajados = await traer(false, false);
+            if (bajados || !revisadoAlIniciar) { quitarRepetidosPorCodigo(); revisadoAlIniciar = true; }
             await empujar();
             ultimoError = "";
             if (bajados) refrescarPantalla();
@@ -470,22 +538,255 @@ const Nube = (function () {
         }, 600);
     }
 
-    // primera conexión: modo "nube" = bajar todo y reemplazar este equipo; "unir" = juntar lo de aquí con lo de la nube
-    async function primeraSincronizacion(modo) {
+    // ---------- productos iguales con distinto id (cargados por separado en cada equipo) ----------
+
+    // mismo producto = mismo código de barras; sin código: mismo nombre, marca, modelo, color y talla
+    function claveProducto(p) {
+        const c = String((p && p.codigoBarras) || "").replace(/\s/g, "");
+        if (c) return "c:" + c;
+        return "n:" + [p.nombre, p.marca, p.modelo, p.color, p.talla].map(x => normalizar(x || "")).join("|");
+    }
+
+    // cambia el producto de las ventas, movimientos y casos de posventa según el mapa {idViejo: idNuevo}
+    function cambiarProductoEn(lista, mapa) {
+        let n = 0;
+        const fijar = o => { if (o && mapa[o.productoId]) { o.productoId = mapa[o.productoId]; n++; } };
+        (lista || []).forEach(r => {
+            if (!r || typeof r !== "object") return;
+            fijar(r);
+            (r.items || []).forEach(fijar);
+            (r.devueltos || []).forEach(fijar);
+            (r.entregados || []).forEach(fijar);
+        });
+        return n;
+    }
+
+    // Equipo que se une a una tienda que ya tiene datos: los productos, usuarios y configuración
+    // vienen de la nube; de este equipo solo se suben sus ventas (descontando el stock en la nube).
+    function incorporarVentasLocales(local) {
+
+        const productos = DB.leer("productos", []) || [];
+        const porId = new Map(productos.map(p => [p.id, p]));
+        const porClave = new Map();
+        productos.forEach(p => { if (p && !p.borrado) { const k = claveProducto(p); if (!porClave.has(k)) porClave.set(k, p); } });
+
+        const mapa = {};
+        (local.productos || []).forEach(p => {
+            if (!p || !p.id) return;
+            if (porId.has(p.id)) return;
+            const igual = porClave.get(claveProducto(p));
+            if (igual) mapa[p.id] = igual.id;
+        });
+
+        const ventas = DB.leer("ventas", []) || [];
+        const yaEstan = new Set(ventas.map(v => v && v.id));
+        const contadores = DB.leer("contadores", {}) || {};
+        let numero = Math.max(Number(contadores.venta) || 0, ...ventas.map(v => Number(v && v.numero) || 0));
+        let subidas = 0, sinProducto = 0;
+
+        const nuevas = (local.ventas || []).filter(v => v && v.id && !yaEstan.has(v.id))
+            .sort((a, b) => String(a.fecha || "").localeCompare(String(b.fecha || "")));
+
+        nuevas.forEach(v => {
+            const venta = clonar(v);
+            cambiarProductoEn([venta], mapa);
+            venta.numeroOtroEquipo = venta.numero;
+            venta.numero = ++numero;
+            if (venta.estado !== "anulada") {
+                (venta.items || []).forEach(it => {
+                    const p = porId.get(it.productoId);
+                    if (!p) { sinProducto++; return; }
+                    if (typeof controlaStock === "function" && !controlaStock(p)) return;
+                    p.stock = Math.round(((Number(p.stock) || 0) - (Number(it.cantidad) || 0)) * 1000) / 1000;
+                });
+            }
+            ventas.push(venta);
+            subidas++;
+        });
+
+        // salidas de bodega hechas en este equipo (bajas): también descuentan el stock de la nube
+        const movimientos = DB.leer("movimientos", []) || [];
+        const movYa = new Set(movimientos.map(m => m && m.id));
+        let salidas = 0;
+        (local.movimientos || []).forEach(m => {
+            if (!m || !m.id || movYa.has(m.id) || m.tipo !== "baja" || !(Number(m.unidades) < 0) || m.detalle === "Producto borrado") return;
+            const mov = clonar(m);
+            cambiarProductoEn([mov], mapa);
+            const p = porId.get(mov.productoId);
+            if (p && (typeof controlaStock !== "function" || controlaStock(p))) {
+                p.stock = Math.round(((Number(p.stock) || 0) + Number(mov.unidades)) * 1000) / 1000;
+            }
+            movimientos.push(mov);
+            salidas++;
+        });
+
+        if (subidas || salidas) {
+            ventas.sort((a, b) => String(b.fecha || "").localeCompare(String(a.fecha || "")));
+            movimientos.sort((a, b) => String(b.fecha || "").localeCompare(String(a.fecha || "")));
+            contadores.venta = numero;
+            DB.guardar("ventas", ventas);
+            DB.guardar("movimientos", movimientos);
+            DB.guardar("productos", productos);
+            DB.guardar("contadores", contadores);
+        }
+
+        return { ventas: subidas, salidas, sinProducto };
+    }
+
+    // "Unir ambos": lo que es el mismo producto (o el mismo usuario) en los dos lados queda una sola vez
+    function quitarRepetidosAlUnir() {
+
+        const estado = leerEstado();
+        const enNube = estado.hashes.productos || {};
+        const productos = DB.leer("productos", []) || [];
+        const porClave = new Map();
+        productos.forEach(p => { if (p && !p.borrado && enNube[p.id]) { const k = claveProducto(p); if (!porClave.has(k)) porClave.set(k, p); } });
+
+        const mapa = {};
+        const quedan = productos.filter(p => {
+            if (!p || enNube[p.id] || p.borrado) return true;
+            const igual = porClave.get(claveProducto(p));
+            if (!igual) return true;
+            mapa[p.id] = igual.id;
+            return false;
+        });
+
+        if (Object.keys(mapa).length) {
+            // las ventas de este equipo (aún no subidas) descontaron su copia: se descuentan del producto de la nube
+            const ventasNube = estado.hashes.ventas || {};
+            const porId = new Map(quedan.map(p => [p.id, p]));
+            (DB.leer("ventas", []) || []).forEach(v => {
+                if (!v || ventasNube[v.id] || v.estado === "anulada") return;
+                (v.items || []).forEach(it => {
+                    const p = mapa[it.productoId] && porId.get(mapa[it.productoId]);
+                    if (p && (typeof controlaStock !== "function" || controlaStock(p))) {
+                        p.stock = Math.round(((Number(p.stock) || 0) - (Number(it.cantidad) || 0)) * 1000) / 1000;
+                    }
+                });
+            });
+            DB.guardar("productos", quedan);
+            ["ventas", "movimientos", "posventa"].forEach(col => {
+                const lista = DB.leer(col, []) || [];
+                if (cambiarProductoEn(lista, mapa)) DB.guardar(col, lista);
+            });
+        }
+
+        // usuarios: el mismo nombre de ingreso queda una vez (el de la nube)
+        const usuariosNube = estado.hashes.usuarios || {};
+        const usuarios = DB.leer("usuarios", []) || [];
+        const ingresosNube = new Set(usuarios.filter(u => u && usuariosNube[u.id] && !u.borrado).map(u => normalizar(u.usuario)));
+        const usuariosQuedan = usuarios.filter(u => !u || usuariosNube[u.id] || !ingresosNube.has(normalizar(u.usuario)));
+        if (usuariosQuedan.length !== usuarios.length) DB.guardar("usuarios", usuariosQuedan);
+
+        return Object.keys(mapa).length;
+    }
+
+    // Productos que ya quedaron repetidos (de una unión anterior): se deja uno por grupo
+    function buscarRepetidos() {
+        const grupos = new Map();
+        (DB.leer("productos", []) || []).forEach(p => {
+            if (!p || p.borrado) return;
+            const k = claveProducto(p);
+            if (!grupos.has(k)) grupos.set(k, []);
+            grupos.get(k).push(p);
+        });
+        return Array.from(grupos.values()).filter(g => g.length > 1).map(g =>
+            g.slice().sort((a, b) => String(a.creado || "9").localeCompare(String(b.creado || "9"))));
+    }
+
+    // regla de stock para el que queda: "antiguo" (el del más antiguo), "menor" o "suma"
+    function quitarRepetidos(regla) {
+        const productos = DB.leer("productos", []) || [];
+        const porId = new Map(productos.map(p => [p.id, p]));
+        const mapa = {};
+        let quitados = 0;
+        buscarRepetidos().forEach(grupo => {
+            const queda = porId.get(grupo[0].id);
+            const stocks = grupo.map(p => Number(p.stock) || 0);
+            if (regla === "menor") queda.stock = Math.min(...stocks);
+            else if (regla === "suma") queda.stock = stocks.reduce((a, b) => a + b, 0);
+            grupo.slice(1).forEach(r => {
+                const p = porId.get(r.id);
+                Object.assign(p, { borrado: true, activo: false, borradoEn: new Date().toISOString(), borradoPor: "repetido", repetidoDe: queda.id });
+                mapa[p.id] = queda.id;
+                quitados++;
+            });
+        });
+        if (!quitados) return 0;
+        DB.guardar("productos", productos);
+        ["ventas", "movimientos", "posventa"].forEach(col => {
+            const lista = DB.leer(col, []) || [];
+            if (cambiarProductoEn(lista, mapa)) DB.guardar(col, lista);
+        });
+        return quitados;
+    }
+
+    // Mismo código de barras en dos productos distintos (cada equipo importó la misma planilla):
+    // queda el más antiguo y los demás se marcan borrados. Todos los equipos eligen el mismo
+    // (el de "creado" más antiguo y, si empatan, el id menor), así quedan iguales.
+    function quitarRepetidosPorCodigo() {
+        const productos = DB.leer("productos", []) || [];
+        const grupos = new Map();
+        productos.forEach(p => {
+            if (!p || p.borrado) return;
+            const c = String(p.codigoBarras || "").replace(/\s/g, "");
+            if (!c) return;
+            if (!grupos.has(c)) grupos.set(c, []);
+            grupos.get(c).push(p);
+        });
+        const mapa = {};
+        grupos.forEach(g => {
+            if (g.length < 2) return;
+            g.sort((a, b) => String(a.creado || "9").localeCompare(String(b.creado || "9")) || String(a.id).localeCompare(String(b.id)));
+            g.slice(1).forEach(p => {
+                Object.assign(p, { borrado: true, activo: false, borradoEn: new Date().toISOString(), borradoPor: "repetido", repetidoDe: g[0].id });
+                mapa[p.id] = g[0].id;
+            });
+        });
+        const n = Object.keys(mapa).length;
+        if (!n) return 0;
+        DB.guardar("productos", productos);
+        ["ventas", "movimientos", "posventa"].forEach(col => {
+            const lista = DB.leer(col, []) || [];
+            if (cambiarProductoEn(lista, mapa)) DB.guardar(col, lista);
+        });
+        console.info("[Nube] productos repetidos por código quitados:", n);
+        return n;
+    }
+
+    let resultadoUnion = null;
+    let revisadoAlIniciar = false;
+
+    // primera conexión:
+    //  "nube"   = bajar todo y reemplazar este equipo
+    //  "ventas" = productos, usuarios y configuración de la nube + se suben solo las ventas de este equipo
+    //  "unir"   = juntar lo de aquí con lo de la nube (sin repetir productos ni usuarios)
+    async function primeraSincronizacion(modo, alAvanzar) {
 
         guardarEstado(Object.assign(clonar(ESTADO_VACIO), { cuenta: usuario.id }));
+        resultadoUnion = null;
 
-        if (modo === "nube") {
-            COLECCIONES.concat(DOCUMENTOS).forEach(k => DB.borrar(k));
-            await traer(true, true);
+        if (modo === "nube" || modo === "ventas") {
+            const local = modo === "ventas" ? { productos: DB.leer("productos", []), ventas: DB.leer("ventas", []), movimientos: DB.leer("movimientos", []) } : null;
+            aplicando = true;
+            try { COLECCIONES.concat(DOCUMENTOS).forEach(k => DB.borrar(k)); } finally { aplicando = false; }
+            await traer(true, true, alAvanzar);
+            const repetidos = quitarRepetidosPorCodigo();
+            if (repetidos) await empujar();
+            if (local) {
+                resultadoUnion = incorporarVentasLocales(local);
+                await empujar();
+            }
         } else {
-            await traer(true, false);   // lo que solo existe en la nube se agrega; lo local gana en choques
+            await traer(true, false, alAvanzar);   // lo que solo existe en la nube se agrega; lo local gana en choques
+            resultadoUnion = { productosRepetidos: quitarRepetidosAlUnir() };
             await empujar();
         }
 
         ultimoError = "";
         avisarCambio();
         refrescarPantalla();
+        return resultadoUnion;
     }
 
     function estado() {
@@ -514,7 +815,7 @@ const Nube = (function () {
     })();
 
 
-    return { iniciar, entrar, salir, sincronizar, primeraSincronizacion, cuentaEnNube, estado, alCambiar, configurada, correoDeTienda, rutDeCorreo, crearCuenta };
+    return { iniciar, entrar, salir, sincronizar, primeraSincronizacion, cuentaEnNube, estado, alCambiar, configurada, correoDeTienda, rutDeCorreo, crearCuenta, buscarRepetidos, quitarRepetidos, claveProducto };
 
 })();
 
@@ -576,8 +877,14 @@ const NubeUI = {
                             }
 
                             if (enNube && hayLocal) {
+                                // la tienda ya está en la nube: este equipo toma sus productos y solo sube sus ventas y salidas
+                                const r = await Nube.primeraSincronizacion("ventas");
                                 cerrar();
-                                NubeUI.elegirModo();
+                                const partes = [];
+                                if (r && r.ventas) partes.push(`${r.ventas} venta(s)`);
+                                if (r && r.salidas) partes.push(`${r.salidas} salida(s)`);
+                                avisar("Listo: este equipo quedó con los productos de la nube." + (partes.length ? " Se subieron " + partes.join(" y ") + " de este equipo." : ""));
+                                if (typeof App !== "undefined") App.refrescar();
                                 return;
                             }
 
@@ -648,19 +955,77 @@ const NubeUI = {
 
     // la nube ya tiene datos y este equipo también
     elegirModo() {
+        const ventasAqui = Datos.ventas().length;
+        const listo = (r, texto) => {
+            const extra = r && r.ventas ? ` Se subieron ${r.ventas} venta(s) de este equipo.` : "";
+            const rep = r && r.productosRepetidos ? ` ${r.productosRepetidos} producto(s) ya estaban en la nube y no se repitieron.` : "";
+            avisar(texto + extra + rep);
+            App.refrescar();
+        };
         abrirModal({
             titulo: "La nube ya tiene datos",
             clase: "angosto",
             cerrable: false,
             html: `
-                <p class="texto-2" style="margin:0 0 12px">Esta cuenta ya guardó información y este equipo también tiene la suya. ¿Qué hacemos?</p>
-                <p style="margin:0 0 8px"><strong>Usar los de la nube:</strong> este equipo queda igual que la nube (se reemplaza lo de aquí).</p>
-                <p style="margin:0"><strong>Unir ambos:</strong> se juntan los productos y ventas de los dos. Si algo está en los dos, gana lo de este equipo.</p>
-                <div id="nbError" class="mensaje-error oculto" style="margin-top:12px"></div>`,
+                <p class="texto-2" style="margin:0 0 12px">Esta cuenta ya tiene la tienda guardada y este equipo también tiene datos. ¿Qué hacemos?</p>
+                <div class="mensaje-info" style="margin:0 0 10px"><strong>Recomendado para un segundo equipo:</strong><br>
+                    <strong>Usar la tienda de la nube y subir mis ventas:</strong> los productos, el stock, los usuarios y la configuración quedan iguales a la nube. De este equipo solo se suben sus ventas${ventasAqui ? ` (${ventasAqui})` : ""} y se descuentan del stock. Los productos <strong>no se repiten</strong>.</div>
+                <p style="margin:0 0 8px"><strong>Usar todo lo de la nube:</strong> este equipo queda igual que la nube. Lo de aquí, incluidas sus ventas, no se sube.</p>
+                <p style="margin:0" class="chico texto-2"><strong>Unir ambos</strong> (solo si este equipo tiene productos que la nube no tiene): se juntan los dos; un producto con el mismo código de barras queda una sola vez.</p>`,
             botones: [
                 { texto: "Desconectar", accion: async cerrar => { await Nube.salir(); cerrar(); if (Configuracion.pestana === "nube") Configuracion.pintar(); } },
-                { texto: "Usar los de la nube", accion: async cerrar => { await Nube.primeraSincronizacion("nube"); cerrar(); avisar("Datos descargados de la nube."); App.refrescar(); } },
-                { texto: "Unir ambos", clase: "btn-primario", accion: async cerrar => { await Nube.primeraSincronizacion("unir"); cerrar(); avisar("Datos unidos."); App.refrescar(); } }
+                { texto: "Unir ambos", accion: async cerrar => { const r = await Nube.primeraSincronizacion("unir"); cerrar(); listo(r, "Datos unidos."); } },
+                { texto: "Usar todo lo de la nube", accion: async cerrar => { await Nube.primeraSincronizacion("nube"); cerrar(); listo(null, "Datos descargados de la nube."); } },
+                { texto: "Usar la nube y subir mis ventas", clase: "btn-primario", accion: async cerrar => { const r = await Nube.primeraSincronizacion("ventas"); cerrar(); listo(r, "Listo: este equipo quedó con la tienda de la nube."); } }
+            ]
+        });
+    },
+
+    // productos repetidos (quedaron de una unión anterior)
+    revisarRepetidos() {
+
+        const grupos = Nube.buscarRepetidos();
+
+        if (!grupos.length) {
+            avisar("No hay productos repetidos.");
+            return;
+        }
+
+        const total = grupos.reduce((n, g) => n + g.length - 1, 0);
+        const filas = grupos.slice(0, 60).map(g => `
+            <tr>
+                <td>${esc(g[0].nombre)}${g[0].talla ? ` <span class="texto-2">· T ${esc(g[0].talla)}</span>` : ""}<div class="chico texto-3">${esc(g[0].codigoBarras || "sin código")}</div></td>
+                <td class="num">${g.length}</td>
+                <td class="num">${g.map(p => numero(Number(p.stock) || 0)).join(" / ")}</td>
+            </tr>`).join("");
+
+        abrirModal({
+            titulo: "Productos repetidos",
+            html: `
+                <p class="texto-2" style="margin:0 0 10px">Hay <strong>${numero(total)}</strong> producto(s) repetido(s) en <strong>${numero(grupos.length)}</strong> grupo(s) (mismo código de barras, o mismo nombre y talla si no tienen código). Se deja <strong>uno por grupo</strong> (el más antiguo) y los demás se borran en todos los equipos. Sus ventas pasan al que queda.</p>
+                <div class="tabla-contenedor" style="max-height:300px;overflow:auto;margin-bottom:12px">
+                    <table class="tabla"><thead><tr><th>Producto</th><th class="num">Copias</th><th class="num">Stock de cada copia</th></tr></thead><tbody>${filas}</tbody></table>
+                    ${grupos.length > 60 ? `<p class="chico texto-3" style="margin:6px 0 0">… y ${numero(grupos.length - 60)} grupo(s) más.</p>` : ""}
+                </div>
+                <div class="campo"><label for="rpRegla">Stock que queda</label>
+                    <select id="rpRegla">
+                        <option value="antiguo">El del producto más antiguo (el primero que se cargó)</option>
+                        <option value="menor">El menor de las copias</option>
+                        <option value="suma">La suma de las copias</option>
+                    </select>
+                    <span class="ayuda">Después revise el stock de estos productos en el inventario.</span>
+                </div>`,
+            botones: [
+                { texto: "Cancelar" },
+                {
+                    texto: `Quitar ${numero(total)} repetido(s)`, clase: "btn-primario",
+                    accion: async (cerrar, raiz) => {
+                        const n = Nube.quitarRepetidos($("#rpRegla", raiz).value);
+                        cerrar();
+                        avisar(`Listo: se quitaron ${numero(n)} producto(s) repetido(s).`);
+                        if (typeof App !== "undefined") App.refrescar();
+                    }
+                }
             ]
         });
     },
@@ -693,6 +1058,7 @@ const NubeUI = {
                         <p class="chico texto-2" style="margin:0 0 14px">Los equipos conectados a esta cuenta comparten productos, ventas, caja, posventa y usuarios. Si no hay internet, el sistema sigue funcionando y sube los cambios al volver.</p>
                         <div style="display:flex;gap:8px;flex-wrap:wrap">
                             <button class="btn btn-primario" id="nbSincronizar">Sincronizar ahora</button>
+                            <button class="btn" id="nbRepetidos">Revisar productos repetidos</button>
                             <button class="btn btn-peligro" id="nbDesconectar">Desconectar este equipo</button>
                         </div>`
                     : `
@@ -719,6 +1085,9 @@ const NubeUI = {
 
         const bSync = $("#nbSincronizar", contenedor);
         if (bSync) bSync.addEventListener("click", async () => { bSync.disabled = true; await Nube.sincronizar(); Configuracion.pintar(); });
+
+        const bRep = $("#nbRepetidos", contenedor);
+        if (bRep) bRep.addEventListener("click", () => NubeUI.revisarRepetidos());
 
         const bDes = $("#nbDesconectar", contenedor);
         if (bDes) bDes.addEventListener("click", async () => {
