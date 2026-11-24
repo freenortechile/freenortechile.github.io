@@ -315,6 +315,30 @@
                     video.srcObject = flujo;
                     await video.play();
 
+                    // Vista previa dibujada: en algunos iPhone (app agregada a la pantalla
+                    // de inicio) el video queda negro aunque la cámara funciona y lee
+                    // los códigos. Dibujar cada cuadro en un lienzo lo muestra igual.
+                    const lienzo = document.createElement("canvas");
+                    lienzo.setAttribute("aria-hidden", "true");
+                    lienzo.style.cssText = "position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none";
+                    video.insertAdjacentElement("afterend", lienzo);
+                    const pincel = lienzo.getContext("2d");
+                    const pintarVista = () => {
+                        if (terminado || !lienzo.isConnected) return;
+                        const w = lienzo.clientWidth, h = lienzo.clientHeight;
+                        const vw = video.videoWidth, vh = video.videoHeight;
+                        if (w && h && vw && vh && video.readyState >= 2) {
+                            const dpr = Math.min(window.devicePixelRatio || 1, 2);
+                            const cw = Math.round(w * dpr), ch = Math.round(h * dpr);
+                            if (lienzo.width !== cw || lienzo.height !== ch) { lienzo.width = cw; lienzo.height = ch; }
+                            const escala = Math.max(cw / vw, ch / vh);
+                            const dw = vw * escala, dh = vh * escala;
+                            try { pincel.drawImage(video, (cw - dw) / 2, (ch - dh) / 2, dw, dh); } catch (e6) { /* cuadro aún no listo */ }
+                        }
+                        requestAnimationFrame(pintarVista);
+                    };
+                    requestAnimationFrame(pintarVista);
+
                     // enfoque continuo, linterna y zoom (si la cámara los tiene)
                     const pista = flujo.getVideoTracks()[0];
                     const cap = pista.getCapabilities ? pista.getCapabilities() : {};
