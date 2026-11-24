@@ -5,7 +5,7 @@
 // Al publicar cambios, subir el número de VERSION.
 // ==========================================
 
-const VERSION = "sportpos-v16";
+const VERSION = "sportpos-v17";
 
 const ARCHIVOS = [
     "./",
