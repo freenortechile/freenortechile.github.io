@@ -780,6 +780,14 @@ dialog.player.vertical{max-width:min(92vw,420px)}
   box-shadow:0 40px 90px -30px rgba(0,0,0,.8),0 0 0 8px rgba(227,184,91,.06),0 0 120px -20px rgba(227,184,91,.35);background:#0b111c}
 .marca__video video{display:block;width:100%;height:100%;object-fit:cover}
 @media (max-width:820px){.marca__grid{grid-template-columns:1fr}.marca__video{width:min(78%,320px)}}
+
+/* A la medida: tarjeta con foto 3D arriba */
+.svc > div{position:relative;overflow:hidden;isolation:isolate}
+.svc__foto{display:block;pointer-events:none;user-select:none}
+.svc--tarjeta > div{padding-top:0}
+.svc--tarjeta .svc__foto{margin:0 -24px;width:calc(100% + 48px);max-width:none;aspect-ratio:1200/620;object-fit:cover;object-position:center 30%;border-bottom:1px solid var(--line);background:linear-gradient(160deg,#f4efe5,#e5dac6)}
+:root[data-theme="dark"] .svc--tarjeta .svc__foto{background:linear-gradient(160deg,#1c2639,#111926)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .svc--tarjeta .svc__foto{background:linear-gradient(160deg,#1c2639,#111926)}}
 </style>
 </head>
 <body>
@@ -1269,8 +1277,9 @@ dialog.player.vertical{max-width:min(92vw,420px)}
       <div><span class="kicker">A la medida</span><h2>¿Tu empresa necesita algo propio?</h2></div>
       <p>Desarrollamos sistemas y herramientas para operaciones que no calzan con un sistema estándar.</p>
     </div>
-    <div class="svc">
+    <div class="svc svc--tarjeta">
       <div>
+        <img class="svc__foto" src="assets/img/medida-desarrollo.webp" alt="" width="1200" height="760" loading="lazy" decoding="async">
         <h3>Diseño y desarrollo</h3>
         <div class="svc__list">
           <div class="svc__item"><span class="ic-box"><svg class="ico"><use href="#i-code"/></svg></span><div><h4>Desarrollo de sistemas</h4><p>Sistemas personalizados para tu empresa.</p></div></div>
@@ -1278,6 +1287,7 @@ dialog.player.vertical{max-width:min(92vw,420px)}
         </div>
       </div>
       <div>
+        <img class="svc__foto" src="assets/img/medida-datos.webp" alt="" width="1200" height="760" loading="lazy" decoding="async">
         <h3>Aplicaciones y datos</h3>
         <div class="svc__list">
           <div class="svc__item"><span class="ic-box"><svg class="ico"><use href="#i-device"/></svg></span><div><h4>Aplicaciones web</h4><p>Para computador, tablet y celular.</p></div></div>
@@ -1285,6 +1295,7 @@ dialog.player.vertical{max-width:min(92vw,420px)}
         </div>
       </div>
       <div>
+        <img class="svc__foto" src="assets/img/medida-soporte.webp" alt="" width="1200" height="760" loading="lazy" decoding="async">
         <h3>Automatización y soporte</h3>
         <div class="svc__list">
           <div class="svc__item"><span class="ic-box"><svg class="ico"><use href="#i-zap"/></svg></span><div><h4>Automatización</h4><p>Digitalización de procesos y herramientas.</p></div></div>
