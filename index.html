@@ -621,6 +621,165 @@ dialog.player.vertical{max-width:min(92vw,420px)}
   .foot__grid{gap:30px}
   .foot__bar{margin-top:38px}
 }
+/* ===== Fuentes del sitio (los archivos ya estaban en assets/fonts, pero no se cargaban) ===== */
+@font-face{font-family:Sora;font-weight:700;font-display:swap;src:url(assets/fonts/sora-latin-700-normal.woff2) format("woff2")}
+@font-face{font-family:Sora;font-weight:800;font-display:swap;src:url(assets/fonts/sora-latin-800-normal.woff2) format("woff2")}
+@font-face{font-family:Inter;font-weight:400;font-display:swap;src:url(assets/fonts/inter-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:Inter;font-weight:500;font-display:swap;src:url(assets/fonts/inter-latin-500-normal.woff2) format("woff2")}
+@font-face{font-family:Inter;font-weight:600;font-display:swap;src:url(assets/fonts/inter-latin-600-normal.woff2) format("woff2")}
+@font-face{font-family:Caveat;font-weight:700;font-display:swap;src:url(assets/fonts/caveat-latin-700-normal.woff2) format("woff2")}
+
+/* ===== VentaFácil paso a paso (sección con scroll) ===== */
+:root{--vf-a:#f7f6f3;--vf-b:#dcd9d3;--vf-tapa:#1b1d22;--vf-base1:#c9ccd2;--vf-base2:#9ea2aa}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--vf-a:#1a2333;--vf-b:#070b13;--vf-tapa:#2a2f39;--vf-base1:#4a505c;--vf-base2:#2c313b}}
+:root[data-theme="dark"]{--vf-a:#1a2333;--vf-b:#070b13;--vf-tapa:#2a2f39;--vf-base1:#4a505c;--vf-base2:#2c313b}
+.vf{padding-bottom:clamp(56px,7vw,96px)}
+.vf .cab{margin-bottom:0}
+.vf-historia{position:relative;height:480vh;margin-top:clamp(24px,4vw,40px)}
+.vf-fijo{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;display:flex;align-items:center;justify-content:center;
+  padding:76px max(16px,env(safe-area-inset-left,0px)) 24px;background:radial-gradient(120% 80% at 70% 10%,var(--vf-a) 0%,var(--vf-b) 100%)}
+.vf-laptop{width:min(1000px,94vw,calc((100svh - 140px) * 1.45));filter:drop-shadow(0 40px 50px rgba(10,12,20,.25))}
+.vf-tapa{background:var(--vf-tapa);border-radius:clamp(10px,1.6vw,18px) clamp(10px,1.6vw,18px) 4px 4px;padding:clamp(6px,1.1vw,12px);position:relative}
+.vf-tapa::before{content:"";position:absolute;top:clamp(2px,.4vw,4px);left:50%;width:clamp(30px,5vw,60px);height:clamp(3px,.55vw,6px);transform:translateX(-50%);background:#0c0d10;border-radius:0 0 6px 6px}
+.vf-pantalla{aspect-ratio:16/10;background:#fbfaf8;color:#0d1526;border-radius:4px;overflow:hidden;position:relative;container-type:inline-size;color-scheme:light}
+.vf-base{height:clamp(10px,1.6vw,18px);margin:0 -4.5%;background:linear-gradient(var(--vf-base1),var(--vf-base2));border-radius:0 0 18px 18px;position:relative}
+.vf-base::before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:16%;height:40%;background:rgba(0,0,0,.18);border-radius:0 0 8px 8px}
+.vf-web{position:absolute;inset:0;display:grid;grid-template-rows:auto 1fr auto}
+.vf-nav{display:flex;align-items:center;justify-content:space-between;padding:2.2cqw 3.4cqw 0}
+.vf-marca{font-family:Sora,"Segoe UI",Arial,sans-serif;font-weight:800;font-size:1.9cqw;letter-spacing:.02em;display:flex;align-items:center;gap:.8cqw}
+.vf-marca b{color:#8a5a00}
+.vf-marca i{display:block;width:2.2cqw;height:2.2cqw;border-radius:50%;border:.25cqw solid #0d1526;position:relative}
+.vf-marca i::after{content:"";position:absolute;left:50%;top:12%;border-left:.45cqw solid transparent;border-right:.45cqw solid transparent;border-bottom:.9cqw solid #e3b85b;transform:translateX(-50%)}
+.vf-menu{display:flex;gap:2.4cqw;font-size:1.25cqw;color:#5b6475}
+.vf-menu span:first-child{color:#0d1526;font-weight:600}
+.vf-cta{font-size:1.2cqw;font-weight:600;background:#0b111c;color:#fff;border-radius:999px;padding:.7cqw 1.8cqw}
+.vf-hero{display:grid;grid-template-columns:40% 60%;align-items:center;padding:0 3.4cqw;min-height:0}
+.vf-textos{position:relative;height:28cqw}
+.vf-txt{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;opacity:0;transform:translateY(2cqw);transition:opacity .6s var(--ease-out),transform .7s var(--ease-out)}
+.vf-txt.on{opacity:1;transform:none}
+.vf-num{font-size:1.25cqw;font-weight:600;color:#8a5a00;margin-bottom:1.2cqw}
+.vf-txt h3{font-family:Sora,"Segoe UI",Arial,sans-serif;font-weight:800;font-size:4.6cqw;line-height:1.02;letter-spacing:-.04em;margin:0 0 1.4cqw;color:#0d1526}
+.vf-txt p{font-size:1.45cqw;line-height:1.5;color:#5b6475;margin:0;max-width:30cqw}
+.vf-visual{position:relative;height:100%;min-height:0}
+.vf-v{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;transform:translateY(4cqw) scale(.94);transition:opacity .7s var(--ease-out),transform .9s var(--ease-out)}
+.vf-v.on{opacity:1;transform:none}
+.vf-v.salio{transform:translateY(-4cqw) scale(1.03)}
+.vf-cuaderno{width:25cqw;aspect-ratio:3/4;background:#fffdf6;border-radius:.6cqw;box-shadow:0 2cqw 4cqw rgba(30,25,10,.18),inset 3cqw 0 0 #f1ead6;transform:rotate(-7deg);position:relative;padding:3.2cqw 2cqw 2cqw 4.6cqw;
+  background-image:repeating-linear-gradient(transparent 0 2.55cqw,#cfe0f1 2.55cqw 2.7cqw);background-position:0 2.6cqw;font-family:Caveat,"Segoe Print","Bradley Hand",cursive;color:#2f3a59}
+.vf-cuaderno::before{content:"";position:absolute;left:3.6cqw;top:0;bottom:0;width:.15cqw;background:#e9a6a6}
+.vf-cuaderno h4{margin:0 0 .3cqw;font-size:2.4cqw;font-weight:700;line-height:2.7cqw}
+.vf-cuaderno div{font-size:1.95cqw;line-height:2.7cqw;display:flex;justify-content:space-between}
+.vf-tachado{text-decoration:line-through;text-decoration-color:#c0392b;opacity:.7}
+.vf-rojo{color:#c0392b}
+.vf-pregunta{position:absolute;right:-3cqw;top:2cqw;font-family:Sora,Arial,sans-serif;font-weight:800;font-size:6cqw;color:#c0392b;transform:rotate(12deg)}
+.vf-celu{width:15.5cqw;aspect-ratio:585/1266;border-radius:2.2cqw;background:#111;padding:.55cqw;box-shadow:0 2.4cqw 4cqw rgba(0,0,0,.25);position:relative}
+.vf-celu img{width:100%;height:100%;object-fit:cover;border-radius:1.7cqw;display:block}
+.vf-laser{position:absolute;left:8%;right:8%;top:14%;height:.3cqw;background:#ef4444;box-shadow:0 0 1.2cqw #ef4444;border-radius:9px;animation:vf-laser 1.8s ease-in-out infinite alternate}
+@keyframes vf-laser{to{top:24%}}
+.vf-flota{position:absolute;background:#fff;border-radius:1cqw;box-shadow:0 1.6cqw 3cqw rgba(0,0,0,.15);font-size:1.25cqw;color:#0d1526}
+.vf-codigo{right:6cqw;bottom:6cqw;padding:1.2cqw 1.4cqw .9cqw;transform:rotate(8deg);text-align:center}
+.vf-barras{width:13cqw;height:5cqw;background:repeating-linear-gradient(90deg,#111 0 .25cqw,transparent .25cqw .45cqw,#111 .45cqw .9cqw,transparent .9cqw 1.1cqw,#111 1.1cqw 1.25cqw,transparent 1.25cqw 1.6cqw)}
+.vf-codigo small{display:block;font-size:1.05cqw;letter-spacing:.2cqw;margin-top:.5cqw}
+.vf-etiqueta{left:4cqw;top:9cqw;padding:1cqw 1.4cqw}
+.vf-etiqueta b{display:block;font-family:Sora,Arial,sans-serif;font-size:1.7cqw}
+.vf-etiqueta span{color:#16a34a;font-weight:600}
+.vf-ventana{width:50cqw;border-radius:1cqw;overflow:hidden;box-shadow:0 2.4cqw 5cqw rgba(15,20,40,.2);border:.12cqw solid #e2e4ea;background:#fff}
+.vf-barra{height:2cqw;background:#f1f2f5;display:flex;align-items:center;gap:.5cqw;padding:0 1cqw}
+.vf-barra i{width:.75cqw;height:.75cqw;border-radius:50%;background:#d6d8de}
+.vf-ventana img{display:block;width:100%;height:auto}
+.vf-reloj{left:4cqw;bottom:5cqw;background:#0b111c;color:#fff;border-radius:1.2cqw;padding:1.2cqw 1.6cqw}
+.vf-reloj b{display:block;font-family:Sora,Arial,sans-serif;font-size:2.6cqw;color:#e3b85b}
+.vf-impresora{width:24cqw;display:flex;flex-direction:column;align-items:center}
+.vf-cuerpo{width:100%;height:4.2cqw;background:linear-gradient(#2a2d34,#15171b);border-radius:1.2cqw 1.2cqw .4cqw .4cqw;position:relative;z-index:2}
+.vf-cuerpo::after{content:"";position:absolute;left:12%;right:12%;bottom:.6cqw;height:.45cqw;background:#000;border-radius:3px}
+.vf-boleta{width:19cqw;margin-top:-.8cqw;background:#fff;padding:2cqw 1.6cqw 2.4cqw;font-size:1.1cqw;line-height:1.55;color:#222;clip-path:inset(0 0 100% 0);font-family:"Courier New",monospace;
+  -webkit-mask:linear-gradient(#000 0 0) top/100% calc(100% - .9cqw) no-repeat,conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) bottom/1.8cqw .9cqw repeat-x;
+          mask:linear-gradient(#000 0 0) top/100% calc(100% - .9cqw) no-repeat,conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) bottom/1.8cqw .9cqw repeat-x}
+.vf-v.on .vf-boleta{animation:vf-imprime 2.4s steps(14,end) .25s forwards}
+@keyframes vf-imprime{to{clip-path:inset(0 0 0 0)}}
+.vf-boleta .c{text-align:center}
+.vf-boleta .f{display:flex;justify-content:space-between;gap:1cqw}
+.vf-boleta hr{border:0;border-top:.12cqw dashed #999;margin:.8cqw 0}
+.vf-boleta .tot{font-weight:700;font-size:1.35cqw}
+.vf-wsp{right:3cqw;top:7cqw;background:#25d366;color:#fff;border-radius:1.2cqw 1.2cqw 1.2cqw .2cqw;padding:1cqw 1.4cqw;font-weight:600}
+.vf-ganancia{left:5cqw;top:10cqw;border-radius:1.4cqw;padding:1.6cqw 2cqw;color:#5b6475}
+.vf-ganancia b{display:block;font-family:Sora,Arial,sans-serif;font-size:3.2cqw;color:#16a34a;letter-spacing:-.04em}
+.vf-stock{right:4cqw;bottom:6cqw;background:#fff7ed;border:.12cqw solid #fdba74;padding:1.1cqw 1.5cqw}
+.vf-stock b{color:#c2410c}
+.vf-pie{display:flex;align-items:center;justify-content:space-between;padding:0 3.4cqw 2cqw}
+.vf-puntos{display:flex;gap:.8cqw}
+.vf-puntos i{width:.8cqw;height:.8cqw;border-radius:999px;background:#d3d6dc;transition:width .5s var(--ease-out),background .5s}
+.vf-puntos i.on{width:3cqw;background:#0d1526}
+.vf-pie small{font-size:1.1cqw;color:#5b6475}
+.vf-final{text-align:center;margin-top:clamp(28px,4vw,44px)}
+.vf-final p{margin:0;color:var(--ink-2)}
+.vf-final .cta{justify-content:center;margin-top:18px}
+@media (max-width:640px){
+  .vf-historia{height:440vh}
+  .vf-laptop{width:min(100%,calc((100svh - 130px) * .72))}
+  .vf-tapa{border-radius:22px;padding:9px}
+  .vf-tapa::before,.vf-base{display:none}
+  .vf-pantalla{aspect-ratio:3/4.1;border-radius:14px}
+  .vf-nav{padding:4cqw 5cqw 0}
+  .vf-marca{font-size:4.2cqw;gap:1.6cqw}
+  .vf-marca i{width:4.6cqw;height:4.6cqw;border-width:.5cqw}
+  .vf-menu{display:none}
+  .vf-cta{font-size:3.4cqw;padding:1.6cqw 4cqw}
+  .vf-hero{grid-template-columns:1fr;grid-template-rows:auto 1fr;padding:0 5cqw}
+  .vf-textos{height:42cqw}
+  .vf-num{font-size:3.2cqw;margin-bottom:2cqw}
+  .vf-txt h3{font-size:9cqw;margin-bottom:2.4cqw}
+  .vf-txt p{font-size:3.6cqw;max-width:none}
+  .vf-v{scale:1.85}
+  .vf-flota,.vf-pregunta{display:none}
+  .vf-pie{padding:0 5cqw 4cqw}
+  .vf-puntos{gap:1.6cqw}
+  .vf-puntos i{width:1.8cqw;height:1.8cqw}
+  .vf-puntos i.on{width:6cqw}
+  .vf-pie small{font-size:2.8cqw}
+}
+@media (prefers-reduced-motion:reduce){
+  .vf-v,.vf-txt,.vf-puntos i{transition:none}
+  .vf-laser{animation:none}
+  .vf-v.on .vf-boleta{animation:none;clip-path:none}
+}
+
+/* ===== Ilustraciones 3D de los planes de marketing ===== */
+.plan__ilus{display:block;width:100%;height:auto;aspect-ratio:16/10;margin:0 0 16px;border-radius:var(--r-md);background:radial-gradient(90% 90% at 50% 35%,#ffffff 0%,var(--bg-2) 100%);border:1px solid var(--line)}
+.plan--feat .plan__ilus{background:radial-gradient(90% 90% at 50% 35%,#24304a 0%,#121a2a 100%);border-color:rgba(255,255,255,.08)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .plan__ilus{background:radial-gradient(90% 90% at 50% 35%,#1f2a3e 0%,#111a29 100%)}}
+:root[data-theme="dark"] .plan__ilus{background:radial-gradient(90% 90% at 50% 35%,#1f2a3e 0%,#111a29 100%)}
+
+/* ===== Planes 3D en capas: flotan solas y se mueven con el mouse ===== */
+.plan3d{position:relative;overflow:hidden}
+.plan__capa{position:absolute;inset:0;width:100%;height:100%;
+  transform:translate3d(calc(var(--mx,0) * var(--p) * 16px),calc(var(--my,0) * var(--p) * 11px),0);
+  transition:transform .35s var(--ease-out);animation:plan-flota 4.8s ease-in-out infinite alternate;animation-delay:var(--d,0s)}
+.plan__capa--base{animation:none}
+@keyframes plan-flota{from{translate:0 2px}to{translate:0 calc(var(--p) * -8px)}}
+/* ===== Íconos 3D de cada rubro ===== */
+.card__body{position:relative}
+.card__ico{display:block;width:64px;height:64px;padding:5px;margin:-48px 0 10px;border-radius:18px;background:var(--surface);border:1px solid var(--line);
+  box-shadow:0 10px 24px -10px rgba(10,15,30,.35);transition:transform .45s var(--ease-out)}
+.card:hover .card__ico{transform:translateY(-4px) rotate(-6deg) scale(1.06)}
+@media (prefers-reduced-motion:reduce){.plan__capa{animation:none;transition:none;transform:none}.card__ico{transition:none}.card:hover .card__ico{transform:none}}
+
+/* ===== Banda de marca con el video 3D del logo ===== */
+.marca{background:radial-gradient(70% 90% at 75% 50%,#1b2638 0%,#0b111c 60%);color:#eef1f7;padding-block:clamp(56px,8vw,104px);overflow:hidden}
+.marca__grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:clamp(28px,5vw,72px);align-items:center}
+.marca .kicker{color:#e3b85b}
+.marca h2{color:#fff;margin:0 0 14px;text-wrap:balance}
+.marca__texto>p{color:#a9b2c3;max-width:52ch;margin:0 0 18px}
+.marca__lista{list-style:none;padding:0;margin:0 0 18px;display:grid;gap:10px}
+.marca__lista li{display:flex;gap:10px;align-items:center;color:#eef1f7}
+.marca__lista .ico{color:#e3b85b;flex:0 0 auto}
+.marca .marca__zona{font-size:.92rem;color:#8b95a8}
+.marca__btn2{border:1px solid rgba(255,255,255,.22);color:#fff;background:transparent}
+.marca__btn2:hover{border-color:#e3b85b;color:#e3b85b}
+.marca__video{justify-self:center;width:min(100%,360px);aspect-ratio:9/16;border-radius:28px;overflow:hidden;border:1px solid rgba(255,255,255,.1);
+  box-shadow:0 40px 90px -30px rgba(0,0,0,.8),0 0 0 8px rgba(227,184,91,.06),0 0 120px -20px rgba(227,184,91,.35);background:#0b111c}
+.marca__video video{display:block;width:100%;height:100%;object-fit:cover}
+@media (max-width:820px){.marca__grid{grid-template-columns:1fr}.marca__video{width:min(78%,320px)}}
 </style>
 </head>
 <body>
@@ -733,7 +892,32 @@ dialog.player.vertical{max-width:min(92vw,420px)}
   </div>
 </section>
 
-<div class="strip" role="note" aria-label="Rubros con sistema: Bazares, Minimarkets, Ferreterías, Botillerías, Zapatillas, Ropa y calzado, Farmacias, Ópticas, Joyerías, Celulares, Talleres, Peluquerías, Clínicas dentales, Gimnasios, Bodegas, Perfumerías, Minería"><div class="strip__track" aria-hidden="true"><span>Bazares</span><span>Minimarkets</span><span>Ferreterías</span><span>Botillerías</span><span>Zapatillas</span><span>Ropa y calzado</span><span>Farmacias</span><span>Ópticas</span><span>Joyerías</span><span>Celulares</span><span>Talleres</span><span>Peluquerías</span><span>Clínicas dentales</span><span>Gimnasios</span><span>Bodegas</span><span>Perfumerías</span><span>Minería</span><span>Bazares</span><span>Minimarkets</span><span>Ferreterías</span><span>Botillerías</span><span>Zapatillas</span><span>Ropa y calzado</span><span>Farmacias</span><span>Ópticas</span><span>Joyerías</span><span>Celulares</span><span>Talleres</span><span>Peluquerías</span><span>Clínicas dentales</span><span>Gimnasios</span><span>Bodegas</span><span>Perfumerías</span><span>Minería</span></div></div>
+<div class="strip" role="note" aria-label="Rubros con sistema: Bazares, Minimarkets, Verdulerías, Ferreterías, Botillerías, Zapatillas, Ropa y calzado, Farmacias, Ópticas, Joyerías, Celulares, Talleres, Peluquerías, Clínicas dentales, Gimnasios, Bodegas, Perfumerías, Minería"><div class="strip__track" aria-hidden="true"><span>Bazares</span><span>Minimarkets</span><span>Verdulerías</span><span>Ferreterías</span><span>Botillerías</span><span>Zapatillas</span><span>Ropa y calzado</span><span>Farmacias</span><span>Ópticas</span><span>Joyerías</span><span>Celulares</span><span>Talleres</span><span>Peluquerías</span><span>Clínicas dentales</span><span>Gimnasios</span><span>Bodegas</span><span>Perfumerías</span><span>Minería</span><span>Bazares</span><span>Minimarkets</span><span>Verdulerías</span><span>Ferreterías</span><span>Botillerías</span><span>Zapatillas</span><span>Ropa y calzado</span><span>Farmacias</span><span>Ópticas</span><span>Joyerías</span><span>Celulares</span><span>Talleres</span><span>Peluquerías</span><span>Clínicas dentales</span><span>Gimnasios</span><span>Bodegas</span><span>Perfumerías</span><span>Minería</span></div></div>
+
+<section class="marca" id="freenorte" aria-label="Quiénes somos">
+  <div class="wrap marca__grid">
+    <div class="marca__texto">
+      <span class="kicker">Freenorte · Soluciones digitales</span>
+      <h2>Sistemas, inventario y marketing para negocios del norte</h2>
+      <p>Somos de Alto Hospicio. Te instalamos el sistema de ventas en tu local, te dejamos el inventario cargado y te ayudamos a vender por internet.</p>
+      <ul class="marca__lista">
+        <li><svg class="ico"><use href="#i-check"/></svg>Sistemas de venta para celular y computador</li>
+        <li><svg class="ico"><use href="#i-check"/></svg>Inventario contado, cargado y valorizado</li>
+        <li><svg class="ico"><use href="#i-check"/></svg>Redes sociales, Mercado Libre y página web</li>
+      </ul>
+      <p class="marca__zona">Atención en terreno en Alto Hospicio, Iquique, Arica y Pozo Almonte.</p>
+      <div class="cta">
+        <a class="btn btn--gold" href="https://wa.me/56949424720?text=Hola%20Freenorte%2C%20quiero%20saber%20m%C3%A1s%20de%20sus%20servicios" target="_blank" rel="noopener">Escríbenos por WhatsApp</a>
+        <a class="btn marca__btn2" href="#planes">Ver planes y precios</a>
+      </div>
+    </div>
+    <div class="marca__video">
+      <video muted loop playsinline preload="none" poster="assets/videos/freenorte-logo-3d.jpg" width="720" height="1280" aria-label="Video del logo Freenorte: de un computador y un celular con el sistema de ventas sale una brújula dorada que apunta al norte">
+        <source src="assets/videos/freenorte-logo-3d.mp4" type="video/mp4">
+      </video>
+    </div>
+  </div>
+</section>
 
 <section class="sec sec--alt" id="problemas">
   <div class="wrap">
@@ -755,22 +939,82 @@ dialog.player.vertical{max-width:min(92vw,420px)}
   </div>
 </section>
 
-<section class="sec sec--alt" id="como">
+<section class="sec sec--alt vf" id="como" aria-label="Cómo funciona VentaFácil, paso a paso">
   <div class="wrap">
     <div class="cab">
-      <div><span class="kicker">Cómo funciona</span><h2>Una venta toma segundos</h2></div>
-      <p>No necesitas saber de computación: si usas WhatsApp, vas a usar el sistema sin problema.</p>
+      <div><span class="kicker">Cómo funciona</span><h2>Del cuaderno a saber cuánto ganaste</h2></div>
+      <p>Baja con el scroll y mira cómo VentaFácil ordena tu negocio en cinco pasos. Si usas WhatsApp, vas a usar el sistema sin problema.</p>
     </div>
-    <div class="how">
-      <ol class="timeline">
-        <li><span class="badge"><svg class="ico"><use href="#i-scan"/></svg></span><div><small>Paso 1</small><h3>Buscas o escaneas el producto</h3><p>Con una pistola lectora de códigos o con la cámara del celular. También puedes buscar por nombre.</p></div></li>
-        <li><span class="badge"><svg class="ico"><use href="#i-card"/></svg></span><div><small>Paso 2</small><h3>Cobras como quiera pagar tu cliente</h3><p>Efectivo con vuelto, débito, crédito o transferencia. Imprimes el comprobante o lo envías por WhatsApp.</p></div></li>
-        <li><span class="badge"><svg class="ico"><use href="#i-chart"/></svg></span><div><small>Paso 3</small><h3>El stock se descuenta solo</h3><p>Al cerrar la caja ves cuánto vendiste, cuánto hay en caja y qué productos se están acabando.</p></div></li>
-      </ol>
-      <button class="vbtn" type="button" data-video="assets/videos/vid-ventafacil-celular.mp4" data-vertical>
-        <img src="assets/img/sistemas/celu-vender-productos.jpg" width="585" height="1266" alt="Vista previa de VentaFácil en celular con fotos de productos de ejemplo" loading="lazy">
-        <span class="play"><i><svg viewBox="0 0 24 24"><use href="#i-play"/></svg></i>Mira cómo se vende desde el celular (1 min)</span>
-      </button>
+  </div>
+  <div class="vf-historia" id="vf-historia">
+   <div class="vf-fijo">
+    <div class="vf-laptop">
+     <div class="vf-tapa"><div class="vf-pantalla"><div class="vf-web">
+       <div class="vf-nav" aria-hidden="true">
+         <div class="vf-marca"><i></i>FREE<b>NORTE</b></div>
+         <div class="vf-menu"><span>VentaFácil</span><span>Sistemas</span><span>Planes</span><span>Contacto</span></div>
+         <div class="vf-cta">Pídelo</div>
+       </div>
+       <div class="vf-hero">
+         <div class="vf-textos">
+           <div class="vf-txt on"><div class="vf-num">Paso 1 de 5</div><h3>Del cuaderno…</h3><p>Anotar a mano se pierde, se moja y al final del día no cuadra.</p></div>
+           <div class="vf-txt"><div class="vf-num">Paso 2 de 5</div><h3>…al código de barras.</h3><p>Apuntas la cámara del celular y el producto entra solo a la venta. Sin pistola lectora.</p></div>
+           <div class="vf-txt"><div class="vf-num">Paso 3 de 5</div><h3>Vendes en segundos.</h3><p>Desde el computador o el celular, con la caja abierta y el stock al día.</p></div>
+           <div class="vf-txt"><div class="vf-num">Paso 4 de 5</div><h3>Entregas boleta interna.</h3><p>Impresa o por WhatsApp, con el detalle de la venta. Es un comprobante interno: no reemplaza la boleta del SII.</p></div>
+           <div class="vf-txt"><div class="vf-num">Paso 5 de 5</div><h3>Y sabes cuánto ganaste.</h3><p>Ventas del día, ganancia y los productos que se están agotando.</p></div>
+         </div>
+         <div class="vf-visual">
+           <div class="vf-v on" data-vf>
+             <div class="vf-cuaderno" role="img" aria-label="Cuaderno de ventas anotadas a mano, con cuentas tachadas que no cuadran">
+               <h4>Ventas martes</h4>
+               <div><span>2 bebidas</span><span>3.580</span></div>
+               <div class="vf-tachado"><span>pan</span><span>1.200</span></div>
+               <div><span>cuaderno x3</span><span>7.470</span></div>
+               <div class="vf-rojo"><span>¿papas? ¿fiado?</span><span>¿¿??</span></div>
+               <div><span>total</span><span class="vf-rojo">no cuadra</span></div>
+               <span class="vf-pregunta" aria-hidden="true">?</span>
+             </div>
+           </div>
+           <div class="vf-v" data-vf>
+             <div class="vf-flota vf-etiqueta"><b>Bebida 1,5 L</b>$1.790 · <span>stock 34</span></div>
+             <div class="vf-celu"><img src="assets/img/sistemas/celu-vender.jpg" width="585" height="1266" alt="VentaFácil en el celular, pantalla para vender escaneando productos" loading="lazy"><span class="vf-laser" aria-hidden="true"></span></div>
+             <div class="vf-flota vf-codigo" aria-hidden="true"><div class="vf-barras"></div><small>7800030986613</small></div>
+           </div>
+           <div class="vf-v" data-vf>
+             <div class="vf-ventana"><div class="vf-barra" aria-hidden="true"><i></i><i></i><i></i></div><img src="assets/img/sistemas/pc-vender.jpg" width="1440" height="900" alt="VentaFácil en el computador con una venta en curso por $12.740" loading="lazy"></div>
+             <div class="vf-flota vf-reloj">Venta lista en<b>8 segundos</b></div>
+           </div>
+           <div class="vf-v" data-vf>
+             <div class="vf-impresora"><div class="vf-cuerpo" aria-hidden="true"></div>
+               <div class="vf-boleta" role="img" aria-label="Boleta interna de ejemplo por $12.740">
+                 <div class="c"><b>TIENDA DEMO</b><br>Boleta interna N° 000006<br>24-11-2026 18:42</div><hr>
+                 <div class="f"><span>3 Cuaderno univ.</span><span>7.470</span></div>
+                 <div class="f"><span>2 Bebida 1,5 L</span><span>3.580</span></div>
+                 <div class="f"><span>1 Papas fritas</span><span>1.690</span></div><hr>
+                 <div class="f tot"><span>TOTAL</span><span>$12.740</span></div>
+                 <div class="c" style="margin-top:.8cqw">¡Gracias por su compra!</div>
+               </div>
+             </div>
+             <div class="vf-flota vf-wsp">Boleta enviada por WhatsApp ✓</div>
+           </div>
+           <div class="vf-v" data-vf>
+             <div class="vf-flota vf-ganancia">Ganancia de hoy<b>$8.100</b>46% de margen</div>
+             <div class="vf-celu"><img src="assets/img/sistemas/celu-inicio.jpg" width="585" height="1266" alt="VentaFácil, resumen del día con lo vendido y la ganancia" loading="lazy"></div>
+             <div class="vf-flota vf-stock"><b>3 productos</b> por agotarse</div>
+           </div>
+         </div>
+       </div>
+       <div class="vf-pie" aria-hidden="true"><div class="vf-puntos"><i class="on"></i><i></i><i></i><i></i><i></i></div><small>freenortechile.github.io</small></div>
+     </div></div></div>
+     <div class="vf-base" aria-hidden="true"></div>
+    </div>
+   </div>
+  </div>
+  <div class="wrap vf-final">
+    <p><b>VentaFácil</b> · celular y computador · pago único desde <strong class="num">$30.000</strong> siguiendo nuestras redes</p>
+    <div class="cta">
+      <a class="btn btn--gold" href="#planes">Ver planes y precios</a>
+      <button class="btn btn--ghost" type="button" data-video="assets/videos/vid-ventafacil-celular.mp4" data-vertical>Ver el video (1 min)</button>
     </div>
   </div>
 </section>
@@ -806,7 +1050,7 @@ dialog.player.vertical{max-width:min(92vw,420px)}
           <div class="social-promo__logos" aria-label="Síguenos en redes sociales">
             <a href="https://www.instagram.com/contacto.freenorte/" target="_blank" rel="noopener" aria-label="Seguir a Freenorte en Instagram"><img src="assets/img/logo/instagram.png" width="24" height="24" alt="Instagram"></a>
             <a href="https://www.tiktok.com/@freenorte.chile" target="_blank" rel="noopener" aria-label="Seguir a Freenorte en TikTok"><img src="assets/img/logo/tiktok.png" width="24" height="24" alt="TikTok"></a>
-            <a href="https://www.facebook.com/search/top?q=Freenorte%20Soluciones%20Digitales" target="_blank" rel="noopener" aria-label="Seguir a Freenorte en Facebook"><img src="assets/img/logo/facebook.png" width="24" height="24" alt="Facebook"></a>
+            <a href="https://www.facebook.com/profile.php?id=61594966167310" target="_blank" rel="noopener" aria-label="Seguir a Freenorte en Facebook"><img src="assets/img/logo/facebook.png" width="24" height="24" alt="Facebook"></a>
           </div>
           <small>Instagram, TikTok y Facebook</small>
         </div>
@@ -823,7 +1067,7 @@ dialog.player.vertical{max-width:min(92vw,420px)}
           <div class="social-promo__logos" aria-label="Síguenos en redes sociales">
             <a href="https://www.instagram.com/contacto.freenorte/" target="_blank" rel="noopener" aria-label="Seguir a Freenorte en Instagram"><img src="assets/img/logo/instagram.png" width="24" height="24" alt="Instagram"></a>
             <a href="https://www.tiktok.com/@freenorte.chile" target="_blank" rel="noopener" aria-label="Seguir a Freenorte en TikTok"><img src="assets/img/logo/tiktok.png" width="24" height="24" alt="TikTok"></a>
-            <a href="https://www.facebook.com/search/top?q=Freenorte%20Soluciones%20Digitales" target="_blank" rel="noopener" aria-label="Seguir a Freenorte en Facebook"><img src="assets/img/logo/facebook.png" width="24" height="24" alt="Facebook"></a>
+            <a href="https://www.facebook.com/profile.php?id=61594966167310" target="_blank" rel="noopener" aria-label="Seguir a Freenorte en Facebook"><img src="assets/img/logo/facebook.png" width="24" height="24" alt="Facebook"></a>
           </div>
           <small>Instagram, TikTok y Facebook</small>
         </div>
@@ -839,7 +1083,7 @@ dialog.player.vertical{max-width:min(92vw,420px)}
           <div class="social-promo__logos" aria-label="Síguenos en redes sociales">
             <a href="https://www.instagram.com/contacto.freenorte/" target="_blank" rel="noopener" aria-label="Seguir a Freenorte en Instagram"><img src="assets/img/logo/instagram.png" width="24" height="24" alt="Instagram"></a>
             <a href="https://www.tiktok.com/@freenorte.chile" target="_blank" rel="noopener" aria-label="Seguir a Freenorte en TikTok"><img src="assets/img/logo/tiktok.png" width="24" height="24" alt="TikTok"></a>
-            <a href="https://www.facebook.com/search/top?q=Freenorte%20Soluciones%20Digitales" target="_blank" rel="noopener" aria-label="Seguir a Freenorte en Facebook"><img src="assets/img/logo/facebook.png" width="24" height="24" alt="Facebook"></a>
+            <a href="https://www.facebook.com/profile.php?id=61594966167310" target="_blank" rel="noopener" aria-label="Seguir a Freenorte en Facebook"><img src="assets/img/logo/facebook.png" width="24" height="24" alt="Facebook"></a>
           </div>
           <small>Instagram, TikTok y Facebook</small>
         </div>
@@ -955,43 +1199,46 @@ dialog.player.vertical{max-width:min(92vw,420px)}
       <p>Elige la frecuencia y el alcance que necesitas. Los planes Básico y Medio tienen un valor promocional al seguir nuestras redes.</p>
     </div>
     <div class="chan">
-      <div><span class="ic-box"><svg class="ico"><use href="#i-mega"/></svg></span><div><h3>Redes sociales</h3><p>Facebook, Instagram y TikTok ordenados, con publicaciones de catálogo y videos cortos grabados en tu local.</p><div class="chan__logos" role="group" aria-label="Redes sociales de Freenorte"><a href="https://www.facebook.com/search/top?q=Freenorte%20Soluciones%20Digitales" target="_blank" rel="noopener" aria-label="Facebook de Freenorte"><img src="assets/img/logo/facebook.png" width="24" height="24" alt=""></a><a href="https://www.instagram.com/contacto.freenorte/" target="_blank" rel="noopener" aria-label="Instagram de Freenorte"><img src="assets/img/logo/instagram.png" width="24" height="24" alt=""></a><a href="https://www.tiktok.com/@freenorte.chile" target="_blank" rel="noopener" aria-label="TikTok de Freenorte"><img src="assets/img/logo/tiktok.png" width="24" height="24" alt=""></a></div></div></div>
-      <div><span class="ic-box"><svg class="ico"><use href="#i-store"/></svg></span><div><h3>Mercado Libre</h3><p>Cuenta a tu nombre con Mercado Pago y Mercado Envíos. Publicamos cada producto con sus tallas o variantes.</p><div class="chan__marketplace"><img src="assets/img/logo/mercado-libre-png.png" width="960" height="367" alt="Logotipo de Mercado Libre" loading="lazy"><span>Marketplace</span></div></div></div>
+      <div><span class="ic-box"><svg class="ico"><use href="#i-mega"/></svg></span><div><h3>Redes sociales</h3><p>Facebook, Instagram y TikTok ordenados, con publicaciones de catálogo y videos cortos grabados en tu local.</p><div class="chan__logos" role="group" aria-label="Redes sociales de Freenorte"><a href="https://www.facebook.com/profile.php?id=61594966167310" target="_blank" rel="noopener" aria-label="Facebook de Freenorte"><img src="assets/img/logo/facebook.png" width="24" height="24" alt=""></a><a href="https://www.instagram.com/contacto.freenorte/" target="_blank" rel="noopener" aria-label="Instagram de Freenorte"><img src="assets/img/logo/instagram.png" width="24" height="24" alt=""></a><a href="https://www.tiktok.com/@freenorte.chile" target="_blank" rel="noopener" aria-label="TikTok de Freenorte"><img src="assets/img/logo/tiktok.png" width="24" height="24" alt=""></a></div></div></div>
+      <div><span class="ic-box"><svg class="ico"><use href="#i-store"/></svg></span><div><h3>Mercado Libre</h3><p>Cuenta a tu nombre con Mercado Pago y Mercado Envíos. Publicamos cada producto con sus tallas o variantes. También en Falabella.com y Lider.cl.</p><div class="chan__marketplace"><img src="assets/img/logo/mercado-libre-png.png" width="960" height="367" alt="Logotipo de Mercado Libre" loading="lazy"><span>Marketplace</span></div></div></div>
       <div><span class="ic-box"><svg class="ico"><use href="#i-globe"/></svg></span><div><h3>Tu página web</h3><p>Tu catálogo con un botón que abre WhatsApp con el producto ya escrito. Sin comisión por venta.</p><span class="chan__web"><svg class="ico" aria-hidden="true"><use href="#i-globe"/></svg>Catálogo web</span></div></div>
     </div>
     <div class="plans plans--marketing">
       <article class="plan">
+        <div class="plan__ilus plan3d" role="img" aria-label="Ilustración 3D: celular en trípode grabando un video, aro de luz, calendario con 3 días marcados e íconos de Instagram, TikTok y Facebook"><img class="plan__capa plan__capa--base" src="assets/img/planes/plan-basico-base.webp" width="720" height="450" alt="" loading="lazy" style="--p:-.35"><img class="plan__capa" src="assets/img/planes/plan-basico-0.webp" width="720" height="450" alt="" loading="lazy" style="--p:0.5;--d:-0.9s"><img class="plan__capa" src="assets/img/planes/plan-basico-1.webp" width="720" height="450" alt="" loading="lazy" style="--p:0.9;--d:-1.8s"><img class="plan__capa" src="assets/img/planes/plan-basico-2.webp" width="720" height="450" alt="" loading="lazy" style="--p:1;--d:-2.7s"><img class="plan__capa" src="assets/img/planes/plan-basico-3.webp" width="720" height="450" alt="" loading="lazy" style="--p:1.1;--d:-3.6s"><img class="plan__capa" src="assets/img/planes/plan-basico-4.webp" width="720" height="450" alt="" loading="lazy" style="--p:1.2;--d:-4.5s"><img class="plan__capa" src="assets/img/planes/plan-basico-5.webp" width="720" height="450" alt="" loading="lazy" style="--p:0.8;--d:-5.4s"></div>
         <h3>Básico</h3><p class="plan__for">Para mantener activas tus redes sociales.</p>
         <p class="price price--promo"><span class="price__old">$90.000</span><b>$20.000</b><small>al mes</small></p>
-        <ul><li><svg class="ico"><use href="#i-check"/></svg>Gestión de redes sociales 3 días por semana</li><li><svg class="ico"><use href="#i-check"/></svg>8 videos al mes, publicados en TikTok, Instagram y Facebook</li><li><svg class="ico"><use href="#i-check"/></svg>Compartimos el contenido en tus redes</li></ul>
+        <ul><li><svg class="ico"><use href="#i-check"/></svg>Gestión de redes sociales 3 días por semana</li><li><svg class="ico"><use href="#i-check"/></svg>5 videos al mes, publicados en TikTok, Instagram y Facebook</li><li><svg class="ico"><use href="#i-check"/></svg>Compartimos el contenido en tus redes</li></ul>
         <div class="social-promo">
           <strong>Precio promocional al seguirnos en redes</strong>
           <div class="social-promo__logos" aria-label="Redes sociales de Freenorte">
             <a href="https://www.instagram.com/contacto.freenorte/" target="_blank" rel="noopener" aria-label="Instagram de Freenorte"><img src="assets/img/logo/instagram.png" width="24" height="24" alt="Instagram"></a>
             <a href="https://www.tiktok.com/@freenorte.chile" target="_blank" rel="noopener" aria-label="TikTok de Freenorte"><img src="assets/img/logo/tiktok.png" width="24" height="24" alt="TikTok"></a>
-            <a href="https://www.facebook.com/search/top?q=Freenorte%20Soluciones%20Digitales" target="_blank" rel="noopener" aria-label="Facebook de Freenorte"><img src="assets/img/logo/facebook.png" width="24" height="24" alt="Facebook"></a>
+            <a href="https://www.facebook.com/profile.php?id=61594966167310" target="_blank" rel="noopener" aria-label="Facebook de Freenorte"><img src="assets/img/logo/facebook.png" width="24" height="24" alt="Facebook"></a>
           </div>
           <small>Instagram, TikTok y Facebook</small>
         </div>
-        <div class="plan__foot"><a class="btn btn--ghost btn--block" data-wa="Hola, me interesa el plan de marketing Básico: $20.000 mensuales siguiendo las redes. Incluye gestión 3 días por semana y 8 videos mensuales." href="https://wa.me/56949424720">Quiero este plan</a></div>
+        <div class="plan__foot"><a class="btn btn--ghost btn--block" data-wa="Hola, me interesa el plan de marketing Básico: $20.000 mensuales siguiendo las redes. Incluye gestión 3 días por semana y 5 videos mensuales." href="https://wa.me/56949424720">Quiero este plan</a></div>
       </article>
       <article class="plan plan--feat">
         <span class="plan__tag">Recomendado</span>
+        <div class="plan__ilus plan3d" role="img" aria-label="Ilustración 3D: notebook con la página web, celular con el perfil de Instagram y una caja lista para envío de Mercado Libre"><img class="plan__capa plan__capa--base" src="assets/img/planes/plan-medio-base.webp" width="720" height="450" alt="" loading="lazy" style="--p:-.35"><img class="plan__capa" src="assets/img/planes/plan-medio-0.webp" width="720" height="450" alt="" loading="lazy" style="--p:0.9;--d:-0.9s"><img class="plan__capa" src="assets/img/planes/plan-medio-1.webp" width="720" height="450" alt="" loading="lazy" style="--p:0.7;--d:-1.8s"><img class="plan__capa" src="assets/img/planes/plan-medio-2.webp" width="720" height="450" alt="" loading="lazy" style="--p:1;--d:-2.7s"><img class="plan__capa" src="assets/img/planes/plan-medio-3.webp" width="720" height="450" alt="" loading="lazy" style="--p:1.2;--d:-3.6s"></div>
         <h3>Medio</h3><p class="plan__for">Para crecer con redes, Mercado Libre y página web.</p>
         <p class="price price--promo"><span class="price__old">$130.000</span><b>$70.000</b><small>al mes</small></p>
-        <ul><li><svg class="ico"><use href="#i-check"/></svg>Gestión del servicio 4 días por semana</li><li><svg class="ico"><use href="#i-check"/></svg>Mercado Libre: hasta 100 productos publicados y optimizados</li><li><svg class="ico"><use href="#i-check"/></svg>Página web con catálogo de 150 productos y dominio .cl</li><li><svg class="ico"><use href="#i-check"/></svg>Una promoción e informe de resultados al mes</li></ul>
+        <ul><li><svg class="ico"><use href="#i-check"/></svg>Gestión del servicio 4 días por semana</li><li><svg class="ico"><use href="#i-check"/></svg>6 videos a la semana, publicados en TikTok, Instagram y Facebook</li><li><svg class="ico"><use href="#i-check"/></svg>Mercado Libre: hasta 100 productos publicados y optimizados</li><li><svg class="ico"><use href="#i-check"/></svg>Página web con catálogo de 150 productos y dominio .cl</li><li><svg class="ico"><use href="#i-check"/></svg>Una promoción e informe de resultados al mes</li></ul>
         <div class="social-promo">
           <strong>Precio promocional al seguirnos en redes</strong>
           <div class="social-promo__logos" aria-label="Redes sociales de Freenorte">
             <a href="https://www.instagram.com/contacto.freenorte/" target="_blank" rel="noopener" aria-label="Instagram de Freenorte"><img src="assets/img/logo/instagram.png" width="24" height="24" alt="Instagram"></a>
             <a href="https://www.tiktok.com/@freenorte.chile" target="_blank" rel="noopener" aria-label="TikTok de Freenorte"><img src="assets/img/logo/tiktok.png" width="24" height="24" alt="TikTok"></a>
-            <a href="https://www.facebook.com/search/top?q=Freenorte%20Soluciones%20Digitales" target="_blank" rel="noopener" aria-label="Facebook de Freenorte"><img src="assets/img/logo/facebook.png" width="24" height="24" alt="Facebook"></a>
+            <a href="https://www.facebook.com/profile.php?id=61594966167310" target="_blank" rel="noopener" aria-label="Facebook de Freenorte"><img src="assets/img/logo/facebook.png" width="24" height="24" alt="Facebook"></a>
           </div>
           <small>Instagram, TikTok y Facebook</small>
         </div>
-        <div class="plan__foot"><a class="btn btn--gold btn--block" data-wa="Hola, me interesa el plan de marketing Medio: $70.000 mensuales siguiendo las redes. Incluye servicio 4 días por semana, Mercado Libre y página web." href="https://wa.me/56949424720">Quiero este plan</a></div>
+        <div class="plan__foot"><a class="btn btn--gold btn--block" data-wa="Hola, me interesa el plan de marketing Medio: $70.000 mensuales siguiendo las redes. Incluye servicio 4 días por semana, 6 videos a la semana, Mercado Libre y página web." href="https://wa.me/56949424720">Quiero este plan</a></div>
       </article>
       <article class="plan">
+        <div class="plan__ilus plan3d" role="img" aria-label="Ilustración 3D: notebook con el catálogo web, celular con un anuncio pagado, megáfono y gráfico de ventas subiendo"><img class="plan__capa plan__capa--base" src="assets/img/planes/plan-completo-base.webp" width="720" height="450" alt="" loading="lazy" style="--p:-.35"><img class="plan__capa" src="assets/img/planes/plan-completo-0.webp" width="720" height="450" alt="" loading="lazy" style="--p:0.7;--d:-0.9s"><img class="plan__capa" src="assets/img/planes/plan-completo-1.webp" width="720" height="450" alt="" loading="lazy" style="--p:1;--d:-1.8s"><img class="plan__capa" src="assets/img/planes/plan-completo-2.webp" width="720" height="450" alt="" loading="lazy" style="--p:1.2;--d:-2.7s"></div>
         <h3>Completo</h3><p class="plan__for">Todo tu catálogo, más publicidad.</p>
         <p class="price"><b>$130.000</b><small>primer pago</small></p>
         <p class="price__renewal">Desde el segundo mes: <b>$70.000 al mes</b></p>
@@ -1103,6 +1350,7 @@ dialog.player.vertical{max-width:min(92vw,420px)}
             <option value="">Selecciona una opción</option>
             <option>Tienda de ropa, zapatillas o calzado</option>
             <option>Almacén, bazar o minimarket</option>
+            <option>Verdulería o frutería</option>
             <option>Ferretería o librería</option>
             <option>Botillería</option>
             <option>Farmacia</option>
@@ -1147,7 +1395,7 @@ dialog.player.vertical{max-width:min(92vw,420px)}
             <li><img src="assets/img/logo/gmail.png" width="36" height="36" alt=""><div><span>Correo</span><b>contacto.freenorte@gmail.com</b></div></li>
             <li><img src="assets/img/logo/instagram.png" width="36" height="36" alt=""><div><span>Instagram</span><a href="https://www.instagram.com/contacto.freenorte/" target="_blank" rel="noopener">@contacto.freenorte</a></div></li>
             <li><img src="assets/img/logo/tiktok.png" width="36" height="36" alt=""><div><span>TikTok</span><a href="https://www.tiktok.com/@freenorte.chile" target="_blank" rel="noopener">@freenorte.chile</a></div></li>
-            <li><img src="assets/img/logo/facebook.png" width="36" height="36" alt=""><div><span>Facebook</span><a href="https://www.facebook.com/search/top?q=Freenorte%20Soluciones%20Digitales" target="_blank" rel="noopener">Freenorte Soluciones Digitales</a></div></li>
+            <li><img src="assets/img/logo/facebook.png" width="36" height="36" alt=""><div><span>Facebook</span><a href="https://www.facebook.com/profile.php?id=61594966167310" target="_blank" rel="noopener">Freenorte Soluciones Digitales</a></div></li>
             <li><img src="assets/img/logo/maps.png" width="36" height="36" alt=""><div><span>Dónde</span><a href="https://www.google.com/maps/search/?api=1&amp;query=Iquique%2C+Tarapac%C3%A1" target="_blank" rel="noopener">Iquique, Región de Tarapacá</a></div></li>
           </ul>
         </div>
@@ -1171,7 +1419,7 @@ dialog.player.vertical{max-width:min(92vw,420px)}
           <a data-wa="Hola, quiero información del sistema de ventas." href="https://wa.me/56949424720" aria-label="WhatsApp"><img src="assets/img/logo/whatsapp.png" width="34" height="34" alt=""></a>
           <a href="https://www.instagram.com/contacto.freenorte/" target="_blank" rel="noopener" aria-label="Instagram @contacto.freenorte"><img src="assets/img/logo/instagram.png" width="34" height="34" alt=""></a>
           <a href="https://www.tiktok.com/@freenorte.chile" target="_blank" rel="noopener" aria-label="TikTok @freenorte.chile"><img src="assets/img/logo/tiktok.png" width="34" height="34" alt=""></a>
-          <a href="https://www.facebook.com/search/top?q=Freenorte%20Soluciones%20Digitales" target="_blank" rel="noopener" aria-label="Facebook de Freenorte"><img src="assets/img/logo/facebook.png" width="34" height="34" alt=""></a>
+          <a href="https://www.facebook.com/profile.php?id=61594966167310" target="_blank" rel="noopener" aria-label="Facebook de Freenorte"><img src="assets/img/logo/facebook.png" width="34" height="34" alt=""></a>
         </div>
       </div>
       <div>
@@ -1201,6 +1449,7 @@ dialog.player.vertical{max-width:min(92vw,420px)}
   <video id="video" controls playsinline preload="none"></video>
 </dialog>
 
+<script src="assets/js/datos-sistemas.js"></script>
 <script>
 (function(){
   var WA='56949424720';
@@ -1263,6 +1512,56 @@ dialog.player.vertical{max-width:min(92vw,420px)}
   dlg.addEventListener('click',function(e){if(e.target===dlg)cerrar();});
   dlg.addEventListener('cancel',function(e){e.preventDefault();cerrar();});
 
+
+  /* VentaFácil paso a paso: cambia el paso según cuánto has bajado */
+  (function(){
+    var sec=document.getElementById('vf-historia'); if(!sec) return;
+    var txt=[].slice.call(sec.querySelectorAll('.vf-txt')),vis=[].slice.call(sec.querySelectorAll('[data-vf]')),dots=[].slice.call(sec.querySelectorAll('.vf-puntos i'));
+    var n=vis.length,actual=0,pendiente=false;
+    function pasoActual(){
+      var r=sec.getBoundingClientRect(),alto=sec.offsetHeight-window.innerHeight;
+      var p=alto>0?Math.min(1,Math.max(0,-r.top/alto)):0;
+      return Math.min(n-1,Math.floor(p*n));
+    }
+    function pintarPaso(){
+      pendiente=false;
+      var i=pasoActual(); if(i===actual) return; actual=i;
+      vis.forEach(function(v,k){
+        v.classList.toggle('on',k===i); v.classList.toggle('salio',k<i);
+        if(k!==i){var b=v.querySelector('.vf-boleta'); if(b){b.style.animation='none'; void b.offsetWidth; b.style.animation='';}}
+      });
+      txt.forEach(function(t,k){t.classList.toggle('on',k===i);});
+      dots.forEach(function(d,k){d.classList.toggle('on',k===i);});
+    }
+    window.addEventListener('scroll',function(){if(!pendiente){pendiente=true;requestAnimationFrame(pintarPaso);}},{passive:true});
+    window.addEventListener('resize',function(){actual=-1;pintarPaso();});
+    actual=-1; pintarPaso();
+  })();
+
+
+  /* planes 3D: las capas siguen al mouse */
+  (function(){
+    if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    [].forEach.call(document.querySelectorAll('.plan3d'),function(il){
+      var card=il.closest('.plan')||il;
+      card.addEventListener('pointermove',function(e){if(e.pointerType!=='mouse')return;var r=il.getBoundingClientRect();
+        il.style.setProperty('--mx',(((e.clientX-r.left)/r.width)*2-1).toFixed(3));il.style.setProperty('--my',(((e.clientY-r.top)/r.height)*2-1).toFixed(3));});
+      card.addEventListener('pointerleave',function(){il.style.setProperty('--mx',0);il.style.setProperty('--my',0);});
+    });
+  })();
+
+
+  /* video de marca: se reproduce solo cuando está a la vista */
+  (function(){
+    var v=document.querySelector('.marca__video video'); if(!v) return;
+    var quieto=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if(quieto){v.controls=true;return;}
+    if(!('IntersectionObserver' in window)){v.preload='auto';v.play().catch(function(){});return;}
+    new IntersectionObserver(function(es){es.forEach(function(e){
+      if(e.isIntersecting){v.preload='auto';var p=v.play();if(p&&p.catch)p.catch(function(){v.controls=true;});}else{v.pause();}
+    });},{threshold:.35}).observe(v);
+  })();
+
   /* rubros */
   var respaldo=[
     {grupo:'comercio',nombre:'VentaFácil',rubro:'Bazares y minimarkets',resumen:'Ventas rápidas, lector de códigos, stock y cierre de caja.',imagen:'assets/img/sistemas/celu-vender-productos.jpg'},
@@ -1285,7 +1584,7 @@ dialog.player.vertical{max-width:min(92vw,420px)}
       acc+='<a class="link" href="'+wa('Hola, quiero cotizar '+s.nombre+' para mi negocio ('+(s.corto||s.rubro||'de ventas').toLowerCase()+').')+'" target="_blank" rel="noopener">Cotizar</a>';
       if(s.ml) acc+='<a class="card__ml" href="'+esc(s.ml)+'" target="_blank" rel="noopener">Mercado Libre'+(s.precio?' '+precio(s.precio):'')+'</a>';
       return '<li class="card"><div class="card__img"><img src="'+esc(imagen)+'" width="720" height="338" alt="'+esc('Captura del sistema '+s.nombre)+'" loading="lazy"></div>'+
-        '<div class="card__body"><h3>'+esc(s.nombre)+'</h3><span class="card__meta">'+esc(s.rubro)+'</span>'+
+        '<div class="card__body"><img class="card__ico" src="assets/img/iconos/'+esc(s.id)+'.webp" width="192" height="192" alt="" loading="lazy" onerror="this.remove()"><h3>'+esc(s.nombre)+'</h3><span class="card__meta">'+esc(s.rubro)+'</span>'+
         '<p>'+esc(s.resumen)+'</p><div class="card__acts">'+acc+'</div></div></li>';
     }).join('');
   }

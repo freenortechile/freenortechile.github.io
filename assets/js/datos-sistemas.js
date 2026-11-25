@@ -1,5 +1,53 @@
-/* Datos de los 16 sistemas. Para cambiar un texto, edita este archivo. */
+/* Datos de los 18 sistemas. Para cambiar un texto, edita este archivo. */
 window.FN_SISTEMAS = [
+ {
+  "id": "ventafacil",
+  "nombre": "VentaFácil",
+  "rubro": "Bazares, minimarkets y almacenes",
+  "corto": "Bazar o minimarket",
+  "grupo": "comercio",
+  "color": "#4f46e5",
+  "resumen": "Vende con la cámara del celular o con lector, el stock se descuenta solo y entregas boleta interna impresa o por WhatsApp.",
+  "modulos": [
+   [
+    "Vender",
+    "Escanea o busca el producto y cobra en segundos."
+   ],
+   [
+    "Inventario",
+    "Stock al día y aviso de productos por agotarse."
+   ],
+   [
+    "Caja",
+    "Apertura, retiros y cierre con arqueo."
+   ]
+  ],
+  "imagen": "assets/img/sistemas/celu-vender-productos.jpg",
+  "video": "assets/videos/vid-ventafacil-celular.mp4",
+  "poster": "assets/videos/vid-ventafacil-celular.jpg",
+  "vertical": true,
+  "demo": null,
+  "boleta": {
+   "negocio": "Tienda demo",
+   "items": [
+    [
+     "Cuaderno universitario",
+     3,
+     2490
+    ],
+    [
+     "Bebida 1,5 L",
+     2,
+     1790
+    ],
+    [
+     "Papas fritas 110 g",
+     1,
+     1690
+    ]
+   ]
+  }
+ },
  {
   "id": "gestiona",
   "nombre": "GESTIONA POS",
@@ -962,6 +1010,49 @@ window.FN_SISTEMAS = [
     ]
    ],
    "nota": "Retira: Pedro Rojas · Turno día"
+  }
+ },
+ {
+  "id": "verdunorte",
+  "nombre": "VerduNorte",
+  "rubro": "Verdulerías y fruterías",
+  "corto": "Verdulería",
+  "grupo": "comercio",
+  "color": "#16a34a",
+  "resumen": "Cobras por kilo o por monto con el precio del día, el stock en kilos se descuenta solo y entregas boleta interna.",
+  "modulos": [
+   [
+    "Venta por kilo",
+    "Gramos de la balanza o monto en pesos."
+   ],
+   [
+    "Precio del día",
+    "Cambias el precio del kilo cada mañana."
+   ],
+   [
+    "Stock en kilos",
+    "Sabes cuánto te queda de cada producto."
+   ]
+  ],
+  "imagen": "assets/img/sistemas/celu-verdunorte.jpg",
+  "video": null,
+  "poster": null,
+  "vertical": false,
+  "demo": null,
+  "boleta": {
+   "negocio": "Verdulería de ejemplo",
+   "items": [
+    [
+     "Papa (500 g)",
+     1,
+     1000
+    ],
+    [
+     "Tomate (1 kg)",
+     1,
+     1490
+    ]
+   ]
   }
  }
 ];
