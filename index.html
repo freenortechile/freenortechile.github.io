@@ -785,9 +785,29 @@ dialog.player.vertical{max-width:min(92vw,420px)}
 .svc > div{position:relative;overflow:hidden;isolation:isolate}
 .svc__foto{display:block;pointer-events:none;user-select:none}
 .svc--tarjeta > div{padding-top:0}
-.svc--tarjeta .svc__foto{margin:0 -24px;width:calc(100% + 48px);max-width:none;aspect-ratio:1200/620;object-fit:cover;object-position:center 30%;border-bottom:1px solid var(--line);background:linear-gradient(160deg,#f4efe5,#e5dac6)}
+.svc--tarjeta .svc__foto{margin:0 -24px;width:calc(100% + 48px);max-width:none;aspect-ratio:1080/600;object-fit:cover;object-position:center;border-bottom:1px solid var(--line);background:linear-gradient(160deg,#f4efe5,#e5dac6)}
 :root[data-theme="dark"] .svc--tarjeta .svc__foto{background:linear-gradient(160deg,#1c2639,#111926)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .svc--tarjeta .svc__foto{background:linear-gradient(160deg,#1c2639,#111926)}}
+
+/* Iconos 3D en funciones, pasos de inventario, medios de pago y servicios sueltos */
+.ic3d{display:block;object-fit:contain;filter:drop-shadow(0 6px 10px rgba(13,21,38,.14))}
+.feat .ic3d,.feat .ic3d-wrap{width:64px;height:64px;margin-bottom:14px}
+.ic3d-wrap{position:relative;display:block}
+.ic3d__badge{position:absolute;right:-6px;bottom:-4px;width:26px;height:26px;border-radius:50%;box-shadow:0 2px 6px rgba(13,21,38,.2)}
+.inv__steps div{position:relative}
+.ic3d--paso{position:absolute;top:16px;right:16px;width:72px;height:72px;filter:drop-shadow(0 8px 14px rgba(0,0,0,.35))}
+.inv__steps h3,.inv__steps p{padding-right:0}
+.inv__steps h3{margin-right:64px}
+.pagos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:16px}
+.pagos > div{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:var(--r-md);background:var(--bg-2);font-size:.9rem;color:var(--ink-2);line-height:1.35;min-width:0}
+.pagos .ic3d{width:44px;height:44px;flex:none}
+.rows li.row3d{align-items:center;justify-content:flex-start}
+.rows li.row3d > span{flex:1;min-width:0}
+.rows .ic3d{width:48px;height:48px;flex:none}
+.rows .logos{display:flex;align-items:center;gap:8px;margin-top:6px}
+.rows .logos img{height:20px;width:auto;display:block}
+@media (max-width:420px){.pagos{grid-template-columns:1fr}}
+@media (max-width:560px){.rows li.row3d{display:grid;grid-template-columns:48px minmax(0,1fr);column-gap:12px;row-gap:6px;align-items:start}.rows li.row3d .ic3d{grid-row:span 2}.rows li.row3d b{grid-column:2}}
 </style>
 </head>
 <body>
@@ -924,26 +944,6 @@ dialog.player.vertical{max-width:min(92vw,420px)}
         <source src="assets/videos/freenorte-logo-3d.mp4" type="video/mp4">
       </video>
     </div>
-  </div>
-</section>
-
-<section class="sec sec--alt" id="problemas">
-  <div class="wrap">
-    <div class="cab">
-      <div><span class="kicker">Control de tu negocio</span><h2>Vender sin control te puede costar caro</h2></div>
-      <p>Un registro claro de las ventas, el stock y los costos te ayuda a tomar mejores decisiones cada día.</p>
-    </div>
-    <div class="pain__grid">
-      <article class="pain__item"><small>Ventas y comprobantes</small><h3>¿No estás registrando cada venta o no sabes qué comprobante estás entregando?</h3></article>
-      <article class="pain__item"><small>Ganancias</small><h3>¿No tienes claro cuánto margen te deja cada producto?</h3></article>
-      <article class="pain__item"><small>Inventario</small><h3>¿No sabes cuánto stock tienes o qué productos debes reponer?</h3></article>
-      <article class="pain__item"><small>Cambios y devoluciones</small><h3>¿Te devuelven artículos y te cuesta encontrar el registro de la venta?</h3></article>
-    </div>
-    <div class="pain__close">
-      <p><strong>Te recomendamos Freenorte Soluciones Digitales.</strong> Te ayudamos a implementar un sistema de venta fácil de usar para registrar tus ventas, controlar el stock y revisar tus resultados, con instalación y capacitación.</p>
-      <a class="btn btn--gold" data-wa="Hola, quiero ordenar las ventas, el stock y revisar el margen de mi negocio." href="https://wa.me/56949424720">Conversemos por WhatsApp</a>
-    </div>
-    <p class="pain__note">Importante: el sistema genera comprobantes internos de venta; estos no reemplazan la boleta tributaria electrónica oficial. Para emitirla, debes usar una solución autorizada por el SII.</p>
   </div>
 </section>
 
@@ -1111,7 +1111,7 @@ dialog.player.vertical{max-width:min(92vw,420px)}
       </div>
       <div class="panel">
         <h3><svg class="ico"><use href="#i-card"/></svg>Medios de pago</h3>
-        <div class="chips"><span>Crédito en cuotas con Mercado Pago</span><span>Débito</span><span>Transferencia</span><span>Efectivo en la visita</span></div>
+        <div class="pagos"><div><img class="ic3d" src="assets/img/iconos3d/pago-credito.webp" width="56" height="56" alt="" loading="lazy" decoding="async"><span>Crédito en cuotas con Mercado Pago</span></div><div><img class="ic3d" src="assets/img/iconos3d/pago-debito.webp" width="56" height="56" alt="" loading="lazy" decoding="async"><span>Débito</span></div><div><img class="ic3d" src="assets/img/iconos3d/pago-transferencia.webp" width="56" height="56" alt="" loading="lazy" decoding="async"><span>Transferencia</span></div><div><img class="ic3d" src="assets/img/iconos3d/pago-efectivo.webp" width="56" height="56" alt="" loading="lazy" decoding="async"><span>Efectivo en la visita</span></div></div>
       </div>
     </div>
   </div>
@@ -1138,14 +1138,14 @@ dialog.player.vertical{max-width:min(92vw,420px)}
       </figure>
     </div>
     <div class="feat">
-      <div><span class="ic"><svg class="ico"><use href="#i-device"/></svg></span><h3>Computador, tablet y celular</h3><p>Se instala como una aplicación en Android y iPhone.</p></div>
-      <div><span class="ic"><svg class="ico"><use href="#i-offline"/></svg></span><h3>Funciona sin internet</h3><p>Si se corta la señal, sigues vendiendo.</p></div>
-      <div><span class="ic"><svg class="ico"><use href="#i-scan"/></svg></span><h3>Lector de códigos</h3><p>Con pistola o con la cámara del celular.</p></div>
-      <div><span class="ic"><svg class="ico"><use href="#i-camera"/></svg></span><h3>Fotos</h3><p>De productos, recetas, equipos o incidentes.</p></div>
-      <div><span class="ic"><svg class="ico"><use href="#i-cash"/></svg></span><h3>Caja con arqueo</h3><p>Apertura, retiros y cierre contando billetes.</p></div>
-      <div><span class="ic"><svg class="ico"><use href="#i-users"/></svg></span><h3>Usuarios y permisos</h3><p>Cada vendedor ve solo lo que le corresponde.</p></div>
-      <div><span class="ic"><svg class="ico"><use href="#i-print"/></svg></span><h3>Impresión y WhatsApp</h3><p>Comprobantes e informes en PDF, y envío por WhatsApp.</p></div>
-      <div><span class="ic"><svg class="ico"><use href="#i-shield"/></svg></span><h3>Respaldos y seguridad</h3><p>Contraseñas protegidas y copias de seguridad.</p></div>
+      <div><img class="ic3d" src="assets/img/iconos3d/feat-equipos.webp" width="64" height="64" alt="" loading="lazy" decoding="async"><h3>Computador, tablet y celular</h3><p>Se instala como una aplicación en Android y iPhone.</p></div>
+      <div><img class="ic3d" src="assets/img/iconos3d/feat-offline.webp" width="64" height="64" alt="" loading="lazy" decoding="async"><h3>Funciona sin internet</h3><p>Si se corta la señal, sigues vendiendo.</p></div>
+      <div><img class="ic3d" src="assets/img/iconos3d/feat-lector.webp" width="64" height="64" alt="" loading="lazy" decoding="async"><h3>Lector de códigos</h3><p>Con pistola o con la cámara del celular.</p></div>
+      <div><img class="ic3d" src="assets/img/iconos3d/feat-fotos.webp" width="64" height="64" alt="" loading="lazy" decoding="async"><h3>Fotos</h3><p>De productos, recetas, equipos o incidentes.</p></div>
+      <div><img class="ic3d" src="assets/img/iconos3d/feat-caja.webp" width="64" height="64" alt="" loading="lazy" decoding="async"><h3>Caja con arqueo</h3><p>Apertura, retiros y cierre contando billetes.</p></div>
+      <div><img class="ic3d" src="assets/img/iconos3d/feat-usuarios.webp" width="64" height="64" alt="" loading="lazy" decoding="async"><h3>Usuarios y permisos</h3><p>Cada vendedor ve solo lo que le corresponde.</p></div>
+      <div><span class="ic3d-wrap"><img class="ic3d" src="assets/img/iconos3d/feat-impresion.webp" width="64" height="64" alt="" loading="lazy" decoding="async"><img class="ic3d__badge" src="assets/img/logo/whatsapp.png" width="26" height="26" alt="" loading="lazy"></span><h3>Impresión y WhatsApp</h3><p>Comprobantes e informes en PDF, y envío por WhatsApp.</p></div>
+      <div><img class="ic3d" src="assets/img/iconos3d/feat-seguridad.webp" width="64" height="64" alt="" loading="lazy" decoding="async"><h3>Respaldos y seguridad</h3><p>Contraseñas protegidas y copias de seguridad.</p></div>
     </div>
     <div class="zero"><span>Costo extra por estas funciones</span><b class="num">$0</b></div>
   </div>
@@ -1176,10 +1176,10 @@ dialog.player.vertical{max-width:min(92vw,420px)}
     </div>
     <div class="inv">
       <div class="inv__steps">
-        <div><span>1</span><h3>Nos cuentas de tu negocio</h3><p>Qué vendes y cuántos productos tienes. Te enviamos el valor, sin compromiso.</p></div>
-        <div><span>2</span><h3>Contamos tu mercadería</h3><p>Por producto, talla y color, con doble conteo para que los números cuadren.</p></div>
-        <div><span>3</span><h3>La cargamos al sistema</h3><p>Productos, precios, costos y stock listos, con tus usuarios y tu logo.</p></div>
-        <div><span>4</span><h3>Sales a vender</h3><p>Recibes tu inventario valorizado en Excel y PDF: cuánto tienes invertido y cuánto vale.</p></div>
+        <div><span>1</span><img class="ic3d ic3d--paso" src="assets/img/iconos3d/paso-negocio.webp" width="72" height="72" alt="" loading="lazy" decoding="async"><h3>Nos cuentas de tu negocio</h3><p>Qué vendes y cuántos productos tienes. Te enviamos el valor, sin compromiso.</p></div>
+        <div><span>2</span><img class="ic3d ic3d--paso" src="assets/img/iconos3d/paso-conteo.webp" width="72" height="72" alt="" loading="lazy" decoding="async"><h3>Contamos tu mercadería</h3><p>Por producto, talla y color, con doble conteo para que los números cuadren.</p></div>
+        <div><span>3</span><img class="ic3d ic3d--paso" src="assets/img/iconos3d/paso-carga.webp" width="72" height="72" alt="" loading="lazy" decoding="async"><h3>La cargamos al sistema</h3><p>Productos, precios, costos y stock listos, con tus usuarios y tu logo.</p></div>
+        <div><span>4</span><img class="ic3d ic3d--paso" src="assets/img/iconos3d/paso-vender.webp" width="72" height="72" alt="" loading="lazy" decoding="async"><h3>Sales a vender</h3><p>Recibes tu inventario valorizado en Excel y PDF: cuánto tienes invertido y cuánto vale.</p></div>
       </div>
       <article class="case">
         <button class="vbtn" type="button" data-video="assets/videos/gestiona.mp4">
@@ -1258,8 +1258,8 @@ dialog.player.vertical{max-width:min(92vw,420px)}
       <div class="panel">
         <h3><svg class="ico"><use href="#i-tag"/></svg>Servicios sueltos</h3>
         <ul class="rows">
-          <li><span>Gestión de Mercado Libre<small>5 publicaciones nuevas y revisión de precios</small></span><b>$35.000 /mes</b></li>
-          <li><span>Marketing en redes sociales<small>4 publicaciones y 2 videos al mes</small></span><b>$49.990 /mes</b></li>
+          <li class="row3d"><img class="ic3d" src="assets/img/iconos3d/serv-ml.webp" width="52" height="52" alt="" loading="lazy" decoding="async"><span>Gestión de Mercado Libre<small>5 publicaciones nuevas y revisión de precios</small><span class="logos"><img src="assets/img/logo/mercado-libre-png.png" width="60" height="23" alt="Mercado Libre" loading="lazy"></span></span><b>$35.000 /mes</b></li>
+          <li class="row3d"><img class="ic3d" src="assets/img/iconos3d/serv-redes.webp" width="52" height="52" alt="" loading="lazy" decoding="async"><span>Marketing en redes sociales<small>4 publicaciones y 2 videos al mes</small><span class="logos"><img src="assets/img/logo/instagram.png" width="20" height="20" alt="Instagram" loading="lazy"><img src="assets/img/logo/facebook.png" width="20" height="20" alt="Facebook" loading="lazy"><img src="assets/img/logo/tiktok.png" width="20" height="20" alt="TikTok" loading="lazy"></span></span><b>$49.990 /mes</b></li>
         </ul>
       </div>
       <div class="panel">
@@ -1279,7 +1279,7 @@ dialog.player.vertical{max-width:min(92vw,420px)}
     </div>
     <div class="svc svc--tarjeta">
       <div>
-        <img class="svc__foto" src="assets/img/medida-desarrollo.webp" alt="" width="1200" height="760" loading="lazy" decoding="async">
+        <img class="svc__foto" src="assets/img/medida-desarrollo.webp" alt="" width="1080" height="600" loading="lazy" decoding="async">
         <h3>Diseño y desarrollo</h3>
         <div class="svc__list">
           <div class="svc__item"><span class="ic-box"><svg class="ico"><use href="#i-code"/></svg></span><div><h4>Desarrollo de sistemas</h4><p>Sistemas personalizados para tu empresa.</p></div></div>
@@ -1287,7 +1287,7 @@ dialog.player.vertical{max-width:min(92vw,420px)}
         </div>
       </div>
       <div>
-        <img class="svc__foto" src="assets/img/medida-datos.webp" alt="" width="1200" height="760" loading="lazy" decoding="async">
+        <img class="svc__foto" src="assets/img/medida-datos.webp" alt="" width="1080" height="600" loading="lazy" decoding="async">
         <h3>Aplicaciones y datos</h3>
         <div class="svc__list">
           <div class="svc__item"><span class="ic-box"><svg class="ico"><use href="#i-device"/></svg></span><div><h4>Aplicaciones web</h4><p>Para computador, tablet y celular.</p></div></div>
@@ -1295,7 +1295,7 @@ dialog.player.vertical{max-width:min(92vw,420px)}
         </div>
       </div>
       <div>
-        <img class="svc__foto" src="assets/img/medida-soporte.webp" alt="" width="1200" height="760" loading="lazy" decoding="async">
+        <img class="svc__foto" src="assets/img/medida-soporte.webp" alt="" width="1080" height="600" loading="lazy" decoding="async">
         <h3>Automatización y soporte</h3>
         <div class="svc__list">
           <div class="svc__item"><span class="ic-box"><svg class="ico"><use href="#i-zap"/></svg></span><div><h4>Automatización</h4><p>Digitalización de procesos y herramientas.</p></div></div>
