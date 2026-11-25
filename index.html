@@ -848,10 +848,11 @@ dialog.player.vertical{max-width:min(92vw,420px)}
       <span>FREE<b>NORTE</b></span>
     </a>
     <nav class="nav" aria-label="Secciones">
-      <a href="#planes">Planes</a>
       <a href="#rubros">Rubros</a>
+      <a href="#planes">Planes</a>
       <a href="#inventario">Inventario</a>
       <a href="#marketing">Marketing</a>
+      <a href="#medida">A medida</a>
       <a href="#preguntas">Preguntas</a>
     </nav>
     <button class="btn btn--ghost theme-toggle" id="theme-toggle" type="button" aria-label="Cambiar al tema claro" title="Cambiar al tema claro" hidden>
@@ -922,32 +923,24 @@ dialog.player.vertical{max-width:min(92vw,420px)}
 
 <div class="strip" role="note" aria-label="Rubros con sistema: Bazares, Minimarkets, Verdulerías, Ferreterías, Botillerías, Zapatillas, Ropa y calzado, Farmacias, Ópticas, Joyerías, Celulares, Talleres, Peluquerías, Clínicas dentales, Gimnasios, Bodegas, Perfumerías, Minería"><div class="strip__track" aria-hidden="true"><span>Bazares</span><span>Minimarkets</span><span>Verdulerías</span><span>Ferreterías</span><span>Botillerías</span><span>Zapatillas</span><span>Ropa y calzado</span><span>Farmacias</span><span>Ópticas</span><span>Joyerías</span><span>Celulares</span><span>Talleres</span><span>Peluquerías</span><span>Clínicas dentales</span><span>Gimnasios</span><span>Bodegas</span><span>Perfumerías</span><span>Minería</span><span>Bazares</span><span>Minimarkets</span><span>Verdulerías</span><span>Ferreterías</span><span>Botillerías</span><span>Zapatillas</span><span>Ropa y calzado</span><span>Farmacias</span><span>Ópticas</span><span>Joyerías</span><span>Celulares</span><span>Talleres</span><span>Peluquerías</span><span>Clínicas dentales</span><span>Gimnasios</span><span>Bodegas</span><span>Perfumerías</span><span>Minería</span></div></div>
 
-<section class="marca" id="freenorte" aria-label="Quiénes somos">
-  <div class="wrap marca__grid">
-    <div class="marca__texto">
-      <span class="kicker">Freenorte · Soluciones digitales</span>
-      <h2>Sistemas, inventario y marketing para negocios del norte</h2>
-      <p>Somos de Alto Hospicio. Te instalamos el sistema de ventas en tu local, te dejamos el inventario cargado y te ayudamos a vender por internet.</p>
-      <ul class="marca__lista">
-        <li><svg class="ico"><use href="#i-check"/></svg>Sistemas de venta para celular y computador</li>
-        <li><svg class="ico"><use href="#i-check"/></svg>Inventario contado, cargado y valorizado</li>
-        <li><svg class="ico"><use href="#i-check"/></svg>Redes sociales, Mercado Libre y página web</li>
-      </ul>
-      <p class="marca__zona">Atención en terreno en Alto Hospicio, Iquique, Arica y Pozo Almonte.</p>
-      <div class="cta">
-        <a class="btn btn--gold" href="https://wa.me/56949424720?text=Hola%20Freenorte%2C%20quiero%20saber%20m%C3%A1s%20de%20sus%20servicios" target="_blank" rel="noopener">Escríbenos por WhatsApp</a>
-        <a class="btn marca__btn2" href="#planes">Ver planes y precios</a>
-      </div>
+<section class="sec sec--alt" id="rubros">
+  <div class="wrap">
+    <div class="cab">
+      <div><span class="kicker">Rubros</span><h2>Un sistema pensado para tu negocio</h2></div>
+      <p>Busca tu rubro y mira su video. Algunos también se venden en Mercado Libre: recibes el instalador, la app para el celular y la guía, y lo instalas tú.</p>
     </div>
-    <div class="marca__video">
-      <video muted loop playsinline preload="none" poster="assets/videos/freenorte-logo-3d.jpg" width="720" height="1280" aria-label="Video del logo Freenorte: de un computador y un celular con el sistema de ventas sale una brújula dorada que apunta al norte">
-        <source src="assets/videos/freenorte-logo-3d.mp4" type="video/mp4">
-      </video>
+    <div class="seg" role="group" aria-label="Filtrar rubros">
+      <button type="button" data-grupo="todos" aria-pressed="true">Todos</button>
+      <button type="button" data-grupo="comercio" aria-pressed="false">Comercio</button>
+      <button type="button" data-grupo="salud" aria-pressed="false">Salud</button>
+      <button type="button" data-grupo="servicios" aria-pressed="false">Servicios</button>
+      <button type="button" data-grupo="industria" aria-pressed="false">Industria</button>
     </div>
+    <ul class="cards" id="lista-rubros"><li class="card"><div class="card__body"><p>Activa JavaScript para ver la lista, o escríbenos por WhatsApp y te contamos.</p></div></li></ul>
   </div>
 </section>
 
-<section class="sec sec--alt vf" id="como" aria-label="Cómo funciona VentaFácil, paso a paso">
+<section class="sec vf" id="como" aria-label="Cómo funciona VentaFácil, paso a paso">
   <div class="wrap">
     <div class="cab">
       <div><span class="kicker">Cómo funciona</span><h2>Del cuaderno a saber cuánto ganaste</h2></div>
@@ -1027,17 +1020,52 @@ dialog.player.vertical{max-width:min(92vw,420px)}
   </div>
 </section>
 
-<section class="sec">
+<section class="sec sec--alt">
   <div class="wrap">
     <div class="cab">
-      <div><span class="kicker">Así empiezas</span><h2>Funcionando en un día</h2></div>
-      <p>Vamos a tu local en Iquique, Alto Hospicio, Pozo Almonte y Arica, y atendemos a distancia en todo Chile.</p>
+      <div><span class="kicker">Incluido</span><h2>Todo esto viene en todos los sistemas</h2></div>
+      <p>Cambia el rubro, no la calidad. No pagas extra por ninguna de estas funciones.</p>
     </div>
-    <ol class="steps">
-      <li><span class="n">1</span><h3>Elige tu equipo</h3><p>Celular, tablet o computador. Sirve el que ya usas en tu local.</p></li>
-      <li><span class="n">2</span><h3>Lo instalamos</h3><p>Dejamos el sistema funcionando en tu equipo, creamos tus usuarios y te enseñamos a usarlo.</p></li>
-      <li><span class="n">3</span><h3>Vendes desde el día 1</h3><p>Ingresas tus productos y empiezas a vender. Si prefieres que los carguemos nosotros, es el <a class="link" href="#inventario">servicio de inventario</a>.</p></li>
-    </ol>
+    <div class="feat__showcase" aria-label="Vistas del sistema de ventas">
+      <figure>
+        <img src="assets/img/sistemas/celu-vender-productos.jpg" width="585" height="1266" alt="Pantalla del sistema de ventas con lista y catálogo de productos" loading="lazy">
+        <figcaption>Ventas desde el celular<span>Busca productos y registra cada venta.</span></figcaption>
+      </figure>
+      <figure>
+        <img src="assets/img/sistemas/celu-stockbajo.jpg" width="585" height="1266" alt="Vista de inventario con productos bajo el stock mínimo" loading="lazy">
+        <figcaption>Control de inventario<span>Revisa existencias y productos por reponer.</span></figcaption>
+      </figure>
+      <figure>
+        <img src="assets/img/sistemas/celu-inicio.jpg" width="585" height="1266" alt="Panel de inicio con resumen de ventas, caja y productos por agotarse" loading="lazy">
+        <figcaption>Resumen del negocio<span>Consulta ventas, caja y alertas de stock.</span></figcaption>
+      </figure>
+    </div>
+    <div class="feat">
+      <div><img class="ic3d" src="assets/img/iconos3d/feat-equipos.webp" width="64" height="64" alt="" loading="lazy" decoding="async"><h3>Computador, tablet y celular</h3><p>Se instala como una aplicación en Android y iPhone.</p></div>
+      <div><img class="ic3d" src="assets/img/iconos3d/feat-offline.webp" width="64" height="64" alt="" loading="lazy" decoding="async"><h3>Funciona sin internet</h3><p>Si se corta la señal, sigues vendiendo.</p></div>
+      <div><img class="ic3d" src="assets/img/iconos3d/feat-lector.webp" width="64" height="64" alt="" loading="lazy" decoding="async"><h3>Lector de códigos</h3><p>Con pistola o con la cámara del celular.</p></div>
+      <div><img class="ic3d" src="assets/img/iconos3d/feat-fotos.webp" width="64" height="64" alt="" loading="lazy" decoding="async"><h3>Fotos</h3><p>De productos, recetas, equipos o incidentes.</p></div>
+      <div><img class="ic3d" src="assets/img/iconos3d/feat-caja.webp" width="64" height="64" alt="" loading="lazy" decoding="async"><h3>Caja con arqueo</h3><p>Apertura, retiros y cierre contando billetes.</p></div>
+      <div><img class="ic3d" src="assets/img/iconos3d/feat-usuarios.webp" width="64" height="64" alt="" loading="lazy" decoding="async"><h3>Usuarios y permisos</h3><p>Cada vendedor ve solo lo que le corresponde.</p></div>
+      <div><span class="ic3d-wrap"><img class="ic3d" src="assets/img/iconos3d/feat-impresion.webp" width="64" height="64" alt="" loading="lazy" decoding="async"><img class="ic3d__badge" src="assets/img/logo/whatsapp.png" width="26" height="26" alt="" loading="lazy"></span><h3>Impresión y WhatsApp</h3><p>Comprobantes e informes en PDF, y envío por WhatsApp.</p></div>
+      <div><img class="ic3d" src="assets/img/iconos3d/feat-seguridad.webp" width="64" height="64" alt="" loading="lazy" decoding="async"><h3>Respaldos y seguridad</h3><p>Contraseñas protegidas y copias de seguridad.</p></div>
+    </div>
+    <div class="zero"><span>Costo extra por estas funciones</span><b class="num">$0</b></div>
+  </div>
+</section>
+
+<section class="sec" id="videos">
+  <div class="wrap">
+    <div class="cab">
+      <div><span class="kicker">Videos</span><h2>Míralo en menos de un minuto</h2></div>
+      <p>Videos con voz de nuestros sistemas y servicios. Más en <a class="link" href="https://www.tiktok.com/@freenorte.chile" target="_blank" rel="noopener">TikTok</a> e <a class="link" href="https://www.instagram.com/contacto.freenorte/" target="_blank" rel="noopener">Instagram</a>.</p>
+    </div>
+    <div class="vids">
+      <figure><button class="vbtn" type="button" data-video="assets/videos/vid-ventafacil-celular.mp4" data-vertical aria-label="Ver video: VentaFácil en tu celular"><img src="assets/img/sistemas/celu-vender-productos.jpg" width="585" height="1266" alt="Vista previa de VentaFácil con fotos de productos de ejemplo" loading="lazy"><span class="play"><i><svg viewBox="0 0 24 24"><use href="#i-play"/></svg></i>1 min</span></button><figcaption><b>VentaFácil en tu celular</b><span>Para bazares, minimarkets y ferreterías.</span></figcaption></figure>
+      <figure><button class="vbtn" type="button" data-video="assets/videos/vid-sportpos-pc.mp4" data-vertical aria-label="Ver video: SportPOS en el computador"><img src="assets/img/sistemas/celu-vender-productos.jpg" width="585" height="1266" alt="Vista previa del catálogo de productos en VentaFácil" loading="lazy"><span class="play"><i><svg viewBox="0 0 24 24"><use href="#i-play"/></svg></i>1 min</span></button><figcaption><b>SportPOS en el computador</b><span>Para tiendas de zapatillas y ropa deportiva.</span></figcaption></figure>
+      <figure><button class="vbtn" type="button" data-video="assets/videos/vid-servicio-inventario.mp4" data-vertical aria-label="Ver video: servicio de inventario"><img src="assets/img/sistemas/celu-stockbajo.jpg" width="585" height="1266" alt="Vista previa del control de inventario" loading="lazy"><span class="play"><i><svg viewBox="0 0 24 24"><use href="#i-play"/></svg></i>1 min</span></button><figcaption><b>Servicio de inventario</b><span>Contamos, valorizamos y cargamos tu mercadería.</span></figcaption></figure>
+      <figure><button class="vbtn" type="button" data-video="assets/videos/vid-marketing.mp4" data-vertical aria-label="Ver video: marketing digital"><img src="assets/img/sistemas/celu-inicio.jpg" width="585" height="1266" alt="Vista previa del panel de resultados" loading="lazy"><span class="play"><i><svg viewBox="0 0 24 24"><use href="#i-play"/></svg></i>1 min</span></button><figcaption><b>Marketing digital</b><span>Redes, Mercado Libre y tu página web.</span></figcaption></figure>
+    </div>
   </div>
 </section>
 
@@ -1120,51 +1148,14 @@ dialog.player.vertical{max-width:min(92vw,420px)}
 <section class="sec">
   <div class="wrap">
     <div class="cab">
-      <div><span class="kicker">Incluido</span><h2>Todo esto viene en todos los sistemas</h2></div>
-      <p>Cambia el rubro, no la calidad. No pagas extra por ninguna de estas funciones.</p>
+      <div><span class="kicker">Así empiezas</span><h2>Funcionando en un día</h2></div>
+      <p>Vamos a tu local en Iquique, Alto Hospicio, Pozo Almonte y Arica, y atendemos a distancia en todo Chile.</p>
     </div>
-    <div class="feat__showcase" aria-label="Vistas del sistema de ventas">
-      <figure>
-        <img src="assets/img/sistemas/celu-vender-productos.jpg" width="585" height="1266" alt="Pantalla del sistema de ventas con lista y catálogo de productos" loading="lazy">
-        <figcaption>Ventas desde el celular<span>Busca productos y registra cada venta.</span></figcaption>
-      </figure>
-      <figure>
-        <img src="assets/img/sistemas/celu-stockbajo.jpg" width="585" height="1266" alt="Vista de inventario con productos bajo el stock mínimo" loading="lazy">
-        <figcaption>Control de inventario<span>Revisa existencias y productos por reponer.</span></figcaption>
-      </figure>
-      <figure>
-        <img src="assets/img/sistemas/celu-inicio.jpg" width="585" height="1266" alt="Panel de inicio con resumen de ventas, caja y productos por agotarse" loading="lazy">
-        <figcaption>Resumen del negocio<span>Consulta ventas, caja y alertas de stock.</span></figcaption>
-      </figure>
-    </div>
-    <div class="feat">
-      <div><img class="ic3d" src="assets/img/iconos3d/feat-equipos.webp" width="64" height="64" alt="" loading="lazy" decoding="async"><h3>Computador, tablet y celular</h3><p>Se instala como una aplicación en Android y iPhone.</p></div>
-      <div><img class="ic3d" src="assets/img/iconos3d/feat-offline.webp" width="64" height="64" alt="" loading="lazy" decoding="async"><h3>Funciona sin internet</h3><p>Si se corta la señal, sigues vendiendo.</p></div>
-      <div><img class="ic3d" src="assets/img/iconos3d/feat-lector.webp" width="64" height="64" alt="" loading="lazy" decoding="async"><h3>Lector de códigos</h3><p>Con pistola o con la cámara del celular.</p></div>
-      <div><img class="ic3d" src="assets/img/iconos3d/feat-fotos.webp" width="64" height="64" alt="" loading="lazy" decoding="async"><h3>Fotos</h3><p>De productos, recetas, equipos o incidentes.</p></div>
-      <div><img class="ic3d" src="assets/img/iconos3d/feat-caja.webp" width="64" height="64" alt="" loading="lazy" decoding="async"><h3>Caja con arqueo</h3><p>Apertura, retiros y cierre contando billetes.</p></div>
-      <div><img class="ic3d" src="assets/img/iconos3d/feat-usuarios.webp" width="64" height="64" alt="" loading="lazy" decoding="async"><h3>Usuarios y permisos</h3><p>Cada vendedor ve solo lo que le corresponde.</p></div>
-      <div><span class="ic3d-wrap"><img class="ic3d" src="assets/img/iconos3d/feat-impresion.webp" width="64" height="64" alt="" loading="lazy" decoding="async"><img class="ic3d__badge" src="assets/img/logo/whatsapp.png" width="26" height="26" alt="" loading="lazy"></span><h3>Impresión y WhatsApp</h3><p>Comprobantes e informes en PDF, y envío por WhatsApp.</p></div>
-      <div><img class="ic3d" src="assets/img/iconos3d/feat-seguridad.webp" width="64" height="64" alt="" loading="lazy" decoding="async"><h3>Respaldos y seguridad</h3><p>Contraseñas protegidas y copias de seguridad.</p></div>
-    </div>
-    <div class="zero"><span>Costo extra por estas funciones</span><b class="num">$0</b></div>
-  </div>
-</section>
-
-<section class="sec sec--alt" id="rubros">
-  <div class="wrap">
-    <div class="cab">
-      <div><span class="kicker">Rubros</span><h2>Un sistema pensado para tu negocio</h2></div>
-      <p>Busca tu rubro y mira su video. Algunos también se venden en Mercado Libre: recibes el instalador, la app para el celular y la guía, y lo instalas tú.</p>
-    </div>
-    <div class="seg" role="group" aria-label="Filtrar rubros">
-      <button type="button" data-grupo="todos" aria-pressed="true">Todos</button>
-      <button type="button" data-grupo="comercio" aria-pressed="false">Comercio</button>
-      <button type="button" data-grupo="salud" aria-pressed="false">Salud</button>
-      <button type="button" data-grupo="servicios" aria-pressed="false">Servicios</button>
-      <button type="button" data-grupo="industria" aria-pressed="false">Industria</button>
-    </div>
-    <ul class="cards" id="lista-rubros"><li class="card"><div class="card__body"><p>Activa JavaScript para ver la lista, o escríbenos por WhatsApp y te contamos.</p></div></li></ul>
+    <ol class="steps">
+      <li><span class="n">1</span><h3>Elige tu equipo</h3><p>Celular, tablet o computador. Sirve el que ya usas en tu local.</p></li>
+      <li><span class="n">2</span><h3>Lo instalamos</h3><p>Dejamos el sistema funcionando en tu equipo, creamos tus usuarios y te enseñamos a usarlo.</p></li>
+      <li><span class="n">3</span><h3>Vendes desde el día 1</h3><p>Ingresas tus productos y empiezas a vender. Si prefieres que los carguemos nosotros, es el <a class="link" href="#inventario">servicio de inventario</a>.</p></li>
+    </ol>
   </div>
 </section>
 
@@ -1200,7 +1191,7 @@ dialog.player.vertical{max-width:min(92vw,420px)}
   </div>
 </section>
 
-<section class="sec" id="marketing">
+<section class="sec sec--alt" id="marketing">
   <div class="wrap">
     <div class="cab">
       <div><span class="kicker">Marketing digital</span><h2>Que tu negocio venda también por internet</h2></div>
@@ -1307,22 +1298,32 @@ dialog.player.vertical{max-width:min(92vw,420px)}
   </div>
 </section>
 
-<section class="sec sec--alt" id="videos">
-  <div class="wrap">
-    <div class="cab">
-      <div><span class="kicker">Videos</span><h2>Míralo en menos de un minuto</h2></div>
-      <p>Videos con voz de nuestros sistemas y servicios. Más en <a class="link" href="https://www.tiktok.com/@freenorte.chile" target="_blank" rel="noopener">TikTok</a> e <a class="link" href="https://www.instagram.com/contacto.freenorte/" target="_blank" rel="noopener">Instagram</a>.</p>
+<section class="marca" id="freenorte" aria-label="Quiénes somos">
+  <div class="wrap marca__grid">
+    <div class="marca__texto">
+      <span class="kicker">Freenorte · Soluciones digitales</span>
+      <h2>Sistemas, inventario y marketing para negocios del norte</h2>
+      <p>Somos de Alto Hospicio. Te instalamos el sistema de ventas en tu local, te dejamos el inventario cargado y te ayudamos a vender por internet.</p>
+      <ul class="marca__lista">
+        <li><svg class="ico"><use href="#i-check"/></svg>Sistemas de venta para celular y computador</li>
+        <li><svg class="ico"><use href="#i-check"/></svg>Inventario contado, cargado y valorizado</li>
+        <li><svg class="ico"><use href="#i-check"/></svg>Redes sociales, Mercado Libre y página web</li>
+      </ul>
+      <p class="marca__zona">Atención en terreno en Alto Hospicio, Iquique, Arica y Pozo Almonte.</p>
+      <div class="cta">
+        <a class="btn btn--gold" href="https://wa.me/56949424720?text=Hola%20Freenorte%2C%20quiero%20saber%20m%C3%A1s%20de%20sus%20servicios" target="_blank" rel="noopener">Escríbenos por WhatsApp</a>
+        <a class="btn marca__btn2" href="#planes">Ver planes y precios</a>
+      </div>
     </div>
-    <div class="vids">
-      <figure><button class="vbtn" type="button" data-video="assets/videos/vid-ventafacil-celular.mp4" data-vertical aria-label="Ver video: VentaFácil en tu celular"><img src="assets/img/sistemas/celu-vender-productos.jpg" width="585" height="1266" alt="Vista previa de VentaFácil con fotos de productos de ejemplo" loading="lazy"><span class="play"><i><svg viewBox="0 0 24 24"><use href="#i-play"/></svg></i>1 min</span></button><figcaption><b>VentaFácil en tu celular</b><span>Para bazares, minimarkets y ferreterías.</span></figcaption></figure>
-      <figure><button class="vbtn" type="button" data-video="assets/videos/vid-sportpos-pc.mp4" data-vertical aria-label="Ver video: SportPOS en el computador"><img src="assets/img/sistemas/celu-vender-productos.jpg" width="585" height="1266" alt="Vista previa del catálogo de productos en VentaFácil" loading="lazy"><span class="play"><i><svg viewBox="0 0 24 24"><use href="#i-play"/></svg></i>1 min</span></button><figcaption><b>SportPOS en el computador</b><span>Para tiendas de zapatillas y ropa deportiva.</span></figcaption></figure>
-      <figure><button class="vbtn" type="button" data-video="assets/videos/vid-servicio-inventario.mp4" data-vertical aria-label="Ver video: servicio de inventario"><img src="assets/img/sistemas/celu-stockbajo.jpg" width="585" height="1266" alt="Vista previa del control de inventario" loading="lazy"><span class="play"><i><svg viewBox="0 0 24 24"><use href="#i-play"/></svg></i>1 min</span></button><figcaption><b>Servicio de inventario</b><span>Contamos, valorizamos y cargamos tu mercadería.</span></figcaption></figure>
-      <figure><button class="vbtn" type="button" data-video="assets/videos/vid-marketing.mp4" data-vertical aria-label="Ver video: marketing digital"><img src="assets/img/sistemas/celu-inicio.jpg" width="585" height="1266" alt="Vista previa del panel de resultados" loading="lazy"><span class="play"><i><svg viewBox="0 0 24 24"><use href="#i-play"/></svg></i>1 min</span></button><figcaption><b>Marketing digital</b><span>Redes, Mercado Libre y tu página web.</span></figcaption></figure>
+    <div class="marca__video">
+      <video muted loop playsinline preload="none" poster="assets/videos/freenorte-logo-3d.jpg" width="720" height="1280" aria-label="Video del logo Freenorte: de un computador y un celular con el sistema de ventas sale una brújula dorada que apunta al norte">
+        <source src="assets/videos/freenorte-logo-3d.mp4" type="video/mp4">
+      </video>
     </div>
   </div>
 </section>
 
-<section class="sec" id="preguntas">
+<section class="sec sec--alt" id="preguntas">
   <div class="wrap faq">
     <div class="faq__side">
       <span class="kicker">Preguntas</span>
@@ -1346,7 +1347,7 @@ dialog.player.vertical{max-width:min(92vw,420px)}
   </div>
 </section>
 
-<section class="sec sec--alt" id="contacto">
+<section class="sec" id="contacto">
   <div class="wrap">
     <div class="cab">
       <div><span class="kicker">Contacto</span><h2>¿Qué negocio tienes?</h2></div>
